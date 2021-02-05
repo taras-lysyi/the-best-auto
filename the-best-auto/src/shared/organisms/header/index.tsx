@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'block',
       },
     },
+    logoLink: {
+      textDecoration: 'none',
+      width: '100%',
+    },
     logo: {
       [theme.breakpoints.down('sm')]: {
         width: '100%',
@@ -40,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       fontWeight: 'bold',
-      color: theme.palette.primary.main,
+      color: 'white',
     },
     tabs: {
       width: '100%',
@@ -113,7 +117,7 @@ export const Header = () => {
             aria-label='open drawer'>
             <MenuIcon />
           </IconButton>
-          <Link to='/' style={{ textDecoration: 'none' }}>
+          <Link className={classes.logoLink} to='/' style={{ textDecoration: 'none' }}>
             <Box display='flex' className={classes.logo}>
               <Typography className={classes.title} variant='h4' noWrap>
                 THE

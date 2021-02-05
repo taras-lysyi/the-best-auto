@@ -18,7 +18,6 @@ function App() {
             <Pages />
           </Box>
         </Container>
-
         <Footer />
       </ThemeProvider>
     </>
