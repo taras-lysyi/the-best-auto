@@ -65,52 +65,26 @@ export const Header = () => {
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue)
+    window.scrollTo(0, 0)
   }
-  const renderDesktopToolbarWithTabs = (
-    <Toolbar>
-      <Tabs
-        className={classes.tabs}
-        value={value}
-        indicatorColor='secondary'
-        textColor='inherit'
-        onChange={handleChange}
-        variant='fullWidth'>
-        <Tab label='Головна' component={Link} to='/' className={classes.tab} />
-        <Tab label='Каталог' component={Link} to='/catalog' className={classes.tab} />
-        <Tab label='Контакти' component={Link} to='/contacts' className={classes.tab} />
-        <Tab label='Блог' component={Link} to='/blog' className={classes.tab} />
-      </Tabs>
-    </Toolbar>
-  )
 
-  const [drawer, toggleDrawer] = React.useState(false)
-  const MobileDrawer = (
-    <Drawer open={drawer} onClose={() => toggleDrawer(false)} transitionDuration={2000}>
-      <IconButton onClick={() => toggleDrawer(false)}>
-        <CloseIcon />
-      </IconButton>
-      <Tabs
-        className={classes.tabs}
-        orientation='vertical'
-        value={value}
-        indicatorColor='secondary'
-        textColor='inherit'
-        onChange={handleChange}
-        variant='fullWidth'>
-        <Tab label='Головна' component={Link} to='/' className={classes.tab} />
-        <Tab label='Каталог' component={Link} to='/catalog' className={classes.tab} />
-        <Tab label='Контакти' component={Link} to='/contacts' className={classes.tab} />
-        <Tab label='Блог' component={Link} to='/blog' className={classes.tab} />
-      </Tabs>
-    </Drawer>
-  )
-
+  const [drawer, setDrawer] = React.useState(false)
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return
+    }
+    setDrawer(open)
+  }
   return (
     <div className={classes.root}>
       <AppBar position='fixed' className={classes.appBar}>
         <Toolbar>
           <IconButton
-            onClick={() => toggleDrawer(true)}
+            onClick={toggleDrawer(true)}
             edge='start'
             className={classes.menuButton}
             color='inherit'
@@ -132,10 +106,47 @@ export const Header = () => {
           </Link>
 
           <div className={classes.grow} />
-          {matches && renderDesktopToolbarWithTabs}
+          {matches && (
+            <Toolbar>
+              <Tabs
+                className={classes.tabs}
+                value={value}
+                indicatorColor='secondary'
+                textColor='inherit'
+                onChange={handleChange}
+                variant='fullWidth'>
+                <Tab label='Головна' component={Link} to='/' className={classes.tab} />
+                <Tab label='Каталог' component={Link} to='/catalog' className={classes.tab} />
+                <Tab label='Контакти' component={Link} to='/contacts' className={classes.tab} />
+                <Tab label='Блог' component={Link} to='/blog' className={classes.tab} />
+              </Tabs>
+            </Toolbar>
+          )}
         </Toolbar>
       </AppBar>
-      {!matches && drawer && MobileDrawer}
+      {!matches && (
+        <Drawer open={drawer} onClose={toggleDrawer(false)}>
+          <IconButton onClick={toggleDrawer(false)}>
+            <CloseIcon />
+          </IconButton>
+          <Tabs
+            className={classes.tabs}
+            orientation='vertical'
+            value={value}
+            indicatorColor='secondary'
+            textColor='inherit'
+            onChange={(event, newValue) => {
+              handleChange(event, newValue)
+              setDrawer(false)
+            }}
+            variant='fullWidth'>
+            <Tab label='Головна' component={Link} to='/' className={classes.tab} />
+            <Tab label='Каталог' component={Link} to='/catalog' className={classes.tab} />
+            <Tab label='Контакти' component={Link} to='/contacts' className={classes.tab} />
+            <Tab label='Блог' component={Link} to='/blog' className={classes.tab} />
+          </Tabs>
+        </Drawer>
+      )}
     </div>
   )
 }

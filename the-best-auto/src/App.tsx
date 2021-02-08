@@ -18,7 +18,7 @@ function App() {
             <Pages />
           </Box>
         </Container>
-        <Footer />
+        {/* <Footer /> */}
       </ThemeProvider>
     </>
   )

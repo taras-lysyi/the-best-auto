@@ -18,6 +18,7 @@ import BuildIcon from '@material-ui/icons/Build'
 import InstagramIcon from '@material-ui/icons/Instagram'
 import YouTubeIcon from '@material-ui/icons/YouTube'
 import { Social } from 'features/social-media/organisms'
+import GroupIcon from '@material-ui/icons/Group'
 
 export const HomePage = () => {
   const theme = useTheme()
@@ -86,6 +87,13 @@ export const HomePage = () => {
       </Section>
 
       <Divider />
+      <Section>
+        <TitleWithIcon
+          icon={<GroupIcon fontSize='inherit' color='secondary' />}
+          primaryText='НАША'
+          secondaryText='КОМАНДА'
+        />
+      </Section>
     </>
   )
 }
