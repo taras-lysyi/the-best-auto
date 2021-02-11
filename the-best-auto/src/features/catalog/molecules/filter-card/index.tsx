@@ -25,6 +25,7 @@ const useStyles = makeStyles({
 })
 
 type Props = {
+  carName: string
   src: string
   runCount: number
   year: number
@@ -32,7 +33,7 @@ type Props = {
   newPrice?: number
 }
 
-export const FilterCard = ({ src, runCount, year, price, newPrice }: Props) => {
+export const FilterCard = ({ carName, src, runCount, year, price, newPrice }: Props) => {
   const classes = useStyles()
 
   return (
@@ -41,7 +42,7 @@ export const FilterCard = ({ src, runCount, year, price, newPrice }: Props) => {
         <CardMedia className={classes.media} image={src} title='Contemplative Reptile' />
         <CardContent>
           <Typography gutterBottom variant='subtitle1' className={classes.title}>
-            VOLKSWAGEN CC SPORT
+            {carName}
           </Typography>
           <Typography variant='body1'>Пробіг: {runCount} тис.</Typography>
           <Typography variant='body1'>Рік: {year}</Typography>

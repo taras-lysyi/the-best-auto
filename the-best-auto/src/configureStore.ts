@@ -1,9 +1,9 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
-import { useDispatch } from 'react-redux'
-// ...
+import { useDispatch, TypedUseSelectorHook, useSelector } from 'react-redux'
+import catalogReducer from 'features/catalog/slice'
 
 const rootReducer = combineReducers({
-  // todos: todos.reducer,
+  catalog: catalogReducer,
 })
 
 export const store = configureStore({
@@ -12,4 +12,5 @@ export const store = configureStore({
 
 export type AppDispatch = typeof store.dispatch
 export const useAppDispatch = () => useDispatch<AppDispatch>()
+export const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector
 export type RootState = ReturnType<typeof store.getState>

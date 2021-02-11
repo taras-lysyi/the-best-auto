@@ -1,12 +1,26 @@
-import React from 'react'
+import React, { BaseSyntheticEvent, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import TextField from '@material-ui/core/TextField'
 import Slider from '@material-ui/core/Slider'
 import { FilterBox } from '../../atoms'
+import { useTypedSelector, useAppDispatch } from 'configureStore'
+import { getBrands, getFeature, getFeaturesValue, setInitializeFilter } from '../../slice'
 
 export const FilterItems = () => {
+  const isInitialized = useTypedSelector(state => state.catalog.filter.initialized)
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    if (!isInitialized) {
+      Promise.all([dispatch(getBrands()), dispatch(getFeature()), dispatch(getFeaturesValue())]).then(() => {
+        dispatch(setInitializeFilter(true))
+      })
+    }
+  }, [dispatch, isInitialized])
+
+  let brands = useTypedSelector(state => state.catalog.filter.brands)
+  let features = useTypedSelector(state => state.catalog.filter.features)
   const [state, setState] = React.useState({
     checkedA: true,
     checkedB: true,
@@ -89,70 +103,37 @@ export const FilterItems = () => {
           </Grid>
         </Grid>
       </FilterBox>
-      <FilterBox title='Бренд'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Volkswagen'
-        />
-      </FilterBox>
+
+      {brands.status === 'loading' ? (
+        <FilterBox title='Бренд' status='loading' />
+      ) : brands.status === 'success' ? (
+        <FilterBox title='Бренд' status='success'>
+          {brands.brandsItems.map(item => {
+            return (
+              <FormControlLabel
+                key={item.brand_id}
+                control={
+                  <Checkbox checked={true} onChange={() => console.log('change')} name={item.link} color='primary' />
+                }
+                label={item.name}
+              />
+            )
+          })}
+        </FilterBox>
+      ) : null}
+
+      {features.status === 'loading' ? (
+        <FilterBox status='loading' />
+      ) : features.status === 'success' ? (
+        features.featuresItems.map(item => {
+          return <FilterBox key={item.feature_id} title={item.feature_name} />
+        })
+      ) : null}
+
       <FilterBox title='КПП'>
         <FormControlLabel
           control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
           label='Автомат'
-        />
-      </FilterBox>
-      <FilterBox title={`Об'єм двигуна`}>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='3.6л'
-        />
-      </FilterBox>
-      <FilterBox title='Тип топлива'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Бензин'
-        />
-      </FilterBox>
-      <FilterBox title='Привід'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Повний'
-        />
-      </FilterBox>
-      <FilterBox title='Тип кузова'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Універсал'
-        />
-      </FilterBox>
-      <FilterBox title='Салон'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Шкіряний'
-        />
-      </FilterBox>
-      <FilterBox title='Колір'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Сірий металік'
-        />
-      </FilterBox>
-      <FilterBox title='Безпека'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Центральний замок'
-        />
-      </FilterBox>
-      <FilterBox title='Комфорт'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Підсилювач керма'
-        />
-      </FilterBox>
-      <FilterBox title='Мультимедіа'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Магнітола'
         />
       </FilterBox>
     </>
