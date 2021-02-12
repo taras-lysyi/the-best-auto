@@ -34,7 +34,7 @@ export const getBrands = createAsyncThunk('/brands/all', async function getBrand
   return response.data
 })
 
-interface GetFeatureI {
+export interface GetFeatureI {
   feature_id: number
   feature_name: string // Колір
   sort: number
@@ -45,11 +45,11 @@ export const getFeature = createAsyncThunk('/features/all', async function getFe
   return response.data
 })
 
-interface GetFeaturesValueI {
+export interface GetFeaturesValueI {
   feature_value_id: number
   feature_id: number
   feature_value: string
-  feauture_param: null
+  feature_param: null
 }
 
 export const getFeaturesValue = createAsyncThunk('/features/value', async function getFeaturesValue() {

@@ -6,7 +6,15 @@ import TextField from '@material-ui/core/TextField'
 import Slider from '@material-ui/core/Slider'
 import { FilterBox } from '../../atoms'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
-import { getBrands, getFeature, getFeaturesValue, setInitializeFilter } from '../../slice'
+import {
+  getBrands,
+  getFeature,
+  getFeaturesValue,
+  setInitializeFilter,
+  GetFeatureI,
+  GetFeaturesValueI,
+} from '../../slice'
+import { getAll } from '../../api'
 
 export const FilterItems = () => {
   const isInitialized = useTypedSelector(state => state.catalog.filter.initialized)
@@ -16,11 +24,40 @@ export const FilterItems = () => {
       Promise.all([dispatch(getBrands()), dispatch(getFeature()), dispatch(getFeaturesValue())]).then(() => {
         dispatch(setInitializeFilter(true))
       })
+      console.log(getAll())
     }
   }, [dispatch, isInitialized])
 
   let brands = useTypedSelector(state => state.catalog.filter.brands)
   let features = useTypedSelector(state => state.catalog.filter.features)
+  let featuresValue = useTypedSelector(state => state.catalog.filter.featuresValue)
+
+  interface SortedFeaturesWithValuesI {
+    feature: GetFeatureI
+    featuresValueItems: GetFeaturesValueI[]
+  }
+
+  let sortedFeaturesWithValues = () => {
+    let result: SortedFeaturesWithValuesI[] = []
+
+    features.featuresItems.forEach(feature => {
+      result = [
+        ...result,
+        {
+          feature,
+          featuresValueItems: featuresValue.featuresValueItems
+            .filter(item => feature.feature_id === item.feature_id)
+            .sort((a, b) => {
+              let x = a.feature_value.toLowerCase()
+              let y = b.feature_value.toLowerCase()
+              return x < y ? -1 : x > y ? 1 : 0
+            }),
+        },
+      ]
+    })
+    return result
+  }
+
   const [state, setState] = React.useState({
     checkedA: true,
     checkedB: true,
@@ -105,7 +142,7 @@ export const FilterItems = () => {
       </FilterBox>
 
       {brands.status === 'loading' ? (
-        <FilterBox title='Бренд' status='loading' />
+        <FilterBox status='loading' />
       ) : brands.status === 'success' ? (
         <FilterBox title='Бренд' status='success'>
           {brands.brandsItems.map(item => {
@@ -122,20 +159,32 @@ export const FilterItems = () => {
         </FilterBox>
       ) : null}
 
-      {features.status === 'loading' ? (
-        <FilterBox status='loading' />
-      ) : features.status === 'success' ? (
-        features.featuresItems.map(item => {
-          return <FilterBox key={item.feature_id} title={item.feature_name} />
-        })
-      ) : null}
-
-      <FilterBox title='КПП'>
-        <FormControlLabel
-          control={<Checkbox checked={state.checkedB} onChange={handleChange} name='checkedB' color='primary' />}
-          label='Автомат'
-        />
-      </FilterBox>
+      {sortedFeaturesWithValues().map(item => {
+        return features.status === 'loading' || featuresValue.status === 'loading' ? (
+          <FilterBox status='loading' key={item.feature.feature_id} />
+        ) : features.status === 'success' && featuresValue.status === 'success' ? (
+          <FilterBox status='success' title={item.feature.feature_name} key={item.feature.feature_id}>
+            {item.featuresValueItems.map(featureValue => {
+              return (
+                <FormControlLabel
+                  key={featureValue.feature_value_id}
+                  control={
+                    <Checkbox
+                      checked={false}
+                      onChange={handleChange}
+                      name={featureValue.feature_value}
+                      color='primary'
+                    />
+                  }
+                  label={featureValue.feature_value}
+                />
+              )
+            })}
+          </FilterBox>
+        ) : (
+          <FilterBox status='failed' />
+        )
+      })}
     </>
   )
 }

@@ -17,8 +17,8 @@ type GetAllT = {
 
 export const getAll = (): Promise<GetAllT[] | void> =>
   instance
-    .post('/category/all')
-    .then(response => console.log(response.data.result.filter((item: GetAllT) => item.main)))
+    .post('/catalog/all')
+    .then(response => console.log(response))
     .catch(handleError)
 
 // let _categoryMain: [] | Promise<any> = []
