@@ -1,1 +1,0 @@
-export { FilterItems } from './filter'

@@ -2,7 +2,8 @@ import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography'
 import { SkeletonLoader, LoadingError } from 'shared/molecules'
-import { LoadingStatus } from '../../slice'
+import { LoadingStatus } from '../slice'
+
 interface Props {
   title?: string
   children?: React.ReactNode

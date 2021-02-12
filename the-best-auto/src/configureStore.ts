@@ -1,9 +1,9 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { useDispatch, TypedUseSelectorHook, useSelector } from 'react-redux'
-import catalogReducer from 'features/catalog/slice'
+import filterReducer from 'features/catalog/features/filter/slice'
 
 const rootReducer = combineReducers({
-  catalog: catalogReducer,
+  filter: filterReducer,
 })
 
 export const store = configureStore({

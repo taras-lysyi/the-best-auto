@@ -5,20 +5,18 @@ import { PayloadAction } from '@reduxjs/toolkit'
 export type LoadingStatus = 'loading' | 'success' | 'failed' | null
 
 interface InitialStateI {
-  filter: {
-    initialized: boolean
-    brands: {
-      status: LoadingStatus
-      brandsItems: GetBrandsI[]
-    }
-    features: {
-      status: LoadingStatus
-      featuresItems: GetFeatureI[]
-    }
-    featuresValue: {
-      status: LoadingStatus
-      featuresValueItems: GetFeaturesValueI[]
-    }
+  initialized: boolean
+  brands: {
+    status: LoadingStatus
+    brandsItems: GetBrandsI[]
+  }
+  features: {
+    status: LoadingStatus
+    featuresItems: GetFeatureI[]
+  }
+  featuresValue: {
+    status: LoadingStatus
+    featuresValueItems: GetFeaturesValueI[]
   }
 }
 
@@ -58,67 +56,65 @@ export const getFeaturesValue = createAsyncThunk('/features/value', async functi
 })
 
 const initialState: InitialStateI = {
-  filter: {
-    initialized: false,
-    brands: {
-      status: null,
-      brandsItems: [],
-    },
-    features: {
-      status: null,
-      featuresItems: [],
-    },
-    featuresValue: {
-      status: null,
-      featuresValueItems: [],
-    },
+  initialized: false,
+  brands: {
+    status: null,
+    brandsItems: [],
+  },
+  features: {
+    status: null,
+    featuresItems: [],
+  },
+  featuresValue: {
+    status: null,
+    featuresValueItems: [],
   },
 }
 
-const catalogSlice = createSlice({
-  name: 'catalog',
+const filterSlice = createSlice({
+  name: 'filter',
   initialState,
   reducers: {
     setInitializeFilter: (state, action: PayloadAction<boolean>) => {
-      state.filter.initialized = action.payload
+      state.initialized = action.payload
     },
   },
   extraReducers: builder => {
     builder.addCase(getBrands.pending, state => {
-      state.filter.brands.status = 'loading'
+      state.brands.status = 'loading'
     })
     builder.addCase(getBrands.fulfilled, (state, action) => {
-      state.filter.brands.brandsItems = action.payload.result
-      state.filter.brands.status = 'success'
+      state.brands.brandsItems = action.payload.result
+      state.brands.status = 'success'
     })
     builder.addCase(getBrands.rejected, state => {
-      state.filter.brands.status = 'failed'
+      state.brands.status = 'failed'
     })
 
     builder.addCase(getFeature.pending, state => {
-      state.filter.features.status = 'loading'
+      state.features.status = 'loading'
     })
     builder.addCase(getFeature.fulfilled, (state, action) => {
-      state.filter.features.featuresItems = action.payload.result
-      state.filter.features.status = 'success'
+      state.features.featuresItems = action.payload.result
+      state.features.status = 'success'
     })
     builder.addCase(getFeature.rejected, state => {
-      state.filter.features.status = 'failed'
+      state.features.status = 'failed'
     })
 
     builder.addCase(getFeaturesValue.pending, state => {
-      state.filter.featuresValue.status = 'loading'
+      state.featuresValue.status = 'loading'
     })
     builder.addCase(getFeaturesValue.fulfilled, (state, action) => {
-      state.filter.featuresValue.featuresValueItems = action.payload.result
-      state.filter.featuresValue.status = 'success'
+      state.featuresValue.featuresValueItems = action.payload.result
+      state.featuresValue.status = 'success'
     })
     builder.addCase(getFeaturesValue.rejected, state => {
-      state.filter.featuresValue.status = 'failed'
+      state.featuresValue.status = 'failed'
     })
   },
 })
 
-export const { setInitializeFilter } = catalogSlice.actions
+export const { setInitializeFilter } = filterSlice.actions
 
-export default catalogSlice.reducer
+export default filterSlice.reducer
