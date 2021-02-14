@@ -1,16 +1,17 @@
 import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import { SkeletonLoader, LoadingError } from 'shared/molecules'
-import { LoadingStatus } from '../slice'
+import { LoadingStatusT } from 'shared/types'
 
-interface Props {
+interface FilterBoxTemplateProps {
   title?: string
   children?: React.ReactNode
-  status?: LoadingStatus
+  status: LoadingStatusT
 }
 
-export const FilterBox = ({ title, children, status }: Props) => {
+export const FilterBoxTemplate = ({ title, children, status }: FilterBoxTemplateProps) => {
   return (
     <>
       <Box>
@@ -22,6 +23,30 @@ export const FilterBox = ({ title, children, status }: Props) => {
         </Box>
       </Box>
       <Divider />
+    </>
+  )
+}
+
+interface FilterSliderTemplateProps {
+  min: React.ReactNode
+  max: React.ReactNode
+  slider: React.ReactNode
+}
+
+export const FilterSliderTemplate = ({ min, max, slider }: FilterSliderTemplateProps) => {
+  return (
+    <>
+      <Grid container spacing={1}>
+        <Grid item xs={6} md={6}>
+          {min}
+        </Grid>
+        <Grid item xs={6} md={6}>
+          {max}
+        </Grid>
+        <Grid item xs={12} md={12}>
+          {slider}
+        </Grid>
+      </Grid>
     </>
   )
 }

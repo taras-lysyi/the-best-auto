@@ -1,65 +1,64 @@
+import axios from 'axios'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { instance } from 'serverConfig'
 import { PayloadAction } from '@reduxjs/toolkit'
+import { LoadingStatusT } from 'shared/types'
 
-export type LoadingStatus = 'loading' | 'success' | 'failed' | null
-
-interface InitialStateI {
-  initialized: boolean
-  brands: {
-    status: LoadingStatus
-    brandsItems: GetBrandsI[]
-  }
-  features: {
-    status: LoadingStatus
-    featuresItems: GetFeatureI[]
-  }
-  featuresValue: {
-    status: LoadingStatus
-    featuresValueItems: GetFeaturesValueI[]
-  }
-}
-
-export interface GetBrandsI {
+export interface BrandsResponseI {
   active: number
   brand_id: number
   link: string // bmw
   name: string // BMW
 }
 
-export const getBrands = createAsyncThunk('/brands/all', async function getBrands() {
-  const response = await instance.post('/brands/all')
-  return response.data
+export const getBrands = createAsyncThunk('/brands/all', async () => {
+  const response = await axios.post('/brands/all')
+  return response.data.result
 })
 
-export interface GetFeatureI {
+export interface FeaturesResponseI {
   feature_id: number
   feature_name: string // Колір
   sort: number
 }
 
-export const getFeature = createAsyncThunk('/features/all', async function getFeature() {
-  const response = await instance.post('/features/all')
-  return response.data
+export const getFeatures = createAsyncThunk('/features/all', async () => {
+  const response = await axios.post('/features/all')
+  return response.data.result
 })
 
-export interface GetFeaturesValueI {
-  feature_value_id: number
+export interface FeaturesValueResponseI {
   feature_id: number
+  feature_value_id: number
   feature_value: string
   feature_param: null
 }
 
-export const getFeaturesValue = createAsyncThunk('/features/value', async function getFeaturesValue() {
-  const response = await instance.post('/features/value')
-  return response.data
+export const getFeaturesValue = createAsyncThunk('/features/value', async () => {
+  const response = await axios.post('/features/value')
+  return response.data.result
 })
+
+interface InitialStateI {
+  initialized: boolean
+  brands: {
+    status: LoadingStatusT
+    brandItems: BrandsResponseI[]
+  }
+  features: {
+    status: LoadingStatusT
+    featuresItems: FeaturesResponseI[]
+  }
+  featuresValue: {
+    status: LoadingStatusT
+    featuresValueItems: FeaturesValueResponseI[]
+  }
+}
 
 const initialState: InitialStateI = {
   initialized: false,
   brands: {
     status: null,
-    brandsItems: [],
+    brandItems: [],
   },
   features: {
     status: null,
@@ -80,33 +79,34 @@ const filterSlice = createSlice({
     },
   },
   extraReducers: builder => {
+    // BRANDS
     builder.addCase(getBrands.pending, state => {
       state.brands.status = 'loading'
     })
-    builder.addCase(getBrands.fulfilled, (state, action) => {
-      state.brands.brandsItems = action.payload.result
+    builder.addCase(getBrands.fulfilled, (state, action: PayloadAction<BrandsResponseI[]>) => {
+      state.brands.brandItems = action.payload
       state.brands.status = 'success'
     })
     builder.addCase(getBrands.rejected, state => {
       state.brands.status = 'failed'
     })
-
-    builder.addCase(getFeature.pending, state => {
+    // FEATURES
+    builder.addCase(getFeatures.pending, state => {
       state.features.status = 'loading'
     })
-    builder.addCase(getFeature.fulfilled, (state, action) => {
-      state.features.featuresItems = action.payload.result
+    builder.addCase(getFeatures.fulfilled, (state, action: PayloadAction<FeaturesResponseI[]>) => {
+      state.features.featuresItems = action.payload
       state.features.status = 'success'
     })
-    builder.addCase(getFeature.rejected, state => {
+    builder.addCase(getFeatures.rejected, state => {
       state.features.status = 'failed'
     })
-
+    // FEATURES VALUES
     builder.addCase(getFeaturesValue.pending, state => {
       state.featuresValue.status = 'loading'
     })
-    builder.addCase(getFeaturesValue.fulfilled, (state, action) => {
-      state.featuresValue.featuresValueItems = action.payload.result
+    builder.addCase(getFeaturesValue.fulfilled, (state, action: PayloadAction<FeaturesValueResponseI[]>) => {
+      state.featuresValue.featuresValueItems = action.payload
       state.featuresValue.status = 'success'
     })
     builder.addCase(getFeaturesValue.rejected, state => {

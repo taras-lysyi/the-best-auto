@@ -33,7 +33,7 @@ type Props = {
   newPrice?: number
 }
 
-export const FilterCard = ({ carName, src, runCount, year, price, newPrice }: Props) => {
+export const CatalogCard = ({ carName, src, runCount, year, price, newPrice }: Props) => {
   const classes = useStyles()
 
   return (

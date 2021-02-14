@@ -9,7 +9,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import Fab from '@material-ui/core/Fab'
 import CheckIcon from '@material-ui/icons/Check'
-import { FilterCard } from 'features/catalog/features/filter/molecules'
+import { CatalogCard } from 'features/catalog/molecules'
 import { FilterItems } from 'features/catalog/features/filter/organisms'
 import { CatalogTemplate } from 'features/catalog/templates'
 import { CatalogOnRoad } from './onroad'
@@ -94,7 +94,7 @@ export const CatalogPage = () => {
 
   const cards = cardsData.map(item => {
     return (
-      <FilterCard
+      <CatalogCard
         carName={item.carName}
         src={item.src}
         runCount={item.runCount}
