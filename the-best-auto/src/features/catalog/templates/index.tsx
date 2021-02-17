@@ -4,14 +4,17 @@ import { useTheme, makeStyles, createStyles, Theme } from '@material-ui/core/sty
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Paper from '@material-ui/core/Paper'
 import Box from '@material-ui/core/Box'
-
-type Props = {
+import IconButton from '@material-ui/core/IconButton'
+import Drawer from '@material-ui/core/Drawer'
+import Fab from '@material-ui/core/Fab'
+interface Props {
   filter: JSX.Element
-  mobileDrawer: JSX.Element
   settingButton: JSX.Element
   cards: JSX.Element[]
-  drawer: boolean
   checkButton: JSX.Element
+  categoryItems: JSX.Element[]
+  closeIcon: JSX.Element
+  filterTitle: JSX.Element
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -25,23 +28,74 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export const CatalogTemplate = ({ filter, mobileDrawer, settingButton, cards, drawer, checkButton }: Props) => {
+export const CatalogTemplate = ({
+  filter,
+  settingButton,
+  cards,
+  checkButton,
+  categoryItems,
+  closeIcon,
+  filterTitle,
+}: Props) => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
   const [scrollYPosition, setScroll] = React.useState(0)
   window.onscroll = () => setScroll(window.scrollY)
+
+  const [drawer, setDrawer] = React.useState(false)
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return
+    }
+    setDrawer(open)
+  }
+
   return (
     <>
       {!matches && (
         <Box display='flex' mb={2} width={1} justifyContent='flex-end'>
-          {settingButton}
+          <Fab onClick={toggleDrawer(true)}>{settingButton}</Fab>
         </Box>
       )}
+      {!matches && !drawer && scrollYPosition > 100 && (
+        <Box className={classes.fixedBottomRightMobile}>
+          <Fab onClick={toggleDrawer(true)}>{settingButton}</Fab>
+        </Box>
+      )}
+      {!matches && (
+        <Drawer anchor='right' open={drawer} onClose={toggleDrawer(false)}>
+          <IconButton onClick={() => setDrawer(false)}>{closeIcon}</IconButton>
+          <Box textAlign='center'>{filterTitle}</Box>
+          <Paper>
+            <Box padding={1}>{categoryItems}</Box>
+            <Box padding={1}>{filter}</Box>
+          </Paper>
+        </Drawer>
+      )}
+      {!matches && drawer && (
+        <Box className={classes.fixedBottomRightMobile}>
+          <Fab color='secondary'>{checkButton}</Fab>
+        </Box>
+      )}
+
       <Grid container spacing={2}>
         {matches && (
           <Grid item md={3}>
-            {filter}
+            <Paper>
+              <Box padding={1}>
+                {categoryItems.map(item => {
+                  return <Box my={1}>{item}</Box>
+                })}
+              </Box>
+            </Paper>
+            <Paper>
+              <Box padding={1}>{filter}</Box>
+            </Paper>
           </Grid>
         )}
         <Grid item xs={12} md={9}>
@@ -58,11 +112,6 @@ export const CatalogTemplate = ({ filter, mobileDrawer, settingButton, cards, dr
           </Paper>
         </Grid>
       </Grid>
-      {!matches && mobileDrawer}
-      {!matches && drawer && <Box className={classes.fixedBottomRightMobile}>{checkButton}</Box>}
-      {!matches && !drawer && scrollYPosition > 100 && (
-        <Box className={classes.fixedBottomRightMobile}>{settingButton}</Box>
-      )}
     </>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, FC } from 'react'
 import Grid from '@material-ui/core/Grid'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
@@ -15,7 +15,7 @@ import {
   FeaturesValueResponseI,
 } from '../../slice'
 
-export const FilterItems = () => {
+export const FilterItems: FC = () => {
   const isInitialized = useTypedSelector(state => state.filter.initialized)
   const dispatch = useAppDispatch()
   useEffect(() => {
@@ -61,14 +61,14 @@ export const FilterItems = () => {
       <FormControlLabel control={<Checkbox color='primary' />} label='Топ пропозиції' />
       <FormControlLabel control={<Checkbox color='primary' />} label='Новинки' />
       <FormControlLabel control={<Checkbox color='primary' />} label='Знижки' />
-      <FilterBoxTemplate title='Ціна ($)'>
+      <FilterBoxTemplate status='success' title='Ціна ($)'>
         <FilterSliderTemplate
           min={<TextField fullWidth type='number' label='від' />}
           max={<TextField fullWidth type='number' label='до' />}
           slider={<Slider value={0} color='secondary' valueLabelDisplay='auto' aria-labelledby='range-slider' />}
         />
       </FilterBoxTemplate>
-      <FilterBoxTemplate title='Пробіг (км)'>
+      <FilterBoxTemplate status='success' title='Пробіг (км)'>
         <Grid container spacing={1}>
           <Grid item xs={6} md={6}>
             <TextField type='number' label='від' />

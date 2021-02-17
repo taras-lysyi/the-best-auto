@@ -1,7 +1,24 @@
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
 import { FeaturesValueResponseI } from './features/filter/slice'
+
+interface GetCategoriesResponseI {
+  category_id: number
+  parent_id: null | number
+  link: string // onroad
+  name: string // 'Авто в дорози в украину
+  name_once: string | null
+  active: number
+  main: number // 1
+  second: number // 0
+  sort: number // 4
+}
+
+export const getCategories = createAsyncThunk('/category/all', async () => {
+  const response = await axios.post('/category/all')
+  return response.data.result
+})
 
 interface CategoryIdsBodyDataI {
   categoryIds: []
@@ -72,40 +89,71 @@ export const getByCategoryIds = createAsyncThunk('/catalog/byCategoryIds', async
 })
 
 interface InitialStateI {
-  initialized: boolean
-  status: LoadingStatusT
-  catalogData: ByCategoryIdsResponseI | null
+  selectedCategory: number | null
+  categories: {
+    initialized: boolean
+    status: LoadingStatusT
+    categoriesData: GetCategoriesResponseI[]
+  }
+  catalogDataByCategoryIds: {
+    initialized: boolean
+    status: LoadingStatusT
+    catalogData: ByCategoryIdsResponseI | null
+  }
 }
 
 const initialState: InitialStateI = {
-  initialized: false,
-  status: null,
-  catalogData: null,
+  selectedCategory: null,
+  categories: {
+    initialized: false,
+    status: null,
+    categoriesData: [],
+  },
+  catalogDataByCategoryIds: {
+    initialized: false,
+    status: null,
+    catalogData: null,
+  },
 }
 
 const catalogSlice = createSlice({
   name: 'catalog',
   initialState,
   reducers: {
-    setInitializeCatalog: (state, action: PayloadAction<boolean>) => {
-      state.initialized = action.payload
+    setInitializeCategories: (state, action: PayloadAction<boolean>) => {
+      state.categories.initialized = action.payload
+    },
+    setInitializeCatalogDataByCategoryIds: (state, action: PayloadAction<boolean>) => {
+      state.catalogDataByCategoryIds.initialized = action.payload
     },
   },
   extraReducers: builder => {
     // BYCATEGORYIDS
     builder.addCase(getByCategoryIds.pending, state => {
-      state.status = 'loading'
+      state.catalogDataByCategoryIds.status = 'loading'
     })
     builder.addCase(getByCategoryIds.fulfilled, (state, action: PayloadAction<ByCategoryIdsResponseI>) => {
-      state.catalogData = action.payload
-      state.status = 'success'
+      state.catalogDataByCategoryIds.catalogData = action.payload
+      state.catalogDataByCategoryIds.status = 'success'
     })
+
     builder.addCase(getByCategoryIds.rejected, state => {
-      state.status = 'failed'
+      state.catalogDataByCategoryIds.status = 'failed'
+    })
+
+    builder.addCase(getCategories.pending, state => {
+      state.categories.status = 'loading'
+    })
+    builder.addCase(getCategories.fulfilled, (state, action) => {
+      state.categories.categoriesData = action.payload
+      state.categories.status = 'success'
+    })
+    builder.addCase(getCategories.rejected, state => {
+      state.categories.status = 'failed'
     })
   },
 })
 
-export const { setInitializeCatalog } = catalogSlice.actions
+export const { setInitializeCatalogDataByCategoryIds, setInitializeCategories } = catalogSlice.actions
 
 export default catalogSlice.reducer

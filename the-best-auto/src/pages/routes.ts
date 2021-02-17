@@ -17,7 +17,7 @@ export const routes = [
     component: ContactsPage,
   },
   {
-    path: '/catalog',
+    path: '/catalog/:categoryLink?',
     exact: false,
     component: CatalogPage,
   },

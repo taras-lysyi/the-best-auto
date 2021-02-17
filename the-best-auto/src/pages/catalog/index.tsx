@@ -1,64 +1,38 @@
 import React from 'react'
-import { Route } from 'react-router'
-import Paper from '@material-ui/core/Paper'
-import Box from '@material-ui/core/Box'
+import { useParams } from 'react-router-dom'
 import TuneIcon from '@material-ui/icons/Tune'
-import Drawer from '@material-ui/core/Drawer'
-import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
-import Fab from '@material-ui/core/Fab'
 import CheckIcon from '@material-ui/icons/Check'
+import Grid from '@material-ui/core/Grid'
+import { CategoryItem } from 'features/catalog/features/categories/molecules'
 import { CatalogCard } from 'features/catalog/molecules'
 import { FilterItems } from 'features/catalog/features/filter/organisms'
+import { useAppDispatch, useTypedSelector } from 'configureStore'
+import { getCategories, setInitializeCategories } from 'features/catalog/slice'
 import { CatalogTemplate } from 'features/catalog/templates'
-import { CatalogOnRoad } from './onroad'
-import { CatalogAvailable } from './available'
-import { CatalogAuction } from './auction'
 
 export const CatalogPage = () => {
-  const [drawer, setDrawer] = React.useState(false)
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event &&
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
-    ) {
-      return
-    }
-    setDrawer(open)
+  const dispatch = useAppDispatch()
+  const initializeCategories = useTypedSelector(state => state.catalog.categories.initialized)
+  if (!initializeCategories) {
+    Promise.all([dispatch(getCategories())]).then(() => {
+      dispatch(setInitializeCategories(true))
+    })
+  }
+  const selectedCategory = useTypedSelector(state => state.catalog.selectedCategory)
+  const categoriesData = useTypedSelector(state => state.catalog.categories.categoriesData)
+
+  interface ParamTypes {
+    categoryLink: string
   }
 
-  const filter = (
-    <Paper>
-      <Box padding={1}>
-        <FilterItems />
-      </Box>
-    </Paper>
-  )
-  const mobileDrawer = (
-    <Drawer anchor='right' open={drawer} onClose={toggleDrawer(false)}>
-      <IconButton onClick={() => setDrawer(false)}>
-        <CloseIcon />
-      </IconButton>
-      <Box textAlign='center'>
-        <Typography variant='h6'>Фільтри</Typography>
-      </Box>
-      {filter}
-    </Drawer>
-  )
+  const { categoryLink } = useParams<ParamTypes>()
+  console.log(categoryLink)
 
-  const checkButton = (
-    <Fab color='secondary'>
-      <CheckIcon />
-    </Fab>
-  )
-
-  const settingButton = (
-    <Fab onClick={toggleDrawer(true)} color='secondary'>
-      <TuneIcon />
-    </Fab>
-  )
+  const categoryItems = categoriesData.map(item => {
+    return <CategoryItem link={item.link} name={item.name} currentLink={categoryLink} />
+  })
 
   const cardsData = [
     {
@@ -106,23 +80,29 @@ export const CatalogPage = () => {
   })
   return (
     <>
-      <CatalogTemplate
-        filter={filter}
-        mobileDrawer={mobileDrawer}
-        settingButton={settingButton}
-        cards={cards}
-        drawer={drawer}
-        checkButton={checkButton}
-      />
-      <Route path='/catalog/onroad'>
-        <CatalogOnRoad />
-      </Route>
-      <Route path='/catalog/available'>
-        <CatalogAvailable />
-      </Route>
-      <Route path='/catalog/auction'>
-        <CatalogAuction />
-      </Route>
+      {!categoryLink && (
+        <>
+          <Typography variant='h4' align='center'>
+            Виберiть категорiю
+          </Typography>
+          <Grid container spacing={2} justify='center'>
+            {categoryItems.map(item => {
+              return <Grid item>{item}</Grid>
+            })}
+          </Grid>
+        </>
+      )}
+      {categoryLink && (
+        <CatalogTemplate
+          filter={<FilterItems />}
+          settingButton={<TuneIcon />}
+          cards={cards}
+          closeIcon={<CloseIcon />}
+          filterTitle={<Typography variant='h6'>Фільтри</Typography>}
+          checkButton={<CheckIcon />}
+          categoryItems={categoryItems}
+        />
+      )}
     </>
   )
 }
