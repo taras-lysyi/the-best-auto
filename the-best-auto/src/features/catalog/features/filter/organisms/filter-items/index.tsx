@@ -64,7 +64,10 @@ export const FilterItems: FC = () => {
   const priceHandleChange = (event: any, newValue: number | number[]) => {
     dispatch(setStartEndPrice(newValue))
   }
-
+  const [priceValue, setPriceValue] = React.useState<number[]>([catalog.price.min, catalog.price.max])
+  const handleChange = (event: any, newValue: number | number[]) => {
+    setPriceValue(newValue as number[])
+  }
   return (
     <>
       <FormControlLabel
@@ -87,10 +90,11 @@ export const FilterItems: FC = () => {
           max={<TextField fullWidth type='number' label='до' />}
           slider={
             <Slider
+              onChangeCommitted={priceHandleChange}
               min={catalog.price.min}
               max={catalog.price.max}
-              onChange={priceHandleChange}
-              value={[catalog.price.start, catalog.price.end]}
+              onChange={handleChange}
+              value={priceValue}
               color='secondary'
               valueLabelDisplay='auto'
               aria-labelledby='range-slider'
