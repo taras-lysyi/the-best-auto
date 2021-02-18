@@ -14,16 +14,17 @@ const useStyles = makeStyles({
 })
 
 interface Props {
+  onClick: () => void
   currentLink: string
   link: string
   name: string
 }
 
-export const CategoryItem = ({ currentLink, link, name }: Props) => {
+export const CategoryItem = ({ currentLink, link, name, onClick }: Props) => {
   const classes = useStyles()
   return (
     <>
-      <Link className={classes.link} to={`/catalog/${link}`}>
+      <Link onClick={onClick} className={classes.link} to={`/catalog/${link}`}>
         <Button
           fullWidth
           color={currentLink === link ? 'primary' : 'secondary'}

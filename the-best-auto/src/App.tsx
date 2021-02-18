@@ -1,4 +1,5 @@
 import CssBaseline from '@material-ui/core/CssBaseline'
+import { Route } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { theme } from './theme'
 import { Header, Footer } from './shared/organisms'
@@ -12,13 +13,15 @@ function App() {
     <>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Header />
-        <Container>
-          <Box marginTop={matches ? 15 : 10}>
-            <Pages />
-          </Box>
-        </Container>
-        {/* <Footer /> */}
+        <Route path='/:page?'>
+          <Header />
+          <Container>
+            <Box marginTop={matches ? 15 : 10}>
+              <Pages />
+            </Box>
+          </Container>
+          {/* <Footer /> */}
+        </Route>
       </ThemeProvider>
     </>
   )

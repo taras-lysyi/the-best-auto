@@ -1,39 +1,48 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Redirect, useParams } from 'react-router-dom'
 import TuneIcon from '@material-ui/icons/Tune'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import CheckIcon from '@material-ui/icons/Check'
-import Grid from '@material-ui/core/Grid'
-import { CategoryItem } from 'features/catalog/features/categories/molecules'
+import { CatalogTemplate } from 'features/catalog/templates'
 import { CatalogCard } from 'features/catalog/molecules'
 import { FilterItems } from 'features/catalog/features/filter/organisms'
-import { useAppDispatch, useTypedSelector } from 'configureStore'
-import { getCategories, setInitializeCategories } from 'features/catalog/slice'
-import { CatalogTemplate } from 'features/catalog/templates'
+import { Categories } from 'features/catalog/features/categories/organisms'
+import { useTypedSelector, useAppDispatch } from 'configureStore'
+import { getByCategoryIds, CategoryIdsBodyDataI } from 'features/catalog/slice'
+import { setSelectedCategory } from 'features/catalog/features/categories/slice'
 
 export const CatalogPage = () => {
   const dispatch = useAppDispatch()
-  const initializeCategories = useTypedSelector(state => state.catalog.categories.initialized)
-  if (!initializeCategories) {
-    Promise.all([dispatch(getCategories())]).then(() => {
-      dispatch(setInitializeCategories(true))
-    })
-  }
-  const selectedCategory = useTypedSelector(state => state.catalog.selectedCategory)
-  const categoriesData = useTypedSelector(state => state.catalog.categories.categoriesData)
-
+  let categoryId = useTypedSelector(state => state.category.selectedCategoryId)
+  let filtersBody = useTypedSelector(state => state.filter.filtersBody)
+  let categoriesData = useTypedSelector(state => state.category.categoriesData)
+  const { categoryLink } = useParams<ParamTypes>()
+  useEffect(() => {
+    if (categoryId.length > 0) {
+      let data: CategoryIdsBodyDataI = {
+        categoryIds: categoryId,
+        filters: filtersBody,
+        order: 'popular',
+        page: 1,
+      }
+      dispatch(getByCategoryIds(data))
+    } else if (categoryId.length === 0 && categoriesData.length !== 0 && categoryLink) {
+      let categoryMatchUrl = categoriesData.filter(item => {
+        return item.link === categoryLink
+      })
+      dispatch(
+        setSelectedCategory({
+          selectedCategoryId: [categoryMatchUrl[0].category_id],
+          selectedCategoryLink: categoryMatchUrl[0].link,
+        }),
+      )
+    } // если открыли /catalog/onroad то в стейт добавиться айди onroad категории
+  }, [categoryId, categoriesData, categoryLink, filtersBody, dispatch])
   interface ParamTypes {
     categoryLink: string
   }
-
-  const { categoryLink } = useParams<ParamTypes>()
-  console.log(categoryLink)
-
-  const categoryItems = categoriesData.map(item => {
-    return <CategoryItem link={item.link} name={item.name} currentLink={categoryLink} />
-  })
-
+  const selectedCategoryLink = useTypedSelector(state => state.category.selectedCategoryLink)
   const cardsData = [
     {
       carName: 'VOLKSWAGEN CC SPORT',
@@ -80,19 +89,11 @@ export const CatalogPage = () => {
   })
   return (
     <>
-      {!categoryLink && (
-        <>
-          <Typography variant='h4' align='center'>
-            Виберiть категорiю
-          </Typography>
-          <Grid container spacing={2} justify='center'>
-            {categoryItems.map(item => {
-              return <Grid item>{item}</Grid>
-            })}
-          </Grid>
-        </>
-      )}
-      {categoryLink && (
+      {!categoryLink && !selectedCategoryLink ? (
+        <Categories categoryLink={categoryLink} />
+      ) : !categoryLink && selectedCategoryLink ? (
+        <Redirect to={`/catalog/${selectedCategoryLink}`} />
+      ) : (
         <CatalogTemplate
           filter={<FilterItems />}
           settingButton={<TuneIcon />}
@@ -100,7 +101,7 @@ export const CatalogPage = () => {
           closeIcon={<CloseIcon />}
           filterTitle={<Typography variant='h6'>Фільтри</Typography>}
           checkButton={<CheckIcon />}
-          categoryItems={categoryItems}
+          categories={<Categories categoryLink={categoryLink} />}
         />
       )}
     </>

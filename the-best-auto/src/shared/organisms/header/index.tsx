@@ -4,7 +4,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Box from '@material-ui/core/Box'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -59,28 +59,34 @@ export const Header = () => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-  let location = useLocation()
+  interface ParamTypes {
+    page: string
+  }
+  let { page } = useParams<ParamTypes>()
+  if (page === undefined) {
+    page = ''
+  }
   const routes = [
     {
-      path: '/',
+      path: '',
       label: 'Головна',
     },
     {
-      path: '/catalog',
+      path: 'catalog',
       label: 'Каталог',
     },
     {
-      path: '/contacts',
+      path: 'contacts',
       label: 'Контакти',
     },
     {
-      path: '/blog',
+      path: 'blog',
       label: 'Блог',
     },
   ]
-  let initialLocation = routes.findIndex(item => item.path === location.pathname)
+  let initialLocation = routes.findIndex(item => `${page}` === item.path)
   const [selectedTab, setSelectedTab] = React.useState(initialLocation)
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleChange = (event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => {
     setSelectedTab(newValue)
     window.scrollTo(0, 0)
   }
@@ -108,7 +114,11 @@ export const Header = () => {
             aria-label='open drawer'>
             <MenuIcon />
           </IconButton>
-          <NavLink className={classes.logoLink} to='/' style={{ textDecoration: 'none' }}>
+          <NavLink
+            className={classes.logoLink}
+            to='/'
+            onClick={() => setSelectedTab(0)}
+            style={{ textDecoration: 'none' }}>
             <Box display='flex' className={classes.logo}>
               <Typography className={classes.title} variant='h4' noWrap>
                 THE
@@ -133,7 +143,16 @@ export const Header = () => {
                 onChange={handleChange}
                 variant='fullWidth'>
                 {routes.map(item => {
-                  return <Tab label={item.label} component={NavLink} to={item.path} className={classes.tab} />
+                  return (
+                    <Tab
+                      label={item.label}
+                      key={item.label}
+                      component={NavLink}
+                      to={`/${item.path}`}
+                      className={classes.tab}
+                      disabled={page === item.path}
+                    />
+                  )
                 })}
               </Tabs>
             </Toolbar>
@@ -157,7 +176,16 @@ export const Header = () => {
             }}
             variant='fullWidth'>
             {routes.map(item => {
-              return <Tab label={item.label} component={NavLink} to={item.path} className={classes.tab} />
+              return (
+                <Tab
+                  label={item.label}
+                  key={item.label}
+                  component={NavLink}
+                  to={`/${item.path}`}
+                  className={classes.tab}
+                  disabled={page === item.path}
+                />
+              )
             })}
           </Tabs>
         </Drawer>

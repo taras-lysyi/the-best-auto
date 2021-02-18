@@ -25,7 +25,6 @@ export const FilterItems: FC = () => {
       })
     }
   }, [dispatch, isInitialized])
-
   let brands = useTypedSelector(state => state.filter.brands)
   let features = useTypedSelector(state => state.filter.features)
   let featuresValue = useTypedSelector(state => state.filter.featuresValue)
@@ -58,9 +57,9 @@ export const FilterItems: FC = () => {
 
   return (
     <>
-      <FormControlLabel control={<Checkbox color='primary' />} label='Топ пропозиції' />
-      <FormControlLabel control={<Checkbox color='primary' />} label='Новинки' />
-      <FormControlLabel control={<Checkbox color='primary' />} label='Знижки' />
+      <FormControlLabel control={<Checkbox color='primary' value='popular' />} label='Топ пропозиції' />
+      <FormControlLabel control={<Checkbox color='primary' value='isNew' />} label='Новинки' />
+      <FormControlLabel control={<Checkbox color='primary' value='sale' />} label='Знижки' />
       <FilterBoxTemplate status='success' title='Ціна ($)'>
         <FilterSliderTemplate
           min={<TextField fullWidth type='number' label='від' />}

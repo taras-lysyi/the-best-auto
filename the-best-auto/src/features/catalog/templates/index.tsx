@@ -1,7 +1,6 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
-import { useTheme, makeStyles, createStyles, Theme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Box from '@material-ui/core/Box'
 import IconButton from '@material-ui/core/IconButton'
@@ -12,7 +11,7 @@ interface Props {
   settingButton: JSX.Element
   cards: JSX.Element[]
   checkButton: JSX.Element
-  categoryItems: JSX.Element[]
+  categories: JSX.Element
   closeIcon: JSX.Element
   filterTitle: JSX.Element
 }
@@ -33,13 +32,11 @@ export const CatalogTemplate = ({
   settingButton,
   cards,
   checkButton,
-  categoryItems,
+  categories,
   closeIcon,
   filterTitle,
 }: Props) => {
   const classes = useStyles()
-  const theme = useTheme()
-  const matches = useMediaQuery(theme.breakpoints.up('md'))
   const [scrollYPosition, setScroll] = React.useState(0)
   window.onscroll = () => setScroll(window.scrollY)
 
@@ -54,50 +51,45 @@ export const CatalogTemplate = ({
     }
     setDrawer(open)
   }
-
   return (
     <>
-      {!matches && (
-        <Box display='flex' mb={2} width={1} justifyContent='flex-end'>
-          <Fab onClick={toggleDrawer(true)}>{settingButton}</Fab>
-        </Box>
-      )}
-      {!matches && !drawer && scrollYPosition > 100 && (
-        <Box className={classes.fixedBottomRightMobile}>
-          <Fab onClick={toggleDrawer(true)}>{settingButton}</Fab>
-        </Box>
-      )}
-      {!matches && (
+      <Box display={{ md: 'none' }}>
         <Drawer anchor='right' open={drawer} onClose={toggleDrawer(false)}>
           <IconButton onClick={() => setDrawer(false)}>{closeIcon}</IconButton>
-          <Box textAlign='center'>{filterTitle}</Box>
           <Paper>
-            <Box padding={1}>{categoryItems}</Box>
+            <Box padding={1}>{categories}</Box>
+            <Box textAlign='center'>{filterTitle}</Box>
             <Box padding={1}>{filter}</Box>
           </Paper>
         </Drawer>
-      )}
-      {!matches && drawer && (
-        <Box className={classes.fixedBottomRightMobile}>
-          <Fab color='secondary'>{checkButton}</Fab>
+        {drawer && (
+          <Box className={classes.fixedBottomRightMobile}>
+            <Fab color='secondary'>{checkButton}</Fab>
+          </Box>
+        )}
+        <Box display='flex' mb={2} width={1} justifyContent='flex-end'>
+          <Fab color='secondary' onClick={toggleDrawer(true)}>
+            {settingButton}
+          </Fab>
         </Box>
-      )}
+        {scrollYPosition > 100 && !drawer ? (
+          <Box className={classes.fixedBottomRightMobile}>
+            <Fab color='secondary' onClick={toggleDrawer(true)}>
+              {settingButton}
+            </Fab>
+          </Box>
+        ) : null}
+      </Box>
 
       <Grid container spacing={2}>
-        {matches && (
-          <Grid item md={3}>
-            <Paper>
-              <Box padding={1}>
-                {categoryItems.map(item => {
-                  return <Box my={1}>{item}</Box>
-                })}
-              </Box>
-            </Paper>
-            <Paper>
-              <Box padding={1}>{filter}</Box>
-            </Paper>
-          </Grid>
-        )}
+        <Grid component={Box} display={{ xs: 'none', md: 'block' }} item md={3}>
+          <Paper>
+            <Box padding={1}>{categories}</Box>
+          </Paper>
+          <Paper>
+            <Box padding={1}>{filter}</Box>
+          </Paper>
+        </Grid>
         <Grid item xs={12} md={9}>
           <Paper>
             <Grid container spacing={1} justify='center'>

@@ -1,30 +1,12 @@
 import axios from 'axios'
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
-import { FeaturesValueResponseI } from './features/filter/slice'
-
-interface GetCategoriesResponseI {
-  category_id: number
-  parent_id: null | number
-  link: string // onroad
-  name: string // 'Авто в дорози в украину
-  name_once: string | null
-  active: number
-  main: number // 1
-  second: number // 0
-  sort: number // 4
-}
-
-export const getCategories = createAsyncThunk('/category/all', async () => {
-  const response = await axios.post('/category/all')
-  return response.data.result
-})
-
-interface CategoryIdsBodyDataI {
-  categoryIds: []
+import { FeaturesValueResponseI, FiltersBodyDataI } from './features/filter/slice'
+export interface CategoryIdsBodyDataI {
+  categoryIds: number[] | [] | undefined[]
+  filters: FiltersBodyDataI
+  order: string // popular
   page: number
-  filters: object
-  order: string
 }
 
 interface Product {
@@ -89,12 +71,6 @@ export const getByCategoryIds = createAsyncThunk('/catalog/byCategoryIds', async
 })
 
 interface InitialStateI {
-  selectedCategory: number | null
-  categories: {
-    initialized: boolean
-    status: LoadingStatusT
-    categoriesData: GetCategoriesResponseI[]
-  }
   catalogDataByCategoryIds: {
     initialized: boolean
     status: LoadingStatusT
@@ -103,12 +79,6 @@ interface InitialStateI {
 }
 
 const initialState: InitialStateI = {
-  selectedCategory: null,
-  categories: {
-    initialized: false,
-    status: null,
-    categoriesData: [],
-  },
   catalogDataByCategoryIds: {
     initialized: false,
     status: null,
@@ -120,9 +90,6 @@ const catalogSlice = createSlice({
   name: 'catalog',
   initialState,
   reducers: {
-    setInitializeCategories: (state, action: PayloadAction<boolean>) => {
-      state.categories.initialized = action.payload
-    },
     setInitializeCatalogDataByCategoryIds: (state, action: PayloadAction<boolean>) => {
       state.catalogDataByCategoryIds.initialized = action.payload
     },
@@ -140,20 +107,9 @@ const catalogSlice = createSlice({
     builder.addCase(getByCategoryIds.rejected, state => {
       state.catalogDataByCategoryIds.status = 'failed'
     })
-
-    builder.addCase(getCategories.pending, state => {
-      state.categories.status = 'loading'
-    })
-    builder.addCase(getCategories.fulfilled, (state, action) => {
-      state.categories.categoriesData = action.payload
-      state.categories.status = 'success'
-    })
-    builder.addCase(getCategories.rejected, state => {
-      state.categories.status = 'failed'
-    })
   },
 })
 
-export const { setInitializeCatalogDataByCategoryIds, setInitializeCategories } = catalogSlice.actions
+export const { setInitializeCatalogDataByCategoryIds } = catalogSlice.actions
 
 export default catalogSlice.reducer
