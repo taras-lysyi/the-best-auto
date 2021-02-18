@@ -16,17 +16,18 @@ export const CatalogPage = () => {
   const dispatch = useAppDispatch()
   let categoryId = useTypedSelector(state => state.category.selectedCategoryId)
   let filtersBody = useTypedSelector(state => state.filter.filtersBody)
+  let feauturesFilterBody = useTypedSelector(state => state.filter.featuresFilterBody)
   let categoriesData = useTypedSelector(state => state.category.categoriesData)
   const { categoryLink } = useParams<ParamTypes>()
   useEffect(() => {
     if (categoryId.length > 0) {
       let data: CategoryIdsBodyDataI = {
         categoryIds: categoryId,
-        filters: filtersBody,
+        filters: { ...feauturesFilterBody, ...filtersBody },
         order: 'popular',
         page: 1,
       }
-      dispatch(getByCategoryIds(data))
+      dispatch(getByCategoryIds(data)).then(() => {})
     } else if (categoryId.length === 0 && categoriesData.length !== 0 && categoryLink) {
       let categoryMatchUrl = categoriesData.filter(item => {
         return item.link === categoryLink
@@ -38,7 +39,7 @@ export const CatalogPage = () => {
         }),
       )
     } // если открыли /catalog/onroad то в стейт добавиться айди onroad категории
-  }, [categoryId, categoriesData, categoryLink, filtersBody, dispatch])
+  }, [categoryId, categoriesData, categoryLink, filtersBody, feauturesFilterBody, dispatch])
   interface ParamTypes {
     categoryLink: string
   }

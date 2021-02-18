@@ -13,6 +13,11 @@ import {
   setInitializeFilter,
   FeaturesResponseI,
   FeaturesValueResponseI,
+  setPopular,
+  setSelectedFeatures,
+  setIsNew,
+  setSale,
+  setStartEndPrice,
 } from '../../slice'
 
 export const FilterItems: FC = () => {
@@ -28,7 +33,8 @@ export const FilterItems: FC = () => {
   let brands = useTypedSelector(state => state.filter.brands)
   let features = useTypedSelector(state => state.filter.features)
   let featuresValue = useTypedSelector(state => state.filter.featuresValue)
-
+  let filtersBody = useTypedSelector(state => state.filter.filtersBody)
+  let catalog = useTypedSelector(state => state.catalog.catalogDataByCategoryIds.catalogData)
   interface SortedFeaturesWithValuesI {
     feature: FeaturesResponseI
     featuresValueItems: FeaturesValueResponseI[]
@@ -55,16 +61,41 @@ export const FilterItems: FC = () => {
     return result
   }
 
+  const priceHandleChange = (event: any, newValue: number | number[]) => {
+    dispatch(setStartEndPrice(newValue))
+  }
+
   return (
     <>
-      <FormControlLabel control={<Checkbox color='primary' value='popular' />} label='Топ пропозиції' />
-      <FormControlLabel control={<Checkbox color='primary' value='isNew' />} label='Новинки' />
-      <FormControlLabel control={<Checkbox color='primary' value='sale' />} label='Знижки' />
+      <FormControlLabel
+        control={
+          <Checkbox onChange={() => dispatch(setPopular(filtersBody.popular))} color='primary' value='popular' />
+        }
+        label='Топ пропозиції'
+      />
+      <FormControlLabel
+        control={<Checkbox onChange={() => dispatch(setIsNew(filtersBody.isnew))} color='primary' value='isNew' />}
+        label='Новинки'
+      />
+      <FormControlLabel
+        control={<Checkbox onChange={() => dispatch(setSale(filtersBody.sale))} color='primary' value='sale' />}
+        label='Знижки'
+      />
       <FilterBoxTemplate status='success' title='Ціна ($)'>
         <FilterSliderTemplate
           min={<TextField fullWidth type='number' label='від' />}
           max={<TextField fullWidth type='number' label='до' />}
-          slider={<Slider value={0} color='secondary' valueLabelDisplay='auto' aria-labelledby='range-slider' />}
+          slider={
+            <Slider
+              min={catalog.price.min}
+              max={catalog.price.max}
+              onChange={priceHandleChange}
+              value={[catalog.price.start, catalog.price.end]}
+              color='secondary'
+              valueLabelDisplay='auto'
+              aria-labelledby='range-slider'
+            />
+          }
         />
       </FilterBoxTemplate>
       <FilterBoxTemplate status='success' title='Пробіг (км)'>
@@ -106,7 +137,20 @@ export const FilterItems: FC = () => {
               return (
                 <FormControlLabel
                   key={featureValue.feature_value_id}
-                  control={<Checkbox name={featureValue.feature_value} color='primary' />}
+                  control={
+                    <Checkbox
+                      onChange={() =>
+                        dispatch(
+                          setSelectedFeatures({
+                            featureId: featureValue.feature_id,
+                            values: [featureValue.feature_value],
+                          }),
+                        )
+                      }
+                      name={featureValue.feature_value}
+                      color='primary'
+                    />
+                  }
                   label={featureValue.feature_value}
                 />
               )

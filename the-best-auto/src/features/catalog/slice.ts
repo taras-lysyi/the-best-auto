@@ -4,7 +4,7 @@ import { LoadingStatusT } from 'shared/types'
 import { FeaturesValueResponseI, FiltersBodyDataI } from './features/filter/slice'
 export interface CategoryIdsBodyDataI {
   categoryIds: number[] | [] | undefined[]
-  filters: FiltersBodyDataI
+  filters: FiltersBodyDataI & { [id: number]: string[] }
   order: string // popular
   page: number
 }
@@ -74,7 +74,7 @@ interface InitialStateI {
   catalogDataByCategoryIds: {
     initialized: boolean
     status: LoadingStatusT
-    catalogData: ByCategoryIdsResponseI | null
+    catalogData: ByCategoryIdsResponseI
   }
 }
 
@@ -82,7 +82,26 @@ const initialState: InitialStateI = {
   catalogDataByCategoryIds: {
     initialized: false,
     status: null,
-    catalogData: null,
+    catalogData: {
+      items: [],
+      itemsByCat: [],
+      limit: 0,
+      mileage: {
+        end: 0,
+        max: 0,
+        min: 0,
+        start: 0,
+      },
+      offset: 0,
+      price: {
+        end: 0,
+        max: 0,
+        min: 0,
+        start: 0,
+      },
+      sql: null,
+      total: 0,
+    },
   },
 }
 

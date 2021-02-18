@@ -4,32 +4,20 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
 
 export interface FiltersBodyDataI {
-  1: []
-  2: []
-  3: []
-  4: []
-  5: []
-  6: []
-  7: []
-  8: []
-  9: []
-  10: []
-  11: []
-  12: []
   brand: string[]
   isnew: 0 | 1
   mileage: {
-    min: number | null
-    max: number | null
-    start: number | null
-    end: number | null
+    min: number
+    max: number
+    start: number
+    end: number
   }
   popular: 0 | 1
   price: {
-    min: number | null
-    max: number | null
-    start: number | null
-    end: number | null
+    min: number
+    max: number
+    start: number
+    end: number
   }
   sale: 0 | 1
 }
@@ -84,6 +72,7 @@ interface InitialStateI {
     featuresValueItems: FeaturesValueResponseI[]
   }
   filtersBody: FiltersBodyDataI
+  featuresFilterBody: { [id: number]: string[] }
 }
 
 const initialState: InitialStateI = {
@@ -101,6 +90,24 @@ const initialState: InitialStateI = {
     featuresValueItems: [],
   },
   filtersBody: {
+    brand: [],
+    isnew: 0,
+    mileage: {
+      min: 0,
+      max: 0,
+      start: 0,
+      end: 0,
+    },
+    popular: 0,
+    price: {
+      min: 0,
+      max: 0,
+      start: 0,
+      end: 0,
+    },
+    sale: 0,
+  },
+  featuresFilterBody: {
     1: [],
     2: [],
     3: [],
@@ -113,22 +120,6 @@ const initialState: InitialStateI = {
     10: [],
     11: [],
     12: [],
-    brand: [],
-    isnew: 0,
-    mileage: {
-      min: null,
-      max: null,
-      start: null,
-      end: null,
-    },
-    popular: 0,
-    price: {
-      min: null,
-      max: null,
-      start: null,
-      end: null,
-    },
-    sale: 0,
   },
 }
 
@@ -140,13 +131,13 @@ const filterSlice = createSlice({
       state.initialized = action.payload
     },
     setPopular: (state, action: PayloadAction<0 | 1>) => {
-      state.filtersBody.popular = action.payload
+      action.payload === 0 ? (state.filtersBody.popular = 1) : (state.filtersBody.popular = 0)
     },
     setIsNew: (state, action: PayloadAction<0 | 1>) => {
-      state.filtersBody.isnew = action.payload
+      action.payload === 0 ? (state.filtersBody.isnew = 1) : (state.filtersBody.isnew = 0)
     },
     setSale: (state, action: PayloadAction<0 | 1>) => {
-      state.filtersBody.sale = action.payload
+      action.payload === 0 ? (state.filtersBody.sale = 1) : (state.filtersBody.sale = 0)
     },
     setBrands: (state, action: PayloadAction<string[]>) => {
       state.filtersBody.brand = action.payload
@@ -159,17 +150,19 @@ const filterSlice = createSlice({
       state.filtersBody.mileage.min = action.payload.min
       state.filtersBody.mileage.max = action.payload.max
     },
-    setStartEndPrice: (state, action: PayloadAction<{ start: number; end: number }>) => {
-      state.filtersBody.price.start = action.payload.start
-      state.filtersBody.price.end = action.payload.end
+    setStartEndPrice: (state, action: PayloadAction<number | number[]>) => {
+      if (typeof action.payload === 'object') {
+        state.filtersBody.price.start = action.payload[0]
+        state.filtersBody.price.end = action.payload[1]
+      }
     },
     setMinMaxPrice: (state, action: PayloadAction<{ min: number; max: number }>) => {
       state.filtersBody.price.min = action.payload.min
       state.filtersBody.price.max = action.payload.max
     },
-    // setSelectedFeatures: (state, action: PayloadAction<{ featureId: string; values: [] }>) => {
-    //   state.filtersBody[action.payload.featureId] = action.payload.values
-    // },
+    setSelectedFeatures: (state, action: PayloadAction<{ featureId: number; values: string[] }>) => {
+      state.featuresFilterBody[action.payload.featureId] = action.payload.values
+    },
   },
   extraReducers: builder => {
     // BRANDS
@@ -208,6 +201,17 @@ const filterSlice = createSlice({
   },
 })
 
-export const { setInitializeFilter } = filterSlice.actions
+export const {
+  setInitializeFilter,
+  setSelectedFeatures,
+  setBrands,
+  setIsNew,
+  setMinMaxMileage,
+  setMinMaxPrice,
+  setPopular,
+  setSale,
+  setStartEndMileage,
+  setStartEndPrice,
+} = filterSlice.actions
 
 export default filterSlice.reducer
