@@ -28,20 +28,20 @@ export const FilterBoxTemplate = ({ title, children, status }: FilterBoxTemplate
 }
 
 interface FilterSliderTemplateProps {
-  min: React.ReactNode
-  max: React.ReactNode
+  start: React.ReactNode
+  end: React.ReactNode
   slider: React.ReactNode
 }
 
-export const FilterSliderTemplate = ({ min, max, slider }: FilterSliderTemplateProps) => {
+export const FilterSliderTemplate = ({ start, end, slider }: FilterSliderTemplateProps) => {
   return (
     <>
       <Grid container spacing={1}>
         <Grid item xs={6} md={6}>
-          {min}
+          {start}
         </Grid>
         <Grid item xs={6} md={6}>
-          {max}
+          {end}
         </Grid>
         <Grid item xs={12} md={12}>
           {slider}

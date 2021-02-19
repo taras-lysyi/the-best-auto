@@ -18,6 +18,7 @@ import {
   setIsNew,
   setSale,
   setStartEndPrice,
+  setStartEndMileage,
 } from '../../slice'
 
 export const FilterItems: FC = () => {
@@ -34,7 +35,7 @@ export const FilterItems: FC = () => {
   let features = useTypedSelector(state => state.filter.features)
   let featuresValue = useTypedSelector(state => state.filter.featuresValue)
   let filtersBody = useTypedSelector(state => state.filter.filtersBody)
-  let catalog = useTypedSelector(state => state.catalog.catalogDataByCategoryIds.catalogData)
+  let catalogDataByCategoryIds = useTypedSelector(state => state.catalog.catalogDataByCategoryIds)
   interface SortedFeaturesWithValuesI {
     feature: FeaturesResponseI
     featuresValueItems: FeaturesValueResponseI[]
@@ -64,9 +65,23 @@ export const FilterItems: FC = () => {
   const priceHandleChange = (event: any, newValue: number | number[]) => {
     dispatch(setStartEndPrice(newValue))
   }
-  const [priceValue, setPriceValue] = React.useState<number[]>([catalog.price.min, catalog.price.max])
-  const handleChange = (event: any, newValue: number | number[]) => {
+  const [priceValue, setPriceValue] = React.useState<number[]>([
+    catalogDataByCategoryIds.catalogData.price.min,
+    catalogDataByCategoryIds.catalogData.price.max,
+  ])
+  const handleChangePrice = (event: any, newValue: number | number[]) => {
     setPriceValue(newValue as number[])
+  }
+
+  const mileageHandleChange = (event: any, newValue: number | number[]) => {
+    dispatch(setStartEndMileage(newValue))
+  }
+  const [mileageValue, setMileageValue] = React.useState<number[]>([
+    catalogDataByCategoryIds.catalogData.mileage.min,
+    catalogDataByCategoryIds.catalogData.mileage.max,
+  ])
+  const handleChangeMileage = (event: any, newValue: number | number[]) => {
+    setMileageValue(newValue as number[])
   }
   return (
     <>
@@ -84,37 +99,87 @@ export const FilterItems: FC = () => {
         control={<Checkbox onChange={() => dispatch(setSale(filtersBody.sale))} color='primary' value='sale' />}
         label='Знижки'
       />
-      <FilterBoxTemplate status='success' title='Ціна ($)'>
-        <FilterSliderTemplate
-          min={<TextField fullWidth type='number' label='від' />}
-          max={<TextField fullWidth type='number' label='до' />}
-          slider={
-            <Slider
-              onChangeCommitted={priceHandleChange}
-              min={catalog.price.min}
-              max={catalog.price.max}
-              onChange={handleChange}
-              value={priceValue}
-              color='secondary'
-              valueLabelDisplay='auto'
-              aria-labelledby='range-slider'
-            />
-          }
-        />
-      </FilterBoxTemplate>
-      <FilterBoxTemplate status='success' title='Пробіг (км)'>
-        <Grid container spacing={1}>
-          <Grid item xs={6} md={6}>
-            <TextField type='number' label='від' />
+      {catalogDataByCategoryIds.status === 'loading' ? (
+        <FilterBoxTemplate status='loading' />
+      ) : catalogDataByCategoryIds.status === 'success' ? (
+        <FilterBoxTemplate status='success' title='Ціна ($)'>
+          <FilterSliderTemplate
+            start={
+              <TextField
+                value={priceValue[1] === 0 ? catalogDataByCategoryIds.catalogData.price.min : priceValue[0]}
+                fullWidth
+                type='number'
+                label='від'
+              />
+            }
+            end={
+              <TextField
+                value={priceValue[1] === 0 ? catalogDataByCategoryIds.catalogData.price.max : priceValue[1]}
+                fullWidth
+                type='number'
+                label='до'
+              />
+            }
+            slider={
+              <Slider
+                onChangeCommitted={priceHandleChange}
+                min={catalogDataByCategoryIds.catalogData.price.min}
+                max={catalogDataByCategoryIds.catalogData.price.max}
+                onChange={handleChangePrice}
+                value={
+                  priceValue[1] === 0
+                    ? [catalogDataByCategoryIds.catalogData.price.min, catalogDataByCategoryIds.catalogData.price.max]
+                    : priceValue
+                }
+                color='secondary'
+                valueLabelDisplay='auto'
+                aria-labelledby='range-slider'
+              />
+            }
+          />
+        </FilterBoxTemplate>
+      ) : null}
+      {catalogDataByCategoryIds.status === 'loading' ? (
+        <FilterBoxTemplate status='loading' />
+      ) : catalogDataByCategoryIds.status === 'success' ? (
+        <FilterBoxTemplate status='success' title='Пробіг (км)'>
+          <Grid container spacing={1}>
+            <Grid item xs={6} md={6}>
+              <TextField
+                value={mileageValue[1] === 0 ? catalogDataByCategoryIds.catalogData.mileage.start : mileageValue[0]}
+                type='number'
+                label='від'
+              />
+            </Grid>
+            <Grid item xs={6} md={6}>
+              <TextField
+                value={mileageValue[1] === 0 ? catalogDataByCategoryIds.catalogData.mileage.end : mileageValue[1]}
+                type='number'
+                label='до'
+              />
+            </Grid>
+            <Grid item xs={12} md={12}>
+              <Slider
+                onChange={handleChangeMileage}
+                onChangeCommitted={mileageHandleChange}
+                min={catalogDataByCategoryIds.catalogData.mileage.min}
+                max={catalogDataByCategoryIds.catalogData.mileage.max}
+                value={
+                  mileageValue[1] === 0
+                    ? [
+                        catalogDataByCategoryIds.catalogData.mileage.min,
+                        catalogDataByCategoryIds.catalogData.mileage.max,
+                      ]
+                    : mileageValue
+                }
+                color='secondary'
+                valueLabelDisplay='auto'
+                aria-labelledby='range-slider'
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6} md={6}>
-            <TextField type='number' label='до' />
-          </Grid>
-          <Grid item xs={12} md={12}>
-            <Slider value={0} color='secondary' valueLabelDisplay='auto' aria-labelledby='range-slider' />
-          </Grid>
-        </Grid>
-      </FilterBoxTemplate>
+        </FilterBoxTemplate>
+      ) : null}
 
       {brands.status === 'loading' ? (
         <FilterBoxTemplate status='loading' />
@@ -130,7 +195,9 @@ export const FilterItems: FC = () => {
             )
           })}
         </FilterBoxTemplate>
-      ) : null}
+      ) : (
+        <FilterBoxTemplate status='failed' />
+      )}
 
       {sortedFeaturesWithValues().map(item => {
         return features.status === 'loading' || featuresValue.status === 'loading' ? (

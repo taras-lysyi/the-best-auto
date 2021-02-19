@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { useParams } from 'react-router'
 import { useAppDispatch, useTypedSelector } from 'configureStore'
 import { CategoryItem } from '../../molecules'
 import { getCategories, setInitializeCategories, setSelectedCategory } from '../../slice'

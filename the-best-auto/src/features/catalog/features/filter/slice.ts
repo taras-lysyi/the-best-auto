@@ -142,9 +142,11 @@ const filterSlice = createSlice({
     setBrands: (state, action: PayloadAction<string[]>) => {
       state.filtersBody.brand = action.payload
     },
-    setStartEndMileage: (state, action: PayloadAction<{ start: number; end: number }>) => {
-      state.filtersBody.mileage.start = action.payload.start
-      state.filtersBody.mileage.end = action.payload.end
+    setStartEndMileage: (state, action: PayloadAction<number | number[]>) => {
+      if (typeof action.payload === 'object') {
+        state.filtersBody.mileage.start = action.payload[0]
+        state.filtersBody.mileage.end = action.payload[1]
+      }
     },
     setMinMaxMileage: (state, action: PayloadAction<{ min: number; max: number }>) => {
       state.filtersBody.mileage.min = action.payload.min
