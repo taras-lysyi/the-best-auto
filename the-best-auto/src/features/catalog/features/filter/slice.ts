@@ -176,17 +176,17 @@ const filterSlice = createSlice({
         }
       } else {
         // вызываеться диспач onchange checkbox
-        if (state.featuresFilterBody[action.payload.featureId].includes(action.payload.values as string)) {
+        debugger
+        if (state.featuresFilterBody[action.payload.featureId].indexOf(action.payload.values as string) !== -1) {
           // если элемент есть в массиве
-          let index = state.featuresFilterBody[action.payload.featureId].indexOf(action.payload.values as string)
           state.featuresFilterBody[action.payload.featureId] = (state.featuresFilterBody[
             action.payload.featureId
-          ] as string[]).splice(index, 1)
+          ] as string[]).filter(item => item !== action.payload.values)
         } else {
-          let currentSelectedFeatures = state.featuresFilterBody[Number(action.payload.featureId)] as string[]
-          currentSelectedFeatures.push(action.payload.values as string)
-          let changedSelectedFeatures = currentSelectedFeatures
-          state.featuresFilterBody[action.payload.featureId] = changedSelectedFeatures[0]
+          state.featuresFilterBody[action.payload.featureId] = [
+            ...(state.featuresFilterBody[action.payload.featureId] as string[]),
+            action.payload.values as string,
+          ]
         }
       }
     },

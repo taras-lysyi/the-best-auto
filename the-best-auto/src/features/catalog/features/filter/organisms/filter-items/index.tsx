@@ -295,8 +295,8 @@ export const FilterItems: FC = () => {
                       onChange={() =>
                         dispatch(
                           setSelectedFeatures({
-                            featureId: featureValue.feature_id,
-                            values: [featureValue.feature_value],
+                            featureId: item.feature.feature_id,
+                            values: featureValue.feature_value,
                           }),
                         )
                       }
