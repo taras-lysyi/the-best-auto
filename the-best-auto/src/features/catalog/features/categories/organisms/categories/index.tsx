@@ -12,12 +12,12 @@ export const Categories = ({ categoryLink }: Props) => {
   const dispatch = useAppDispatch()
   const category = useTypedSelector(state => state.category)
   useEffect(() => {
-    if (!category.initialized) {
+    if (!category.initialized && category.status !== 'loading') {
       Promise.all([dispatch(getCategories())]).then(() => {
         dispatch(setInitializeCategories(true))
       })
     }
-  }, [dispatch, category.initialized])
+  }, [dispatch, category.initialized, category.status])
 
   const categoryItems = category.categoriesData.map(item => {
     return (

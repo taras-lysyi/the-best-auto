@@ -72,7 +72,7 @@ interface InitialStateI {
     featuresValueItems: FeaturesValueResponseI[]
   }
   filtersBody: FiltersBodyDataI
-  featuresFilterBody: { [id: number]: string[] }
+  featuresFilterBody: { [id: number]: string[] | string }
 }
 
 const initialState: InitialStateI = {
@@ -130,8 +130,12 @@ const filterSlice = createSlice({
     setInitializeFilter: (state, action: PayloadAction<boolean>) => {
       state.initialized = action.payload
     },
-    setPopular: (state, action: PayloadAction<0 | 1>) => {
-      action.payload === 0 ? (state.filtersBody.popular = 1) : (state.filtersBody.popular = 0)
+    setPopular: (state, action: PayloadAction<0 | 1 | string>) => {
+      if (typeof action.payload === 'string') {
+        state.filtersBody.popular = Number(action.payload) as 0 | 1
+      } else {
+        action.payload === 0 ? (state.filtersBody.popular = 1) : (state.filtersBody.popular = 0)
+      }
     },
     setIsNew: (state, action: PayloadAction<0 | 1>) => {
       action.payload === 0 ? (state.filtersBody.isnew = 1) : (state.filtersBody.isnew = 0)
@@ -162,8 +166,29 @@ const filterSlice = createSlice({
       state.filtersBody.price.min = action.payload.min
       state.filtersBody.price.max = action.payload.max
     },
-    setSelectedFeatures: (state, action: PayloadAction<{ featureId: number; values: string[] }>) => {
-      state.featuresFilterBody[action.payload.featureId] = action.payload.values
+    setSelectedFeatures: (state, action: PayloadAction<{ featureId: number | string; values: string[] | string }>) => {
+      if (typeof action.payload.featureId === 'string') {
+        // вызываеться диспач с данными которые приходят из урла
+        if (typeof action.payload.values !== 'object') {
+          state.featuresFilterBody[Number(action.payload.featureId)] = [action.payload.values]
+        } else {
+          state.featuresFilterBody[Number(action.payload.featureId)] = action.payload.values
+        }
+      } else {
+        // вызываеться диспач onchange checkbox
+        if (state.featuresFilterBody[action.payload.featureId].includes(action.payload.values as string)) {
+          // если элемент есть в массиве
+          let index = state.featuresFilterBody[action.payload.featureId].indexOf(action.payload.values as string)
+          state.featuresFilterBody[action.payload.featureId] = (state.featuresFilterBody[
+            action.payload.featureId
+          ] as string[]).splice(index, 1)
+        } else {
+          let currentSelectedFeatures = state.featuresFilterBody[Number(action.payload.featureId)] as string[]
+          currentSelectedFeatures.push(action.payload.values as string)
+          let changedSelectedFeatures = currentSelectedFeatures
+          state.featuresFilterBody[action.payload.featureId] = changedSelectedFeatures[0]
+        }
+      }
     },
   },
   extraReducers: builder => {
