@@ -4,7 +4,7 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
 
 export interface FiltersBodyDataI {
-  brand: string[]
+  brand: number[]
   isnew: 0 | 1
   mileage: {
     min: number
@@ -130,6 +130,11 @@ const filterSlice = createSlice({
     setInitializeFilter: (state, action: PayloadAction<boolean>) => {
       state.initialized = action.payload
     },
+    resetFilter: (state, action) => {
+      state.initialized = initialState.initialized
+      state.filtersBody = initialState.filtersBody
+      state.featuresFilterBody = initialState.featuresFilterBody
+    },
     setPopular: (state, action: PayloadAction<0 | 1 | string>) => {
       if (typeof action.payload === 'string') {
         state.filtersBody.popular = Number(action.payload) as 0 | 1
@@ -137,14 +142,34 @@ const filterSlice = createSlice({
         action.payload === 0 ? (state.filtersBody.popular = 1) : (state.filtersBody.popular = 0)
       }
     },
-    setIsNew: (state, action: PayloadAction<0 | 1>) => {
-      action.payload === 0 ? (state.filtersBody.isnew = 1) : (state.filtersBody.isnew = 0)
+    setIsNew: (state, action: PayloadAction<0 | 1 | string>) => {
+      if (typeof action.payload === 'string') {
+        state.filtersBody.isnew = Number(action.payload) as 0 | 1
+      } else {
+        action.payload === 0 ? (state.filtersBody.isnew = 1) : (state.filtersBody.popular = 0)
+      }
     },
-    setSale: (state, action: PayloadAction<0 | 1>) => {
-      action.payload === 0 ? (state.filtersBody.sale = 1) : (state.filtersBody.sale = 0)
+    setSale: (state, action: PayloadAction<0 | 1 | string>) => {
+      if (typeof action.payload === 'string') {
+        state.filtersBody.sale = Number(action.payload) as 0 | 1
+      } else {
+        action.payload === 0 ? (state.filtersBody.sale = 1) : (state.filtersBody.sale = 0)
+      }
     },
-    setBrands: (state, action: PayloadAction<string[]>) => {
-      state.filtersBody.brand = action.payload
+    setBrands: (state, action: PayloadAction<number[] | number>) => {
+      debugger
+      if (typeof action.payload === 'object') {
+        // вызываеться диспач с данными которые приходят из урла
+        state.filtersBody.brand = [...(action.payload as number[])]
+      } else {
+        // вызываеться диспач onchange checkbox
+        if (state.filtersBody.brand.indexOf((action.payload as unknown) as number) !== -1) {
+          // если элемент есть в массиве
+          state.filtersBody.brand = (state.filtersBody.brand as number[]).filter(item => item !== action.payload)
+        } else {
+          state.filtersBody.brand = [...(state.filtersBody.brand as number[]), (action.payload as unknown) as number]
+        }
+      }
     },
     setStartEndMileage: (state, action: PayloadAction<number | number[]>) => {
       if (typeof action.payload === 'object') {
@@ -152,19 +177,11 @@ const filterSlice = createSlice({
         state.filtersBody.mileage.end = action.payload[1]
       }
     },
-    setMinMaxMileage: (state, action: PayloadAction<{ min: number; max: number }>) => {
-      state.filtersBody.mileage.min = action.payload.min
-      state.filtersBody.mileage.max = action.payload.max
-    },
     setStartEndPrice: (state, action: PayloadAction<number | number[]>) => {
       if (typeof action.payload === 'object') {
         state.filtersBody.price.start = action.payload[0]
         state.filtersBody.price.end = action.payload[1]
       }
-    },
-    setMinMaxPrice: (state, action: PayloadAction<{ min: number; max: number }>) => {
-      state.filtersBody.price.min = action.payload.min
-      state.filtersBody.price.max = action.payload.max
     },
     setSelectedFeatures: (state, action: PayloadAction<{ featureId: number | string; values: string[] | string }>) => {
       if (typeof action.payload.featureId === 'string') {
@@ -233,12 +250,11 @@ export const {
   setSelectedFeatures,
   setBrands,
   setIsNew,
-  setMinMaxMileage,
-  setMinMaxPrice,
   setPopular,
   setSale,
   setStartEndMileage,
   setStartEndPrice,
+  resetFilter,
 } = filterSlice.actions
 
 export default filterSlice.reducer

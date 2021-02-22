@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useAppDispatch, useTypedSelector } from 'configureStore'
 import { CategoryItem } from '../../molecules'
+import { resetFilter } from 'features/catalog/features/filter/slice'
 import { getCategories, setInitializeCategories, setSelectedCategory } from '../../slice'
 import { CategoryBoxTemplate } from '../../templates'
 
@@ -22,9 +23,10 @@ export const Categories = ({ categoryLink }: Props) => {
   const categoryItems = category.categoriesData.map(item => {
     return (
       <CategoryItem
-        onClick={() =>
+        onClick={() => {
+          dispatch(resetFilter({}))
           dispatch(setSelectedCategory({ selectedCategoryId: [item.category_id], selectedCategoryLink: item.link }))
-        }
+        }}
         currentLink={categoryLink}
         link={item.link}
         name={item.name}

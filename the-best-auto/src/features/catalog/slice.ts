@@ -72,15 +72,23 @@ export const getByCategoryIds = createAsyncThunk('/catalog/byCategoryIds', async
 
 interface InitialStateI {
   catalogDataByCategoryIds: {
-    initialized: boolean
     status: LoadingStatusT
     catalogData: ByCategoryIdsResponseI
   }
+  allItemsInCat: Product[]
+  price: {
+    min: number
+    max: number
+  }
+  mileage: {
+    min: number
+    max: number
+  }
+  initializedItemsByCat: boolean
 }
 
 const initialState: InitialStateI = {
   catalogDataByCategoryIds: {
-    initialized: false,
     status: null,
     catalogData: {
       items: [],
@@ -103,14 +111,24 @@ const initialState: InitialStateI = {
       total: 0,
     },
   },
+  allItemsInCat: [],
+  price: {
+    min: 0,
+    max: 0,
+  },
+  mileage: {
+    min: 0,
+    max: 0,
+  },
+  initializedItemsByCat: false,
 }
 
 const catalogSlice = createSlice({
   name: 'catalog',
   initialState,
   reducers: {
-    setInitializeCatalogDataByCategoryIds: (state, action: PayloadAction<boolean>) => {
-      state.catalogDataByCategoryIds.initialized = action.payload
+    setInitializeItemsByCat: (state, action: PayloadAction<boolean>) => {
+      state.initializedItemsByCat = action.payload
     },
   },
   extraReducers: builder => {
@@ -120,6 +138,14 @@ const catalogSlice = createSlice({
     })
     builder.addCase(getByCategoryIds.fulfilled, (state, action: PayloadAction<ByCategoryIdsResponseI>) => {
       state.catalogDataByCategoryIds.catalogData = action.payload
+      if (state.initializedItemsByCat === false) {
+        state.allItemsInCat = action.payload.items
+        state.price.min = action.payload.price.min
+        state.price.max = action.payload.price.max
+        state.mileage.min = action.payload.mileage.min
+        state.mileage.max = action.payload.mileage.max
+        state.initializedItemsByCat = true
+      }
       state.catalogDataByCategoryIds.status = 'success'
     })
 
@@ -129,6 +155,6 @@ const catalogSlice = createSlice({
   },
 })
 
-export const { setInitializeCatalogDataByCategoryIds } = catalogSlice.actions
+export const { setInitializeItemsByCat } = catalogSlice.actions
 
 export default catalogSlice.reducer

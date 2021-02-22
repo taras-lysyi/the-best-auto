@@ -13,7 +13,6 @@ interface CategoryBoxTemplateProps {
 }
 
 export const CategoryBoxTemplate: FC<CategoryBoxTemplateProps> = ({ title, status, categoryItems, isSelected }) => {
-  debugger
   return (
     <Box>
       {status === 'loading' ? (

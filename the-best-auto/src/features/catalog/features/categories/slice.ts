@@ -34,7 +34,6 @@ const initialState: InitialStateI = {
   status: null,
   categoriesData: [],
 }
-debugger
 const categorySlice = createSlice({
   name: 'category',
   initialState,

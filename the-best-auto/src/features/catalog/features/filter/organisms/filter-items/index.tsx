@@ -1,6 +1,6 @@
 import React, { useEffect, FC } from 'react'
 import { useParams, useHistory } from 'react-router'
-import QueryString from 'querystring'
+import qs from 'qs'
 import Grid from '@material-ui/core/Grid'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
@@ -9,6 +9,8 @@ import Slider from '@material-ui/core/Slider'
 import { FilterBoxTemplate, FilterSliderTemplate } from '../../templates'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
 import {
+  BrandsResponseI,
+  resetFilter,
   getBrands,
   getFeatures,
   getFeaturesValue,
@@ -21,45 +23,67 @@ import {
   setSale,
   setStartEndPrice,
   setStartEndMileage,
+  setBrands,
 } from '../../slice'
-import { getByCategoryIds, CategoryIdsBodyDataI } from 'features/catalog/slice'
+import { getByCategoryIds, CategoryIdsBodyDataI, setInitializeItemsByCat } from 'features/catalog/slice'
 import { setSelectedCategory } from 'features/catalog/features/categories/slice'
 
 export const FilterItems: FC = () => {
   const isInitialized = useTypedSelector(state => state.filter.initialized)
-
+  let categoriesData = useTypedSelector(state => state.category.categoriesData)
   let selectedCategoryId = useTypedSelector(state => state.category.selectedCategoryId)
   let selectedCategoryLink = useTypedSelector(state => state.category.selectedCategoryLink)
-  let categoriesData = useTypedSelector(state => state.category.categoriesData)
   const { categoryLink } = useParams<{ categoryLink: string }>()
-
+  let brandsBody = useTypedSelector(state => state.filter.filtersBody.brand)
+  let filtersBody = useTypedSelector(state => state.filter.filtersBody)
+  let feauturesFilterBody = useTypedSelector(state => state.filter.featuresFilterBody)
   let brands = useTypedSelector(state => state.filter.brands)
   let features = useTypedSelector(state => state.filter.features)
   let featuresValue = useTypedSelector(state => state.filter.featuresValue)
-  let filtersBody = useTypedSelector(state => state.filter.filtersBody)
-  let feauturesFilterBody = useTypedSelector(state => state.filter.featuresFilterBody)
+  let catalog = useTypedSelector(state => state.catalog)
   let catalogDataByCategoryIds = useTypedSelector(state => state.catalog.catalogDataByCategoryIds)
   const dispatch = useAppDispatch()
   const history = useHistory()
   useEffect(() => {
-    debugger
     if (!isInitialized) {
-      let { popular } = QueryString.parse(history.location.search.substr(1))
-      let parsedUrl = QueryString.parse(history.location.search.substr(1))
+      let { popular, isnew, sale, priceStart, priceEnd, mileageStart, mileageEnd, brand } = qs.parse(
+        history.location.search.substr(1),
+      )
+      if (Number(popular) === 0 || 1) {
+        dispatch(setPopular(popular as string))
+      }
+      if (Number(isnew) === 0 || 1) {
+        dispatch(setIsNew(isnew as string))
+      }
+      if (Number(sale) === 0 || 1) {
+        dispatch(setSale(sale as string))
+      }
+      if (priceStart || priceEnd) {
+        dispatch(setStartEndPrice([Number(priceStart), Number(priceEnd)]))
+        setPriceValue([Number(priceStart), Number(priceEnd)])
+      }
+      if (mileageStart || mileageEnd) {
+        dispatch(setStartEndMileage([Number(mileageStart), Number(mileageEnd)]))
+        setMileageValue([Number(mileageStart), Number(mileageEnd)])
+      }
+
+      if (typeof brand === 'object') {
+        dispatch(setBrands((brand as string[]).map(Number)))
+      } else if (typeof brand === 'string') {
+        dispatch(setBrands(Number(brand)))
+      }
+      let parsedUrl = qs.parse(history.location.search.substr(1))
       Object.keys(parsedUrl).forEach(key => {
         if (Number(key)) {
           dispatch(
             setSelectedFeatures({
               featureId: key,
-              values: parsedUrl[key],
+              values: parsedUrl[key] as string | string[],
             }),
           )
         }
-      }) // if key === number это фичи
+      }) // if Number(key) это фичи
 
-      if (Number(popular) === 0 || 1) {
-        dispatch(setPopular(popular as string))
-      }
       Promise.all([dispatch(getBrands()), dispatch(getFeatures()), dispatch(getFeaturesValue())]).then(() => {
         dispatch(setInitializeFilter(true))
       })
@@ -68,20 +92,32 @@ export const FilterItems: FC = () => {
 
   useEffect(() => {
     if (isInitialized) {
-      let filtered: { [id: number]: string[] | string } = {}
+      let filteredFeatures: { [id: number]: string[] | string } = {}
       Object.keys(feauturesFilterBody)
         .filter(key => {
           return feauturesFilterBody[Number(key)].length !== 0
         })
         .forEach(key => {
-          return (filtered[Number(key)] = feauturesFilterBody[Number(key)])
+          return (filteredFeatures[Number(key)] = feauturesFilterBody[Number(key)])
         })
+      let stringBody = qs.stringify({
+        brand: brandsBody,
+        ...filteredFeatures,
+        priceStart: filtersBody.price.start === 0 ? [] : filtersBody.price.start,
+        priceEnd: filtersBody.price.end === 0 ? [] : filtersBody.price.end,
+        mileageStart: filtersBody.mileage.start === 0 ? [] : filtersBody.mileage.start,
+        mileageEnd: filtersBody.mileage.end === 0 ? [] : filtersBody.mileage.end,
+        popular: filtersBody.popular === 0 ? [] : filtersBody.popular,
+        isnew: filtersBody.isnew === 0 ? [] : filtersBody.isnew,
+        sale: filtersBody.sale === 0 ? [] : filtersBody.sale,
+      })
+
       history.push({
         pathname: `/catalog/${selectedCategoryLink}`,
-        search: QueryString.stringify(filtered),
+        search: stringBody,
       })
     } // Меняем ссылку когда фильтер меняеться
-  }, [feauturesFilterBody, filtersBody, isInitialized, history, selectedCategoryLink])
+  }, [feauturesFilterBody, filtersBody, isInitialized, history, selectedCategoryLink, brandsBody, dispatch])
 
   useEffect(() => {
     if (selectedCategoryId.length === 0 && categoriesData.length !== 0 && categoryLink) {
@@ -111,18 +147,51 @@ export const FilterItems: FC = () => {
     categoryLink,
     filtersBody,
     feauturesFilterBody,
+    brandsBody,
     dispatch,
   ])
-
+  interface BrandsWithLengthItemsByCat {
+    brand: BrandsResponseI
+    lengthInItemsByCat: number
+  }
+  let sortBrandsWithLengthItems = () => {
+    let result: BrandsWithLengthItemsByCat[] = []
+    brands.brandItems.forEach(item => {
+      let lengthItemsInCategory = 0
+      catalog.allItemsInCat.forEach(catalogItem => {
+        return item.brand_id === catalogItem.brand_id ? lengthItemsInCategory++ : null
+      })
+      result = [
+        ...result,
+        {
+          brand: item,
+          lengthInItemsByCat: lengthItemsInCategory,
+        },
+      ]
+    })
+    return result
+      .filter(item => item.lengthInItemsByCat !== 0)
+      .sort((a, b) => b.lengthInItemsByCat - a.lengthInItemsByCat)
+  }
   interface SortedFeaturesWithValuesI {
     feature: FeaturesResponseI
     featuresValueItems: FeaturesValueResponseI[]
+    lengthInItemsByCat: number
   }
 
   let sortedFeaturesWithValues = () => {
     let result: SortedFeaturesWithValuesI[] = []
 
     features.featuresItems.forEach(feature => {
+      let lengthItemsInCategory = 0
+      featuresValue.featuresValueItems.forEach(featureValueItem => {
+        catalog.allItemsInCat.forEach(catalogItem => {
+          return catalogItem.feature.filter(item => item.feature_value === featureValueItem.feature_value)
+            ? lengthItemsInCategory++
+            : null
+        })
+      })
+
       result = [
         ...result,
         {
@@ -134,6 +203,7 @@ export const FilterItems: FC = () => {
               let y = b.feature_value.toLowerCase()
               return x < y ? -1 : x > y ? 1 : 0
             }),
+          lengthInItemsByCat: lengthItemsInCategory,
         },
       ]
     })
@@ -143,10 +213,7 @@ export const FilterItems: FC = () => {
   const priceHandleChange = (event: any, newValue: number | number[]) => {
     dispatch(setStartEndPrice(newValue))
   }
-  const [priceValue, setPriceValue] = React.useState<number[]>([
-    catalogDataByCategoryIds.catalogData.price.min,
-    catalogDataByCategoryIds.catalogData.price.max,
-  ])
+  const [priceValue, setPriceValue] = React.useState<number[]>([catalog.price.min, catalog.price.max])
   const handleChangePrice = (event: any, newValue: number | number[]) => {
     setPriceValue(newValue as number[])
   }
@@ -154,10 +221,7 @@ export const FilterItems: FC = () => {
   const mileageHandleChange = (event: any, newValue: number | number[]) => {
     dispatch(setStartEndMileage(newValue))
   }
-  const [mileageValue, setMileageValue] = React.useState<number[]>([
-    catalogDataByCategoryIds.catalogData.mileage.min,
-    catalogDataByCategoryIds.catalogData.mileage.max,
-  ])
+  const [mileageValue, setMileageValue] = React.useState<number[]>([catalog.mileage.min, catalog.mileage.max])
   const handleChangeMileage = (event: any, newValue: number | number[]) => {
     setMileageValue(newValue as number[])
   }
@@ -175,21 +239,35 @@ export const FilterItems: FC = () => {
         label='Топ пропозиції'
       />
       <FormControlLabel
-        control={<Checkbox onChange={() => dispatch(setIsNew(filtersBody.isnew))} color='primary' value='isNew' />}
+        control={
+          <Checkbox
+            checked={Boolean(filtersBody.isnew)}
+            onChange={() => dispatch(setIsNew(filtersBody.isnew))}
+            color='primary'
+            value='isNew'
+          />
+        }
         label='Новинки'
       />
       <FormControlLabel
-        control={<Checkbox onChange={() => dispatch(setSale(filtersBody.sale))} color='primary' value='sale' />}
+        control={
+          <Checkbox
+            checked={Boolean(filtersBody.sale)}
+            onChange={() => dispatch(setSale(filtersBody.sale))}
+            color='primary'
+            value='sale'
+          />
+        }
         label='Знижки'
       />
-      {catalogDataByCategoryIds.catalogData.price.max === 0 ? (
+      {catalog.price.max === 0 ? (
         <FilterBoxTemplate status='loading' />
       ) : (
         <FilterBoxTemplate status='success' title='Ціна ($)'>
           <FilterSliderTemplate
             start={
               <TextField
-                value={priceValue[1] === 0 ? catalogDataByCategoryIds.catalogData.price.min : priceValue[0]}
+                value={priceValue[1] === 0 ? catalog.price.min : priceValue[0]}
                 fullWidth
                 type='number'
                 label='від'
@@ -197,7 +275,7 @@ export const FilterItems: FC = () => {
             }
             end={
               <TextField
-                value={priceValue[1] === 0 ? catalogDataByCategoryIds.catalogData.price.max : priceValue[1]}
+                value={priceValue[1] === 0 ? catalog.price.max : priceValue[1]}
                 fullWidth
                 type='number'
                 label='до'
@@ -206,14 +284,10 @@ export const FilterItems: FC = () => {
             slider={
               <Slider
                 onChangeCommitted={priceHandleChange}
-                min={catalogDataByCategoryIds.catalogData.price.min}
-                max={catalogDataByCategoryIds.catalogData.price.max}
+                min={catalog.price.min}
+                max={catalog.price.max}
                 onChange={handleChangePrice}
-                value={
-                  priceValue[1] === 0
-                    ? [catalogDataByCategoryIds.catalogData.price.min, catalogDataByCategoryIds.catalogData.price.max]
-                    : priceValue
-                }
+                value={priceValue[1] === 0 ? [catalog.price.min, catalog.price.max] : priceValue}
                 color='secondary'
                 valueLabelDisplay='auto'
                 aria-labelledby='range-slider'
@@ -222,7 +296,7 @@ export const FilterItems: FC = () => {
           />
         </FilterBoxTemplate>
       )}
-      {catalogDataByCategoryIds.catalogData.mileage.max === 0 ? (
+      {catalog.mileage.max === 0 ? (
         <FilterBoxTemplate status='loading' />
       ) : (
         <FilterBoxTemplate status='success' title='Пробіг (км)'>
@@ -245,16 +319,9 @@ export const FilterItems: FC = () => {
               <Slider
                 onChange={handleChangeMileage}
                 onChangeCommitted={mileageHandleChange}
-                min={catalogDataByCategoryIds.catalogData.mileage.min}
-                max={catalogDataByCategoryIds.catalogData.mileage.max}
-                value={
-                  mileageValue[1] === 0
-                    ? [
-                        catalogDataByCategoryIds.catalogData.mileage.min,
-                        catalogDataByCategoryIds.catalogData.mileage.max,
-                      ]
-                    : mileageValue
-                }
+                min={catalog.mileage.min}
+                max={catalog.mileage.max}
+                value={mileageValue[1] === 0 ? [catalog.mileage.min, catalog.mileage.max] : mileageValue}
                 color='secondary'
                 valueLabelDisplay='auto'
                 aria-labelledby='range-slider'
@@ -263,16 +330,23 @@ export const FilterItems: FC = () => {
           </Grid>
         </FilterBoxTemplate>
       )}
-      {brands.status === 'loading' ? (
+      {brands.status === 'loading' || catalog.initializedItemsByCat === false ? (
         <FilterBoxTemplate status='loading' />
-      ) : brands.status === 'success' ? (
+      ) : brands.status === 'success' && catalog.initializedItemsByCat === true ? (
         <FilterBoxTemplate title='Бренд' status='success'>
-          {brands.brandItems.map(item => {
+          {sortBrandsWithLengthItems().map(item => {
             return (
               <FormControlLabel
-                key={item.brand_id}
-                control={<Checkbox onChange={() => console.log('change')} name={item.link} color='primary' />}
-                label={item.name}
+                key={item.brand.brand_id}
+                control={
+                  <Checkbox
+                    checked={brandsBody.includes(item.brand.brand_id)}
+                    onChange={() => dispatch(setBrands(item.brand.brand_id))}
+                    name={item.brand.link}
+                    color='primary'
+                  />
+                }
+                label={`${item.brand.name} (${item.lengthInItemsByCat})`}
               />
             )
           })}
@@ -281,9 +355,13 @@ export const FilterItems: FC = () => {
         <FilterBoxTemplate status='failed' />
       ) : null}
       {sortedFeaturesWithValues().map(item => {
-        return features.status === 'loading' || featuresValue.status === 'loading' ? (
+        return features.status === 'loading' ||
+          featuresValue.status === 'loading' ||
+          catalog.initializedItemsByCat === false ? (
           <FilterBoxTemplate status='loading' key={item.feature.feature_id} />
-        ) : features.status === 'success' && featuresValue.status === 'success' ? (
+        ) : features.status === 'success' &&
+          featuresValue.status === 'success' &&
+          catalog.initializedItemsByCat === true ? (
           <FilterBoxTemplate status='success' title={item.feature.feature_name} key={item.feature.feature_id}>
             {item.featuresValueItems.map(featureValue => {
               return (
@@ -304,7 +382,7 @@ export const FilterItems: FC = () => {
                       color='primary'
                     />
                   }
-                  label={featureValue.feature_value}
+                  label={`${featureValue.feature_value} (${item.lengthInItemsByCat})`}
                 />
               )
             })}
