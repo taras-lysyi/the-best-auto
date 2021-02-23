@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'fixed',
       bottom: theme.spacing(2),
       right: theme.spacing(2),
-      zIndex: 1500,
     },
   }),
 )
@@ -37,8 +36,7 @@ export const CatalogTemplate = ({
   filterTitle,
 }: Props) => {
   const classes = useStyles()
-  const [scrollYPosition, setScroll] = React.useState(0)
-  window.onscroll = () => setScroll(window.scrollY)
+  console.log('CatalogTemplate rendered')
 
   const [drawer, setDrawer] = React.useState(false)
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -67,12 +65,7 @@ export const CatalogTemplate = ({
             <Fab color='secondary'>{checkButton}</Fab>
           </Box>
         )}
-        <Box display='flex' mb={2} width={1} justifyContent='flex-end'>
-          <Fab color='secondary' onClick={toggleDrawer(true)}>
-            {settingButton}
-          </Fab>
-        </Box>
-        {scrollYPosition > 100 && !drawer ? (
+        {!drawer ? (
           <Box className={classes.fixedBottomRightMobile}>
             <Fab color='secondary' onClick={toggleDrawer(true)}>
               {settingButton}

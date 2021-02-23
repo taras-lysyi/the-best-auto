@@ -1,3 +1,5 @@
+import { memo } from 'react'
+import _ from 'lodash'
 import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
@@ -11,7 +13,7 @@ interface FilterBoxTemplateProps {
   status: LoadingStatusT
 }
 
-export const FilterBoxTemplate = ({ title, children, status }: FilterBoxTemplateProps) => {
+export const FilterBoxTemplate = memo(({ title, children, status }: FilterBoxTemplateProps) => {
   return (
     <>
       <Box>
@@ -25,7 +27,7 @@ export const FilterBoxTemplate = ({ title, children, status }: FilterBoxTemplate
       <Divider />
     </>
   )
-}
+})
 
 interface FilterSliderTemplateProps {
   start: React.ReactNode
@@ -33,7 +35,8 @@ interface FilterSliderTemplateProps {
   slider: React.ReactNode
 }
 
-export const FilterSliderTemplate = ({ start, end, slider }: FilterSliderTemplateProps) => {
+export const FilterSliderTemplate = memo(({ start, end, slider }: FilterSliderTemplateProps) => {
+  console.log('render filterSliderTemp')
   return (
     <>
       <Grid container spacing={1}>
@@ -49,4 +52,4 @@ export const FilterSliderTemplate = ({ start, end, slider }: FilterSliderTemplat
       </Grid>
     </>
   )
-}
+})

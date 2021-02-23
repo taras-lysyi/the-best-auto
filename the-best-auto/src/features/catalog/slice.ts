@@ -84,7 +84,7 @@ interface InitialStateI {
     min: number
     max: number
   }
-  initializedItemsByCat: boolean
+  initializedAllItemsInCat: boolean
 }
 
 const initialState: InitialStateI = {
@@ -120,15 +120,15 @@ const initialState: InitialStateI = {
     min: 0,
     max: 0,
   },
-  initializedItemsByCat: false,
+  initializedAllItemsInCat: false,
 }
 
 const catalogSlice = createSlice({
   name: 'catalog',
   initialState,
   reducers: {
-    setInitializeItemsByCat: (state, action: PayloadAction<boolean>) => {
-      state.initializedItemsByCat = action.payload
+    setInitializeAllItemsInCat: (state, action: PayloadAction<boolean>) => {
+      state.initializedAllItemsInCat = action.payload
     },
   },
   extraReducers: builder => {
@@ -138,13 +138,13 @@ const catalogSlice = createSlice({
     })
     builder.addCase(getByCategoryIds.fulfilled, (state, action: PayloadAction<ByCategoryIdsResponseI>) => {
       state.catalogDataByCategoryIds.catalogData = action.payload
-      if (state.initializedItemsByCat === false) {
+      if (state.initializedAllItemsInCat === false) {
         state.allItemsInCat = action.payload.items
         state.price.min = action.payload.price.min
         state.price.max = action.payload.price.max
         state.mileage.min = action.payload.mileage.min
         state.mileage.max = action.payload.mileage.max
-        state.initializedItemsByCat = true
+        state.initializedAllItemsInCat = true
       }
       state.catalogDataByCategoryIds.status = 'success'
     })
@@ -155,6 +155,6 @@ const catalogSlice = createSlice({
   },
 })
 
-export const { setInitializeItemsByCat } = catalogSlice.actions
+export const { setInitializeAllItemsInCat } = catalogSlice.actions
 
 export default catalogSlice.reducer

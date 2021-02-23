@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo, useMemo, useCallback } from 'react'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Box from '@material-ui/core/Box'
@@ -55,7 +55,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export const Header = () => {
+export const Header = React.memo(() => {
+  console.log('rendered')
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
@@ -135,26 +136,28 @@ export const Header = () => {
           <div className={classes.grow} />
           {matches && (
             <Toolbar>
-              <Tabs
-                className={classes.tabs}
-                value={selectedTab}
-                indicatorColor='secondary'
-                textColor='inherit'
-                onChange={handleChange}
-                variant='fullWidth'>
-                {routes.map(item => {
-                  return (
-                    <Tab
-                      label={item.label}
-                      key={item.label}
-                      component={NavLink}
-                      to={`/${item.path}`}
-                      className={classes.tab}
-                      disabled={page === item.path}
-                    />
-                  )
-                })}
-              </Tabs>
+              {
+                <Tabs
+                  className={classes.tabs}
+                  value={selectedTab}
+                  indicatorColor='secondary'
+                  textColor='inherit'
+                  onChange={handleChange}
+                  variant='fullWidth'>
+                  {routes.map(item => {
+                    return (
+                      <Tab
+                        label={item.label}
+                        key={item.label}
+                        component={NavLink}
+                        to={`/${item.path}`}
+                        className={classes.tab}
+                        disabled={page === item.path}
+                      />
+                    )
+                  })}
+                </Tabs>
+              }
             </Toolbar>
           )}
         </Toolbar>
@@ -192,4 +195,4 @@ export const Header = () => {
       )}
     </div>
   )
-}
+})

@@ -146,7 +146,7 @@ const filterSlice = createSlice({
       if (typeof action.payload === 'string') {
         state.filtersBody.isnew = Number(action.payload) as 0 | 1
       } else {
-        action.payload === 0 ? (state.filtersBody.isnew = 1) : (state.filtersBody.popular = 0)
+        action.payload === 0 ? (state.filtersBody.isnew = 1) : (state.filtersBody.isnew = 0)
       }
     },
     setSale: (state, action: PayloadAction<0 | 1 | string>) => {
