@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import _ from 'lodash'
 import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
@@ -36,7 +35,6 @@ interface FilterSliderTemplateProps {
 }
 
 export const FilterSliderTemplate = memo(({ start, end, slider }: FilterSliderTemplateProps) => {
-  console.log('render filterSliderTemp')
   return (
     <>
       <Grid container spacing={1}>

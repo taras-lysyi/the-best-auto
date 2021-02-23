@@ -307,7 +307,7 @@ export const FilterItems: FC = () => {
       )}
       {brandsStatus === 'loading' || !initializedAllItemsInCat ? (
         <FilterBoxTemplate status='loading' />
-      ) : brandsStatus === 'success' && !initializedAllItemsInCat ? (
+      ) : brandsStatus === 'success' && initializedAllItemsInCat ? (
         <FilterBoxTemplate
           title='Бренд'
           status='success'

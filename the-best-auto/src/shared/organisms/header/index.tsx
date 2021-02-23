@@ -55,8 +55,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export const Header = React.memo(() => {
-  console.log('rendered')
+export const Header = memo(() => {
+  console.log('rendered header')
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
@@ -67,42 +67,66 @@ export const Header = React.memo(() => {
   if (page === undefined) {
     page = ''
   }
-  const routes = [
-    {
-      path: '',
-      label: 'Головна',
-    },
-    {
-      path: 'catalog',
-      label: 'Каталог',
-    },
-    {
-      path: 'contacts',
-      label: 'Контакти',
-    },
-    {
-      path: 'blog',
-      label: 'Блог',
-    },
-  ]
-  let initialLocation = routes.findIndex(item => `${page}` === item.path)
+
+  const routes = useMemo(() => {
+    return [
+      {
+        path: '',
+        label: 'Головна',
+      },
+      {
+        path: 'catalog',
+        label: 'Каталог',
+      },
+      {
+        path: 'contacts',
+        label: 'Контакти',
+      },
+      {
+        path: 'blog',
+        label: 'Блог',
+      },
+    ]
+  }, [])
+
+  let initialLocation = useMemo(() => {
+    return routes.findIndex(item => `${page}` === item.path)
+  }, [page, routes])
   const [selectedTab, setSelectedTab] = React.useState(initialLocation)
-  const handleChange = (event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => {
+  const handleChange = useCallback((event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => {
     setSelectedTab(newValue)
     window.scrollTo(0, 0)
-  }
+  }, [])
 
   const [drawer, setDrawer] = React.useState(false)
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event &&
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
-    ) {
-      return
-    }
-    setDrawer(open)
-  }
+  const toggleDrawer = useCallback(
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event &&
+        event.type === 'keydown' &&
+        ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+      ) {
+        return
+      }
+      setDrawer(open)
+    },
+    [],
+  )
+
+  const tabs = useMemo(() => {
+    return routes.map(item => {
+      return (
+        <Tab
+          label={item.label}
+          key={item.label}
+          component={NavLink}
+          to={`/${item.path}`}
+          className={classes.tab}
+          disabled={page === item.path}
+        />
+      )
+    })
+  }, [classes.tab, page, routes])
   return (
     <div className={classes.root}>
       <AppBar position='fixed' className={classes.appBar}>
@@ -144,18 +168,7 @@ export const Header = React.memo(() => {
                   textColor='inherit'
                   onChange={handleChange}
                   variant='fullWidth'>
-                  {routes.map(item => {
-                    return (
-                      <Tab
-                        label={item.label}
-                        key={item.label}
-                        component={NavLink}
-                        to={`/${item.path}`}
-                        className={classes.tab}
-                        disabled={page === item.path}
-                      />
-                    )
-                  })}
+                  {tabs}
                 </Tabs>
               }
             </Toolbar>
@@ -178,18 +191,7 @@ export const Header = React.memo(() => {
               setDrawer(false)
             }}
             variant='fullWidth'>
-            {routes.map(item => {
-              return (
-                <Tab
-                  label={item.label}
-                  key={item.label}
-                  component={NavLink}
-                  to={`/${item.path}`}
-                  className={classes.tab}
-                  disabled={page === item.path}
-                />
-              )
-            })}
+            {tabs}
           </Tabs>
         </Drawer>
       )}
