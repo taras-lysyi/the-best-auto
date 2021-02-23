@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import TuneIcon from '@material-ui/icons/Tune'
 import CloseIcon from '@material-ui/icons/Close'
@@ -15,50 +16,58 @@ export const CatalogPage = () => {
   interface ParamTypes {
     categoryLink: string
   }
-  const cardsData = [
-    {
-      carName: 'VOLKSWAGEN CC SPORT',
-      src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
-      runCount: 40,
-      price: 9400,
-      newPrice: 9000,
-      year: 2015,
-    },
-    {
-      carName: 'VOLKSWAGEN CC SPORT',
-      src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
-      runCount: 40,
-      price: 9400,
-      year: 2015,
-    },
-    {
-      carName: 'VOLKSWAGEN CC SPORT',
-      src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
-      runCount: 40,
-      price: 9400,
-      year: 2015,
-    },
-    {
-      carName: 'VOLKSWAGEN CC SPORT',
-      src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
-      runCount: 40,
-      price: 9400,
-      year: 2015,
-    },
-  ]
 
-  const cards = cardsData.map(item => {
-    return (
-      <CatalogCard
-        carName={item.carName}
-        src={item.src}
-        runCount={item.runCount}
-        price={item.price}
-        newPrice={item.newPrice}
-        year={item.year}
-      />
-    )
-  })
+  const cards = useMemo(() => {
+    const cardsData = [
+      {
+        carName: 'VOLKSWAGEN CC SPORT',
+        src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
+        runCount: 40,
+        price: 9400,
+        newPrice: 9000,
+        year: 2015,
+      },
+      {
+        carName: 'VOLKSWAGEN CC SPORT',
+        src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
+        runCount: 40,
+        price: 9400,
+        year: 2015,
+      },
+      {
+        carName: 'VOLKSWAGEN CC SPORT',
+        src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
+        runCount: 40,
+        price: 9400,
+        year: 2015,
+      },
+      {
+        carName: 'VOLKSWAGEN CC SPORT',
+        src: 'https://the-best-auto.com/assets/catalog/990/6.jpg',
+        runCount: 40,
+        price: 9400,
+        year: 2015,
+      },
+    ]
+    return cardsData.map(item => {
+      return (
+        <CatalogCard
+          carName={item.carName}
+          src={item.src}
+          runCount={item.runCount}
+          price={item.price}
+          newPrice={item.newPrice}
+          year={item.year}
+        />
+      )
+    })
+  }, [])
+  const filter = useMemo(() => <FilterItems />, [])
+  const settingButton = useMemo(() => <TuneIcon />, [])
+  const closeIcon = useMemo(() => <CloseIcon />, [])
+  const filterTitle = useMemo(() => <Typography variant='h6'>Фільтри</Typography>, [])
+  const checkButton = useMemo(() => <CheckIcon />, [])
+  const categories = useMemo(() => <Categories categoryLink={categoryLink} />, [categoryLink])
   return (
     <>
       {!categoryLink && !selectedCategoryLink ? (
@@ -67,13 +76,13 @@ export const CatalogPage = () => {
         <Redirect to={`/catalog/${selectedCategoryLink}`} />
       ) : (
         <CatalogTemplate
-          filter={<FilterItems />}
-          settingButton={<TuneIcon />}
+          filter={filter}
+          settingButton={settingButton}
           cards={cards}
-          closeIcon={<CloseIcon />}
-          filterTitle={<Typography variant='h6'>Фільтри</Typography>}
-          checkButton={<CheckIcon />}
-          categories={<Categories categoryLink={categoryLink} />}
+          closeIcon={closeIcon}
+          filterTitle={filterTitle}
+          checkButton={checkButton}
+          categories={categories}
         />
       )}
     </>

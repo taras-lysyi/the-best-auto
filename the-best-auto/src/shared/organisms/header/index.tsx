@@ -1,10 +1,12 @@
+/** @jsxImportSource @welldone-software/why-did-you-render */
 import React, { memo, useMemo, useCallback } from 'react'
+import { useParams } from 'react-router-dom'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Box from '@material-ui/core/Box'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import { NavLink, useParams } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -55,18 +57,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export const Header = memo(() => {
+export default memo(() => {
+  const usePage = () => {
+    let { page } = useParams<{ page: string }>()
+    return page ? page : ''
+  }
+  const page = usePage()
   console.log('rendered header')
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-  interface ParamTypes {
-    page: string
-  }
-  let { page } = useParams<ParamTypes>()
-  if (page === undefined) {
-    page = ''
-  }
 
   const routes = useMemo(() => {
     return [
@@ -117,6 +117,7 @@ export const Header = memo(() => {
     return routes.map(item => {
       return (
         <Tab
+          onClick={toggleDrawer(false)}
           label={item.label}
           key={item.label}
           component={NavLink}
@@ -126,24 +127,20 @@ export const Header = memo(() => {
         />
       )
     })
-  }, [classes.tab, page, routes])
+  }, [classes.tab, page, routes, toggleDrawer])
   return (
     <div className={classes.root}>
       <AppBar position='fixed' className={classes.appBar}>
         <Toolbar>
           <IconButton
-            onClick={toggleDrawer(true)}
+            onClick={useCallback(() => toggleDrawer(true), [toggleDrawer])}
             edge='start'
             className={classes.menuButton}
             color='inherit'
             aria-label='open drawer'>
             <MenuIcon />
           </IconButton>
-          <NavLink
-            className={classes.logoLink}
-            to='/'
-            onClick={() => setSelectedTab(0)}
-            style={{ textDecoration: 'none' }}>
+          <NavLink className={classes.logoLink} to='/' onClick={useCallback(() => setSelectedTab(0), [])}>
             <Box display='flex' className={classes.logo}>
               <Typography className={classes.title} variant='h4' noWrap>
                 THE
@@ -186,10 +183,7 @@ export const Header = memo(() => {
             value={selectedTab}
             indicatorColor='secondary'
             textColor='inherit'
-            onChange={(event, newValue) => {
-              handleChange(event, newValue)
-              setDrawer(false)
-            }}
+            onChange={handleChange}
             variant='fullWidth'>
             {tabs}
           </Tabs>
