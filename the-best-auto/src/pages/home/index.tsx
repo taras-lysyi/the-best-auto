@@ -87,13 +87,13 @@ export const HomePage = () => {
       </Section>
 
       <Divider />
-      <Section>
+      {/* <Section>
         <TitleWithIcon
           icon={<GroupIcon fontSize='inherit' color='secondary' />}
           primaryText='НАША'
           secondaryText='КОМАНДА'
         />
-      </Section>
+      </Section> */}
     </>
   )
 }

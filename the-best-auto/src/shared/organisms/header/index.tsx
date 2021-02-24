@@ -14,6 +14,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Drawer from '@material-ui/core/Drawer'
 import CloseIcon from '@material-ui/icons/Close'
+import { NavTabs } from 'shared/molecules'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -57,46 +58,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export default memo(() => {
-  const usePage = () => {
-    let { page } = useParams<{ page: string }>()
-    return page ? page : ''
-  }
-  const page = usePage()
-  console.log('rendered header')
+interface Props {
+  selectedTab: number
+  tabHandleChange: (event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => void
+}
+
+const Header = ({ selectedTab, tabHandleChange }: Props) => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-
-  const routes = useMemo(() => {
-    return [
-      {
-        path: '',
-        label: 'Головна',
-      },
-      {
-        path: 'catalog',
-        label: 'Каталог',
-      },
-      {
-        path: 'contacts',
-        label: 'Контакти',
-      },
-      {
-        path: 'blog',
-        label: 'Блог',
-      },
-    ]
-  }, [])
-
-  let initialLocation = useMemo(() => {
-    return routes.findIndex(item => `${page}` === item.path)
-  }, [page, routes])
-  const [selectedTab, setSelectedTab] = React.useState(initialLocation)
-  const handleChange = useCallback((event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => {
-    setSelectedTab(newValue)
-    window.scrollTo(0, 0)
-  }, [])
 
   const [drawer, setDrawer] = React.useState(false)
   const toggleDrawer = useCallback(
@@ -112,62 +82,45 @@ export default memo(() => {
     },
     [],
   )
-
-  const tabs = useMemo(() => {
-    return routes.map(item => {
-      return (
-        <Tab
-          onClick={toggleDrawer(false)}
-          label={item.label}
-          key={item.label}
-          component={NavLink}
-          to={`/${item.path}`}
-          className={classes.tab}
-          disabled={page === item.path}
-        />
-      )
-    })
-  }, [classes.tab, page, routes, toggleDrawer])
+  const usePage = () => {
+    let { page } = useParams<{ page: string }>()
+    return page ? page : ''
+  }
+  let page = usePage()
   return (
     <div className={classes.root}>
       <AppBar position='fixed' className={classes.appBar}>
         <Toolbar>
           <IconButton
-            onClick={useCallback(() => toggleDrawer(true), [toggleDrawer])}
+            onClick={toggleDrawer(true)}
             edge='start'
             className={classes.menuButton}
             color='inherit'
             aria-label='open drawer'>
             <MenuIcon />
           </IconButton>
-          <NavLink className={classes.logoLink} to='/' onClick={useCallback(() => setSelectedTab(0), [])}>
-            <Box display='flex' className={classes.logo}>
-              <Typography className={classes.title} variant='h4' noWrap>
-                THE
-              </Typography>
-              <Typography className={classes.title} variant='h4' noWrap>
-                BEST
-              </Typography>
-              <Typography color='secondary' style={{ fontWeight: 'bold' }} noWrap variant='h4'>
-                AUTO
-              </Typography>
-            </Box>
-          </NavLink>
+          <Box display='flex' className={classes.logo}>
+            <Typography className={classes.title} variant='h4' noWrap>
+              THE
+            </Typography>
+            <Typography className={classes.title} variant='h4' noWrap>
+              BEST
+            </Typography>
+            <Typography color='secondary' style={{ fontWeight: 'bold' }} noWrap variant='h4'>
+              AUTO
+            </Typography>
+          </Box>
 
           <div className={classes.grow} />
           {matches && (
             <Toolbar>
-              {
-                <Tabs
-                  className={classes.tabs}
-                  value={selectedTab}
-                  indicatorColor='secondary'
-                  textColor='inherit'
-                  onChange={handleChange}
-                  variant='fullWidth'>
-                  {tabs}
-                </Tabs>
-              }
+              <NavTabs
+                selectedTab={selectedTab}
+                tabHandleChange={tabHandleChange}
+                drawerHandler={toggleDrawer}
+                page={page}
+                matches={matches}
+              />
             </Toolbar>
           )}
         </Toolbar>
@@ -177,18 +130,17 @@ export default memo(() => {
           <IconButton onClick={toggleDrawer(false)}>
             <CloseIcon />
           </IconButton>
-          <Tabs
-            className={classes.tabs}
-            orientation='vertical'
-            value={selectedTab}
-            indicatorColor='secondary'
-            textColor='inherit'
-            onChange={handleChange}
-            variant='fullWidth'>
-            {tabs}
-          </Tabs>
+          <NavTabs
+            selectedTab={selectedTab}
+            tabHandleChange={tabHandleChange}
+            drawerHandler={toggleDrawer}
+            page={page}
+            matches={matches}
+          />
         </Drawer>
       )}
     </div>
   )
-})
+}
+
+export default Header

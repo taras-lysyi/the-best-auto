@@ -6,6 +6,7 @@ import { selectAllItemsInCat } from 'features/catalog/selectors'
 const getFilters = (state: RootState) => state.filter
 
 export const selectFilterIsInitialized = createSelector([getFilters], filter => filter.initialized)
+export const selectFeatures = createSelector([getFilters], filter => filter.features)
 
 const getFiltersBody = (state: RootState) => state.filter.filtersBody
 
@@ -56,6 +57,10 @@ export const selectFeaturesFilterBody = createSelector([getFeaturesFilterBody], 
 })
 
 const getBrands = (state: RootState) => state.filter.brands
+
+export const selectBrands = createSelector([getBrands], brands => {
+  return brands.brandItems
+})
 
 export const selectBrandsStatus = createSelector([getBrands], brands => {
   return brands.status

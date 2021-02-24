@@ -1,35 +1,43 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { useParams } from 'react-router-dom'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import { Paper } from '@material-ui/core'
-
+import Paper from '@material-ui/core/Paper'
+import Box from '@material-ui/core/Box'
+import { NavTabs } from 'shared/molecules'
 const useStyles = makeStyles(theme => ({
-  paper: {
-    background: `${theme.palette.primary.main}`,
-    boxShadow: `0px -2px 19px 0px ${theme.palette.secondary.main}`,
-  },
   toolbar: {
-    minHeight: 128,
     alignItems: 'flex-start',
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-    alignSelf: 'flex-end',
   },
 }))
+interface Props {
+  selectedTab: number
+  tabHandleChange: (event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => void
+}
 
-export const Footer = () => {
+export const Footer = ({ selectedTab, tabHandleChange }: Props) => {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up('md'))
   const classes = useStyles()
-
+  const usePage = () => {
+    let { page } = useParams<{ page: string }>()
+    return page ? page : ''
+  }
+  let page = usePage()
   return (
-    <Paper square className={classes.paper}>
-      <Toolbar className={classes.toolbar}>
-        <Typography className={classes.title} variant='h5' noWrap>
-          Material-UI
-        </Typography>
-      </Toolbar>
-    </Paper>
+    <Box mt={4}>
+      <Paper square>
+        <Toolbar className={classes.toolbar}>
+          <NavTabs
+            selectedTab={selectedTab}
+            tabHandleChange={tabHandleChange}
+            page={page}
+            matches={matches}
+            drawerHandler={() => undefined}
+          />
+        </Toolbar>
+      </Paper>
+    </Box>
   )
 }

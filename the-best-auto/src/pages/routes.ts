@@ -27,7 +27,7 @@ export const routes = [
     component: SearchPage,
   },
   {
-    path: '/product/:productId',
+    path: '/product/:productId?',
     exact: true,
     component: ProductPage,
   },
