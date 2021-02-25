@@ -6,6 +6,8 @@ import Box from '@material-ui/core/Box'
 import IconButton from '@material-ui/core/IconButton'
 import Drawer from '@material-ui/core/Drawer'
 import Fab from '@material-ui/core/Fab'
+import { LoadingStatusT } from 'shared/types'
+import { SkeletonLoader } from 'shared/molecules'
 interface Props {
   filter: JSX.Element
   settingButton: JSX.Element
@@ -14,6 +16,7 @@ interface Props {
   categories: JSX.Element
   closeIcon: JSX.Element
   filterTitle: JSX.Element
+  catalogDataStatus: LoadingStatusT
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export const CatalogTemplate = memo(
-  ({ filter, settingButton, cards, checkButton, categories, closeIcon, filterTitle }: Props) => {
+  ({ filter, settingButton, cards, checkButton, categories, closeIcon, filterTitle, catalogDataStatus }: Props) => {
     const classes = useStyles()
 
     const [drawer, setDrawer] = React.useState(false)
@@ -79,13 +82,19 @@ export const CatalogTemplate = memo(
           <Grid item xs={12} md={9}>
             <Paper>
               <Grid container spacing={1} justify='center'>
-                {cards.map(item => {
-                  return (
-                    <Grid item xs={10} sm={4} md={3}>
-                      {item}
-                    </Grid>
-                  )
-                })}
+                {catalogDataStatus === 'loading' ? (
+                  <Grid item sm={12}>
+                    <SkeletonLoader />
+                  </Grid>
+                ) : catalogDataStatus === 'success' ? (
+                  cards.map(item => {
+                    return (
+                      <Grid item xs={10} sm={4} md={3}>
+                        {item}
+                      </Grid>
+                    )
+                  })
+                ) : null}
               </Grid>
             </Paper>
           </Grid>

@@ -76,6 +76,7 @@ interface InitialStateI {
     catalogData: ByCategoryIdsResponseI
   }
   allItemsInCat: Product[]
+  itemsByFilter: Product[]
   price: {
     min: number
     max: number
@@ -112,6 +113,7 @@ const initialState: InitialStateI = {
     },
   },
   allItemsInCat: [],
+  itemsByFilter: [],
   price: {
     min: 0,
     max: 0,
@@ -138,6 +140,7 @@ const catalogSlice = createSlice({
     })
     builder.addCase(getByCategoryIds.fulfilled, (state, action: PayloadAction<ByCategoryIdsResponseI>) => {
       state.catalogDataByCategoryIds.catalogData = action.payload
+      state.itemsByFilter = action.payload.itemsByCat
       if (state.initializedAllItemsInCat === false) {
         state.allItemsInCat = action.payload.items
         state.price.min = action.payload.price.min

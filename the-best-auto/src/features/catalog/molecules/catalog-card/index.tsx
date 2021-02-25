@@ -24,35 +24,40 @@ const useStyles = makeStyles({
   },
 })
 
-type Props = {
-  carName: string
-  src: string
-  runCount: number
+interface Props {
+  title: string
+  firstImageSrc: string
+  mileage: number
   year: number
   price: number
-  newPrice?: number
+  offer_price?: number | null
+  item_id: number
 }
 
-export const CatalogCard = ({ carName, src, runCount, year, price, newPrice }: Props) => {
+export const CatalogCard = ({ title, firstImageSrc, mileage, year, price, offer_price, item_id }: Props) => {
   const classes = useStyles()
 
   return (
     <Card>
       <CardActionArea>
-        <CardMedia className={classes.media} image={src} title='Contemplative Reptile' />
+        <CardMedia
+          className={classes.media}
+          image={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
+          title='Contemplative Reptile'
+        />
         <CardContent>
           <Typography gutterBottom variant='subtitle1' className={classes.title}>
-            {carName}
+            {title}
           </Typography>
-          <Typography variant='body1'>Пробіг: {runCount} тис.</Typography>
+          <Typography variant='body1'>Пробіг: {mileage} тис.</Typography>
           <Typography variant='body1'>Рік: {year}</Typography>
-          {newPrice ? (
+          {offer_price ? (
             <Box display='flex' alignItems='center'>
               <Typography variant='subtitle1' className={classes.priceOld}>
                 {price} $
               </Typography>
               <Typography variant='h6' className={classes.price}>
-                {newPrice} $
+                {offer_price} $
               </Typography>
             </Box>
           ) : (

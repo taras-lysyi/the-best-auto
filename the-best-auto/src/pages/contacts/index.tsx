@@ -1,6 +1,9 @@
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
+import viber from './viber.png'
+import instagram from './instagram.png'
+import youtube from './youtube.png'
 export const ContactsPage = () => {
   return (
     <>
@@ -37,9 +40,27 @@ export const ContactsPage = () => {
           <Typography variant='h5'>+380 67 676 11 66 </Typography>
         </a>
       </Box>
+      <Box justifyContent='center' display='flex' mb={2}>
+        <Box m={1}>
+          <a href='https://www.instagram.com/the.bestauto/'>
+            <img alt='instagram' src={instagram} />
+          </a>
+        </Box>
+        <Box m={1}>
+          <a href='https://www.youtube.com/channel/UCmqZmHm0ZXpW3TVjyyLEJ9w'>
+            <img alt='youtube' src={youtube} />
+          </a>
+        </Box>
+        <Box m={1}>
+          <a href='https://invite.viber.com/?g2=AQAakSsuDgGu0Uq6s2EQ9D3DZCdPy26RvFwbhsEG3ulwI%2FwFYZX6y86USCsprzGN&lang=en'>
+            <img alt='viber' src={viber} />
+          </a>
+        </Box>
+      </Box>
       <Box textAlign='center' my={2}>
         <Typography variant='h4'>Завiтайте в наш офiс</Typography>
       </Box>
+
       <Grid container spacing={1}>
         <Grid item xs={12} md={4} style={{ textAlign: 'center' }}>
           <iframe
@@ -47,7 +68,7 @@ export const ContactsPage = () => {
             src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2541.9048296466485!2d30.47030211573041!3d50.424244779471714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40d4cec7b4e58fd7%3A0x60ed58f70e0e8e2c!2z0YPQuy4g0J_RgNC10L7QsdGA0LDQttC10L3RgdC60LDRjywgONCRLCDQmtC40LXQsiwgMDMwMzc!5e0!3m2!1sru!2sua!4v1614180506230!5m2!1sru!2sua'
             allowFullScreen={true}
             height='300'
-            width='400'
+            width='300'
             style={{ border: 0 }}
             loading='lazy'></iframe>
         </Grid>
@@ -58,7 +79,7 @@ export const ContactsPage = () => {
             allowFullScreen={true}
             style={{ border: 0 }}
             height='300'
-            width='400'
+            width='300'
             loading='lazy'></iframe>
         </Grid>
         <Grid item xs={12} md={4} style={{ textAlign: 'center' }}>
@@ -68,7 +89,7 @@ export const ContactsPage = () => {
             allowFullScreen={true}
             style={{ border: 0 }}
             height='300'
-            width='400'
+            width='300'
             loading='lazy'></iframe>
         </Grid>
       </Grid>

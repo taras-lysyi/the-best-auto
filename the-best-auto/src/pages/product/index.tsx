@@ -1,11 +1,18 @@
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
-import { getProduct, setInitializeProduct } from 'features/product/slice'
+import { getProduct, setInitializeProduct, resetProduct } from 'features/product/slice'
 import { selectProductData, selectProductInitialized, selectProductStatus } from 'features/product/selectors'
 import { getCategories } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
 import { selectBrands, selectFeatures } from 'features/catalog/features/filter/selectors'
-import { getBrands, BrandsResponseI, getFeatures } from 'features/catalog/features/filter/slice'
+import {
+  getBrands,
+  BrandsResponseI,
+  getFeatures,
+  FeaturesResponseI,
+  FeaturesValueResponseI,
+} from 'features/catalog/features/filter/slice'
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { SkeletonLoader } from 'shared/molecules/index'
@@ -47,7 +54,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
     ul: {
       listStyleType: 'circle',
-      display: 'flex',
     },
     list: {
       marginRight: theme.spacing(1),
@@ -56,6 +62,10 @@ const useStyles = makeStyles((theme: Theme) =>
         color: theme.palette.secondary.main,
       },
       listStylePosition: 'inside',
+    },
+    link: {
+      textDecoration: 'none',
+      color: 'inherit',
     },
   }),
 )
@@ -87,48 +97,77 @@ export const ProductPage = () => {
       return brand[0].name
     }
   }
-  if (!initialized && status === null) {
-    Promise.all([
-      dispatch(getCategories()),
-      dispatch(getProduct([productId])),
-      dispatch(getBrands()),
-      dispatch(getFeatures()),
-    ]).then(() => {
-      dispatch(setInitializeProduct())
-    })
+  useEffect(() => {
+    return () => {
+      dispatch(resetProduct())
+    }
+  }, [])
+  useEffect(() => {
+    if (!initialized && status === null) {
+      Promise.all([
+        dispatch(getCategories()),
+        dispatch(getProduct([productId])),
+        dispatch(getBrands()),
+        dispatch(getFeatures()),
+      ]).then(() => {
+        dispatch(setInitializeProduct())
+      })
+    }
+  }, [initialized, status, dispatch, productId])
+
+  interface SortedFeaturesWithValuesI {
+    feature: FeaturesResponseI
+    featuresValueItems: FeaturesValueResponseI[]
   }
+
+  let sortedFeaturesWithValues = () => {
+    let sorted: SortedFeaturesWithValuesI[] = []
+    features.featuresItems.forEach(feature => {
+      sorted = [
+        ...sorted,
+        {
+          feature,
+          featuresValueItems: productData[0].feature.filter(item => feature.feature_id === item.feature_id),
+        },
+      ]
+    })
+    return sorted
+  }
+
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-  console.log('hi')
+  debugger
   return (
     <>
       {!initialized ? (
         <SkeletonLoader />
       ) : (
         <>
-          <Box mb={2} display='flex' justifyContent='space-between'>
-            <Typography className={classes.typography} variant='h4'>
-              {productData[0].title}
-            </Typography>
-            <Paper>
-              <Box display='flex' justifyContent='space-between' alignItems='center' p={1}>
-                <Typography className={classes.code}>Код авто:</Typography>
-                <Typography>{productData[0].product_code}</Typography>
-              </Box>
-            </Paper>
-          </Box>
+          {productData[0].product_code !== '' && productData[0].product_code !== '0' && (
+            <Box mb={2} display='flex' justifyContent='space-between'>
+              <Typography className={classes.typography} variant={matches ? 'h4' : 'h5'}>
+                {productData[0].title}
+              </Typography>
+              <Paper>
+                <Box display='flex' justifyContent='space-between' alignItems='center' p={1}>
+                  <Typography className={classes.code}>Код авто:</Typography>
+                  <Typography>{productData[0].product_code}</Typography>
+                </Box>
+              </Paper>
+            </Box>
+          )}
 
           <Grid container spacing={2}>
             <Grid className={classes.marginZeroAuto} item xs={12} sm={10} md={6}>
               <Paper>
-                <Carousel />
+                <Carousel productId={productId} photoIdsString={productData[0].images} />
               </Paper>
             </Grid>
             <Grid className={classes.marginZeroAuto} item xs={12} md={6}>
               <Paper>
                 <Box p={1}>
-                  <Typography variant='h5' className={classes.bold}>
+                  <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
                     {categoryName()}
                   </Typography>
                   <Box display='flex'>
@@ -156,11 +195,11 @@ export const ProductPage = () => {
               {productData[0].vin && (
                 <Paper className={classes.paper}>
                   <Box p={1} display='flex' alignItems='center'>
-                    <Typography variant='h5' className={classes.bold}>
+                    <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
                       VIN-код:
                     </Typography>
                     <Box className={classes.vin} p={1} ml={2}>
-                      <Typography variant='h5' color='secondary'>
+                      <Typography variant={matches ? 'h5' : 'h6'} color='secondary'>
                         {productData[0].vin}
                       </Typography>
                     </Box>
@@ -170,80 +209,68 @@ export const ProductPage = () => {
 
               <Paper className={classes.paper}>
                 <Box p={1}>
-                  <Typography variant='h5' className={classes.bold}>
+                  <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
                     Характеристика {productData[0].title}:
                   </Typography>
-                  <Box display='flex' justifyContent='space-between' className={classes.dotted}>
-                    <Box className={classes.feature} width={1 / 2}>
-                      <Typography variant='h6'>{productData[0].feature[0].feature_value}:</Typography>
-                    </Box>
-                    <Box width={1 / 2}>{/* <Typography variant='h6'>{productData[0].feature}</Typography> */}</Box>
-                  </Box>
-                  <Box display='flex' justifyContent='space-between' className={classes.dotted}>
-                    <Box className={classes.feature} width={1 / 2}>
-                      <Typography variant='h6'>Привiд:</Typography>
-                    </Box>
-                    <Box width={1 / 2}>
-                      <Typography variant='h6'>Повний</Typography>
-                    </Box>
-                  </Box>
-                  <Box display='flex' justifyContent='space-between' className={classes.dotted}>
-                    <Box className={classes.feature} width={1 / 2}>
-                      <Typography variant='h6'>Салон:</Typography>
-                    </Box>
-                    <Box width={1 / 2}>
-                      <Typography variant='h6'>Шкiряний</Typography>
-                    </Box>
-                  </Box>
+                  {sortedFeaturesWithValues()
+                    .filter(item => {
+                      return item.featuresValueItems.length === 1
+                    })
+                    .map(item => {
+                      return (
+                        <Box
+                          key={item.feature.feature_id}
+                          display='flex'
+                          justifyContent='space-between'
+                          className={classes.dotted}>
+                          <Box className={classes.feature} width={1 / 2}>
+                            <Typography variant='h6'>{item.feature.feature_name}:</Typography>
+                          </Box>
+                          <Box width={1 / 2}>
+                            <Typography variant='h6'>{item.featuresValueItems[0].feature_value}</Typography>
+                          </Box>
+                        </Box>
+                      )
+                    })}
                 </Box>
               </Paper>
-              <Paper className={classes.paper}>
-                <Box p={1}>
-                  <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
-                    Безпека:
-                  </Typography>
-                  <Box display='flex'>
-                    <ul className={classes.ul}>
-                      <li className={classes.list}>Item</li>
-                      <li className={classes.list}>Item</li>
-                    </ul>
+              {sortedFeaturesWithValues()
+                .filter(item => {
+                  return item.featuresValueItems.length > 1
+                })
+                .map(item => {
+                  return (
+                    <Paper className={classes.paper} key={item.feature.feature_id}>
+                      <Box p={1}>
+                        <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
+                          {item.feature.feature_name}:
+                        </Typography>
+                        <Box display='flex'>
+                          <ul className={classes.ul}>
+                            {item.featuresValueItems.map(featureValue => {
+                              return (
+                                <li key={featureValue.feature_value_id} className={classes.list}>
+                                  {featureValue.feature_value}{' '}
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        </Box>
+                      </Box>
+                    </Paper>
+                  )
+                })}
+              {productData[0].description.length !== 0 && (
+                <Paper className={classes.paper}>
+                  <Box p={1}>
+                    <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
+                      Опис {productData[0].title}:
+                    </Typography>
+                    <Typography variant='h6'>{productData[0].description}</Typography>
                   </Box>
-                </Box>
-              </Paper>
-              <Paper className={classes.paper}>
-                <Box p={1}>
-                  <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
-                    Комфорт:
-                  </Typography>
-                  <Box display='flex'>
-                    <ul className={classes.ul}>
-                      <li className={classes.list}>Item</li>
-                      <li className={classes.list}>Item</li>
-                    </ul>
-                  </Box>
-                </Box>
-              </Paper>
-              <Paper className={classes.paper}>
-                <Box p={1}>
-                  <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
-                    Мультимедiа:
-                  </Typography>
-                  <Box display='flex'>
-                    <ul className={classes.ul}>
-                      <li className={classes.list}>Item</li>
-                      <li className={classes.list}>Item</li>
-                    </ul>
-                  </Box>
-                </Box>
-              </Paper>
-              <Paper className={classes.paper}>
-                <Box p={1}>
-                  <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
-                    Опис {productData[0].title}:
-                  </Typography>
-                  <Typography variant='h6'>{productData[0].description}</Typography>
-                </Box>
-              </Paper>
+                </Paper>
+              )}
+
               <Paper className={classes.paper}>
                 <Box p={1} display='flex' justifyContent='space-between' alignItems='center'>
                   <Box>
@@ -253,7 +280,9 @@ export const ProductPage = () => {
                     </Typography>
                   </Box>
                   <Button size='large' variant='outlined' color='secondary' startIcon={<CallIcon />}>
-                    <Typography variant={matches ? 'h4' : 'h5'}>Дзвiнок</Typography>
+                    <a href='tel:+380673142557' className={classes.link}>
+                      <Typography variant={matches ? 'h4' : 'h5'}>Дзвiнок</Typography>
+                    </a>
                   </Button>
                 </Box>
               </Paper>

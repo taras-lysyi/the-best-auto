@@ -2,7 +2,7 @@ import React from 'react'
 import { useKeenSlider } from 'keen-slider/react'
 import 'keen-slider/keen-slider.min.css'
 import './styles.css'
-export const Carousel = () => {
+export const Carousel = ({ productId, photoIdsString }: { productId: string; photoIdsString: string }) => {
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     initial: 0,
@@ -11,16 +11,19 @@ export const Carousel = () => {
     },
   })
 
+  let photoIdsArr = photoIdsString !== null ? photoIdsString.split(',') : []
+
   return (
     <>
       <div className='navigation-wrapper'>
         <div ref={sliderRef} className='keen-slider'>
-          <div className='keen-slider__slide'>
-            <img alt='auto' src='https://the-best-auto.com/assets/catalog/990/6.jpg' />
-          </div>
-          <div className='keen-slider__slide'>
-            <img alt='auto' src='https://the-best-auto.com/assets/catalog/1217/17.jpg' />
-          </div>
+          {photoIdsArr.map(photoId => {
+            return (
+              <div className='keen-slider__slide' key={photoId}>
+                <img alt='auto' src={`https://the-best-auto.com/assets/catalog/${productId}/${photoId}.jpg`} />
+              </div>
+            )
+          })}
         </div>
         {slider && (
           <>
