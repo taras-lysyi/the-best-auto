@@ -1,9 +1,7 @@
-import { SearchPage } from './search'
 import { HomePage } from './home'
 import { CatalogPage } from './catalog'
 import { ContactsPage } from './contacts'
 import { ProductPage } from './product/'
-import { AccountPage } from './account'
 
 export const routes = [
   {
@@ -21,19 +19,10 @@ export const routes = [
     exact: false,
     component: CatalogPage,
   },
-  {
-    path: '/search',
-    exact: true,
-    component: SearchPage,
-  },
+
   {
     path: '/product/:productId?',
     exact: true,
     component: ProductPage,
-  },
-  {
-    path: '/account',
-    exact: true,
-    component: AccountPage,
   },
 ]
