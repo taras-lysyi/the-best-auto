@@ -7,15 +7,13 @@ import Slider from '@material-ui/core/Slider'
 interface FilterSliderProps {
   min: number
   max: number
+  onChange: ((event: React.ChangeEvent<{}>, value: number | number[]) => void) | undefined
   onChangeCommitedAction: (payload: number | number[]) => any
+  value: number[]
 }
 
-export const FilterSlider = memo(({ min, max, onChangeCommitedAction }: FilterSliderProps) => {
-  const [value, setValue] = useState<number[]>([min, max])
+export const FilterSlider = memo(({ min, max, onChangeCommitedAction, onChange, value }: FilterSliderProps) => {
   const dispatch = useAppDispatch()
-  const handleChange = (event: any, newValue: number | number[]) => {
-    setValue(newValue as number[])
-  }
   const onChangeCommited = (event: any, newValue: number | number[]) => {
     dispatch(onChangeCommitedAction(newValue as number[]))
   }
@@ -32,7 +30,7 @@ export const FilterSlider = memo(({ min, max, onChangeCommitedAction }: FilterSl
           onChangeCommitted={onChangeCommited}
           min={min}
           max={max}
-          onChange={handleChange}
+          onChange={onChange}
           value={value[1] === 0 ? [min, max] : value}
           color='secondary'
           valueLabelDisplay='auto'

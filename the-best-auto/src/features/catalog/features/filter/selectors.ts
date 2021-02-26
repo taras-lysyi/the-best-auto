@@ -66,19 +66,25 @@ export const selectBrandsStatus = createSelector([getBrands], brands => {
   return brands.status
 })
 
+interface MatchBrandsWithItemsInCatI {
+  brand: BrandsResponseI
+  lengthInItemsByCat: number
+}
+
 export const selectMatchBrandsWithItemsInCat = createSelector(
   [getBrands, selectAllItemsInCat],
   (brands, allItemsInCat) => {
-    let matchBrandsWithItemsInCat: { brand: BrandsResponseI; lengthInItemsByCat: number }[] = []
-    brands.brandItems.forEach(item => {
+    let matchBrandsWithItemsInCat: MatchBrandsWithItemsInCatI[] = []
+
+    brands.brandItems.forEach(brand => {
       let lengthItemsInCategory = 0
       allItemsInCat.forEach(catalogItem => {
-        return item.brand_id === catalogItem.brand_id ? lengthItemsInCategory++ : null
+        return brand.brand_id === catalogItem.brand_id ? lengthItemsInCategory++ : null
       })
       matchBrandsWithItemsInCat = [
         ...matchBrandsWithItemsInCat,
         {
-          brand: item,
+          brand: brand,
           lengthInItemsByCat: lengthItemsInCategory,
         },
       ]
@@ -101,7 +107,11 @@ const getFeaturesValueItems = (state: RootState) => state.filter.featuresValue.f
 
 interface SortedFeaturesWithValuesI {
   feature: FeaturesResponseI
-  featuresValueItems: FeaturesValueResponseI[]
+  featuresValueItems: FeatureValueItemsWithLengthI[]
+}
+
+interface FeatureValueItemsWithLengthI {
+  featureValueItem: FeaturesValueResponseI
   lengthInItemsByCat: number
 }
 
@@ -109,29 +119,39 @@ export const selectSortedFeaturesWithValues = createSelector(
   [getFeaturesItems, getFeaturesValueItems, selectAllItemsInCat],
   (featuresItems, featuresValueItems, allItemsInCat) => {
     let sortedFeaturesWithValues: SortedFeaturesWithValuesI[] = []
+    let featureValueItemsWithLength: FeatureValueItemsWithLengthI[] = []
 
     featuresItems.forEach(feature => {
-      let lengthItemsInCategory = 0
-      featuresValueItems.forEach(featureValueItem => {
+      featuresValueItems.forEach(featureValue => {
+        let lengthFeatureValueItemsInCategory = 0
         allItemsInCat.forEach(catalogItem => {
-          return catalogItem.feature.filter(item => item.feature_value === featureValueItem.feature_value)
-            ? lengthItemsInCategory++
-            : null
+          catalogItem.feature.forEach(feature => {
+            return feature.feature_value_id === featureValue.feature_value_id
+              ? lengthFeatureValueItemsInCategory++
+              : null
+          })
         })
+        featureValueItemsWithLength = [
+          ...featureValueItemsWithLength,
+          {
+            featureValueItem: featureValue,
+            lengthInItemsByCat: lengthFeatureValueItemsInCategory,
+          },
+        ]
       })
 
       sortedFeaturesWithValues = [
         ...sortedFeaturesWithValues,
         {
           feature,
-          featuresValueItems: featuresValueItems
-            .filter(item => feature.feature_id === item.feature_id)
+          featuresValueItems: featureValueItemsWithLength
+            .filter(item => {
+              return item.lengthInItemsByCat !== 0
+            })
             .sort((a, b) => {
-              let x = a.feature_value.toLowerCase()
-              let y = b.feature_value.toLowerCase()
-              return x < y ? -1 : x > y ? 1 : 0
-            }),
-          lengthInItemsByCat: lengthItemsInCategory,
+              return (b.lengthInItemsByCat = a.lengthInItemsByCat)
+            })
+            .filter(item => feature.feature_id === item.featureValueItem.feature_id),
         },
       ]
     })

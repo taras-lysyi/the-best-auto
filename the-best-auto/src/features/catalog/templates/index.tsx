@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box'
 import IconButton from '@material-ui/core/IconButton'
 import Drawer from '@material-ui/core/Drawer'
 import Fab from '@material-ui/core/Fab'
+import Typography from '@material-ui/core/Typography'
 import { LoadingStatusT } from 'shared/types'
 import { SkeletonLoader } from 'shared/molecules'
 interface Props {
@@ -86,7 +87,11 @@ export const CatalogTemplate = memo(
                   <Grid item sm={12}>
                     <SkeletonLoader />
                   </Grid>
-                ) : catalogDataStatus === 'success' ? (
+                ) : catalogDataStatus === 'success' && cards.length === 0 ? (
+                  <Box textAlign='center'>
+                    <Typography variant='h5'>Авто в за данним запитом не знайдено</Typography>
+                  </Box>
+                ) : catalogDataStatus === 'success' && cards.length !== 0 ? (
                   cards.map(item => {
                     return (
                       <Grid item xs={10} sm={4} md={3}>

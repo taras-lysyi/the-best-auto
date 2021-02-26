@@ -78,30 +78,34 @@ export const ProductPage = () => {
   const categories = useTypedSelector(state => selectCategoriesData(state))
   const brands = useTypedSelector(state => selectBrands(state))
   const features = useTypedSelector(state => selectFeatures(state))
-  const categoryName = () => {
+  const categoryNameGetter = () => {
     let category: any = []
     if (initialized) {
       category = categories.filter(item => {
         return item.category_id === productData[0].category_id
       })
+      return category[0] ? category[0].name : undefined
     }
-    return category[0].name
   }
   debugger
-  const brandName = () => {
+  let categoryName = categoryNameGetter()
+  const brandNameGetter = () => {
+    console.log('func call')
     let brand: BrandsResponseI[] = []
     if (initialized) {
       brand = brands.filter(item => {
         return item.brand_id === productData[0].brand_id
       })
-      return brand[0].name
+      return brand[0] ? brand[0].name : undefined
     }
   }
+  let brandName = brandNameGetter()
   useEffect(() => {
     return () => {
       dispatch(resetProduct())
     }
-  }, [])
+  }, [dispatch])
+
   useEffect(() => {
     if (!initialized && status === null) {
       Promise.all([
@@ -168,13 +172,13 @@ export const ProductPage = () => {
               <Paper>
                 <Box p={1}>
                   <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
-                    {categoryName()}
+                    {categoryName}
                   </Typography>
                   <Box display='flex'>
                     <Typography variant='h6' className={classes.feature}>
                       Марка:
                     </Typography>
-                    <Typography variant='h6'>{brandName()}</Typography>
+                    <Typography variant='h6'>{brandName}</Typography>
                   </Box>
                   <Box display='flex'>
                     <Typography variant='h6' className={classes.feature}>

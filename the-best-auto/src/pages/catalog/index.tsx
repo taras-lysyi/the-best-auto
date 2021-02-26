@@ -18,7 +18,6 @@ export const CatalogPage = () => {
   interface ParamTypes {
     categoryLink: string
   }
-  debugger
   const itemsByFilter = useTypedSelector(state => selectItemsByFilter(state))
   const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const cards = useMemo(() => {
@@ -26,7 +25,7 @@ export const CatalogPage = () => {
       return itemsByFilter.map(item => {
         let firstImageSrc = item.images !== null ? item.images.split(',')[0] : ''
         return (
-          <Link to={`/product/${item.item_id}`}>
+          <Link style={{ textDecoration: 'none' }} to={`/product/${item.item_id}`}>
             <CatalogCard
               item_id={item.item_id}
               title={item.title}

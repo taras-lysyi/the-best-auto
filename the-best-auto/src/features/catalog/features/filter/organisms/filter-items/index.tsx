@@ -1,4 +1,4 @@
-import React, { useEffect, FC, useCallback } from 'react'
+import React, { useEffect, FC, useCallback, useState } from 'react'
 import { useParams, useHistory } from 'react-router'
 import qs from 'qs'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
@@ -69,6 +69,16 @@ export const FilterItems: FC = () => {
   const featuresValueStatus = useTypedSelector(state => selectFeaturesValueStatus(state))
   const sortedFeaturesWithValues = useTypedSelector(state => selectSortedFeaturesWithValues(state))
 
+  const [priceValue, setPriceValue] = useState<number[]>([price.min, price.max])
+  const priceHandleChange = (event: any, newValue: number | number[]) => {
+    setPriceValue(newValue as number[])
+  }
+
+  const [mileageValue, setMileageValue] = useState<number[]>([mileage.min, mileage.max])
+  const mileageHandleChange = (event: any, newValue: number | number[]) => {
+    setMileageValue(newValue as number[])
+  }
+
   useEffect(() => {
     if (!filterIsInitialized) {
       let { popular, isnew, sale, priceStart, priceEnd, mileageStart, mileageEnd, brand } = qs.parse(
@@ -85,11 +95,11 @@ export const FilterItems: FC = () => {
       }
       if (priceStart || priceEnd) {
         dispatch(setStartEndPrice([Number(priceStart), Number(priceEnd)]))
-        // setPriceValue([Number(priceStart), Number(priceEnd)])
+        setPriceValue([Number(priceStart), Number(priceEnd)])
       }
       if (mileageStart || mileageEnd) {
         dispatch(setStartEndMileage([Number(mileageStart), Number(mileageEnd)]))
-        // setMileageValue([Number(mileageStart), Number(mileageEnd)])
+        setMileageValue([Number(mileageStart), Number(mileageEnd)])
       }
 
       if (typeof brand === 'object') {
@@ -224,7 +234,15 @@ export const FilterItems: FC = () => {
         <FilterBoxTemplate
           status='success'
           title='Ціна ($)'
-          children={<FilterSlider min={price.min} max={price.max} onChangeCommitedAction={setStartEndPrice} />}
+          children={
+            <FilterSlider
+              min={price.min}
+              max={price.max}
+              onChangeCommitedAction={setStartEndPrice}
+              onChange={priceHandleChange}
+              value={priceValue}
+            />
+          }
         />
       )}
       {!initializedAllItemsInCat ? (
@@ -233,7 +251,15 @@ export const FilterItems: FC = () => {
         <FilterBoxTemplate
           status='success'
           title='Пробiг (км)'
-          children={<FilterSlider min={mileage.min} max={mileage.max} onChangeCommitedAction={setStartEndMileage} />}
+          children={
+            <FilterSlider
+              min={mileage.min}
+              max={mileage.max}
+              onChangeCommitedAction={setStartEndMileage}
+              onChange={mileageHandleChange}
+              value={mileageValue}
+            />
+          }
         />
       )}
 
@@ -246,6 +272,7 @@ export const FilterItems: FC = () => {
           children={matchBrandsWithItemsInCat.map(item => {
             return (
               <CheckboxControl
+                key={item.brand.brand_id}
                 checked={brandsCheckedHandler(item.brand.brand_id)}
                 onChangeAction={setBrands}
                 value={item.brand.brand_id}
@@ -270,9 +297,12 @@ export const FilterItems: FC = () => {
               return (
                 <>
                   <CheckboxControlFeatures
-                    checked={featuresValueCheckedHandler(item.feature.feature_id, featureValue.feature_value)}
-                    label={`${featureValue.feature_value} (${item.lengthInItemsByCat})`}
-                    value={featureValue.feature_value}
+                    checked={featuresValueCheckedHandler(
+                      item.feature.feature_id,
+                      featureValue.featureValueItem.feature_value,
+                    )}
+                    label={`${featureValue.featureValueItem.feature_value} (${featureValue.lengthInItemsByCat})`}
+                    value={featureValue.featureValueItem.feature_value}
                     featureId={item.feature.feature_id}
                     onChangeAction={setSelectedFeatures}
                   />
