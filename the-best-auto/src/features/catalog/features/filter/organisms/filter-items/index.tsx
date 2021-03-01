@@ -2,7 +2,12 @@ import React, { useEffect, FC, useCallback, useState } from 'react'
 import { useParams, useHistory } from 'react-router'
 import qs from 'qs'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
-import { selectInitializedAllItemsInCat, selectPrice, selectMileage } from 'features/catalog/selectors'
+import {
+  selectInitializedAllItemsInCat,
+  selectPrice,
+  selectMileage,
+  selectCatalogDataStatus,
+} from 'features/catalog/selectors'
 import {
   selectFilterIsInitialized,
   selectFiltersBody,
@@ -19,6 +24,7 @@ import {
   selectFeaturesStatus,
   selectFeaturesValueStatus,
   selectSortedFeaturesWithValues,
+  selectBrands,
 } from '../../selectors'
 import {
   selectSelectedCategoryId,
@@ -41,16 +47,19 @@ import {
 import { getByCategoryIds, CategoryIdsBodyDataI } from 'features/catalog/slice'
 import { setSelectedCategory } from 'features/catalog/features/categories/slice'
 import { FilterBoxTemplate } from '../../templates'
-import { Proposition, FilterSlider, CheckboxControl, CheckboxControlFeatures } from '../../molecules'
+import { Proposition, FilterSlider, CheckboxControl, CheckboxControlFeatures, FilterSelect } from '../../molecules'
+import Typography from '@material-ui/core/Typography'
 
 export const FilterItems: FC = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
   const { categoryLink } = useParams<{ categoryLink: string }>()
   const filterIsInitialized = useTypedSelector(state => selectFilterIsInitialized(state))
+  const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const initializedAllItemsInCat = useTypedSelector(state => selectInitializedAllItemsInCat(state))
   const price = useTypedSelector(state => selectPrice(state))
   const mileage = useTypedSelector(state => selectMileage(state))
+  const brands = useTypedSelector(state => selectBrands(state))
   const filtersBody = useTypedSelector(state => selectFiltersBody(state))
   const brandsBody = useTypedSelector(state => selectBrandsBody(state))
   const popular = useTypedSelector(state => selectPopular(state))
@@ -161,6 +170,7 @@ export const FilterItems: FC = () => {
   ])
 
   useEffect(() => {
+    debugger
     if (selectedCategoryId.length === 0 && categoriesData.length !== 0 && categoryLink) {
       let categoryMatchUrl = categoriesData.filter(item => {
         return item.link === categoryLink
@@ -212,6 +222,25 @@ export const FilterItems: FC = () => {
 
   return (
     <>
+      <FilterBoxTemplate status='success' title='Ви вибрали:'>
+        {brandsBody.map(bodyItem => {
+          return (
+            <FilterSelect
+              onClickAction={setBrands}
+              name='Бренд'
+              stringValue={
+                brandsBody.length !== 0 && brands.length !== 0
+                  ? brands.filter(item => {
+                      return item.brand_id === bodyItem
+                    })[0].name
+                  : undefined
+              }
+              value={bodyItem}
+            />
+          )
+        })}
+      </FilterBoxTemplate>
+      <Typography>Пiдiбрано авто</Typography>
       <Proposition
         checked={Boolean(popular)}
         onChange={useCallback(() => dispatch(setPopular(popular)), [popular, dispatch])}

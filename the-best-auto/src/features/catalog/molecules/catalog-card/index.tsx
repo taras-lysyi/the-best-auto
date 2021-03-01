@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardActionArea from '@material-ui/core/CardActionArea'
 import CardContent from '@material-ui/core/CardContent'
-import CardMedia from '@material-ui/core/CardMedia'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
@@ -40,10 +39,11 @@ export const CatalogCard = ({ title, firstImageSrc, mileage, year, price, offer_
   return (
     <Card>
       <CardActionArea>
-        <CardMedia
+        <img
+          loading='lazy'
+          alt='auto'
           className={classes.media}
-          image={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
-          title='Contemplative Reptile'
+          src={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
         />
         <CardContent>
           <Typography gutterBottom variant='subtitle1' className={classes.title}>

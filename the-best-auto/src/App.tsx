@@ -6,7 +6,6 @@ import { Pages } from 'pages'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
 import { useMediaQuery } from '@material-ui/core'
-
 function App() {
   const matches = useMediaQuery(theme.breakpoints.up('md'))
   const usePage = () => {
@@ -27,10 +26,6 @@ function App() {
       {
         path: 'contacts',
         label: 'Контакти',
-      },
-      {
-        path: 'blog',
-        label: 'Блог',
       },
     ]
   }, [])

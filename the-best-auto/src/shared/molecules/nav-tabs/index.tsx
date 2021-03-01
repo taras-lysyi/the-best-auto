@@ -40,10 +40,6 @@ export const NavTabs = memo(({ drawerHandler, page, matches, selectedTab, tabHan
         path: 'contacts',
         label: 'Контакти',
       },
-      {
-        path: 'blog',
-        label: 'Блог',
-      },
     ]
   }, [])
 

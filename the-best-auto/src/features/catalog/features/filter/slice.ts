@@ -157,7 +157,6 @@ const filterSlice = createSlice({
       }
     },
     setBrands: (state, action: PayloadAction<number[] | number>) => {
-      debugger
       if (typeof action.payload === 'object') {
         // вызываеться диспач с данными которые приходят из урла
         state.filtersBody.brand = [...(action.payload as number[])]
