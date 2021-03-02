@@ -24,3 +24,7 @@ export const selectPrice = createSelector([getCatalog], catalog => {
 export const selectMileage = createSelector([getCatalog], catalog => {
   return catalog.mileage
 })
+
+export const selectTotalItemsByCat = createSelector([getCatalog], catalog => {
+  return catalog.catalogDataByCategoryIds.catalogData.total
+})

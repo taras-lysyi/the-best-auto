@@ -12,7 +12,6 @@ import App from './App'
 
 axios.defaults.baseURL = 'https://the-best-auto.com:4206'
 axios.defaults.headers['Content-Type'] = 'application/json'
-
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

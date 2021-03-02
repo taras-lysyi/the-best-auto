@@ -7,6 +7,7 @@ import {
   selectPrice,
   selectMileage,
   selectCatalogDataStatus,
+  selectTotalItemsByCat,
 } from 'features/catalog/selectors'
 import {
   selectFilterIsInitialized,
@@ -49,6 +50,7 @@ import { setSelectedCategory } from 'features/catalog/features/categories/slice'
 import { FilterBoxTemplate } from '../../templates'
 import { Proposition, FilterSlider, CheckboxControl, CheckboxControlFeatures, FilterSelect } from '../../molecules'
 import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box'
 
 export const FilterItems: FC = () => {
   const dispatch = useAppDispatch()
@@ -57,6 +59,7 @@ export const FilterItems: FC = () => {
   const filterIsInitialized = useTypedSelector(state => selectFilterIsInitialized(state))
   const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const initializedAllItemsInCat = useTypedSelector(state => selectInitializedAllItemsInCat(state))
+  const totalItemsByCat = useTypedSelector(state => selectTotalItemsByCat(state))
   const price = useTypedSelector(state => selectPrice(state))
   const mileage = useTypedSelector(state => selectMileage(state))
   const brands = useTypedSelector(state => selectBrands(state))
@@ -222,25 +225,47 @@ export const FilterItems: FC = () => {
 
   return (
     <>
-      <FilterBoxTemplate status='success' title='Ви вибрали:'>
+      <Box>
+        <Typography>Ви вибрали:</Typography>
         {brandsBody.map(bodyItem => {
           return (
             <FilterSelect
-              onClickAction={setBrands}
+              key={bodyItem}
+              onClick={() => dispatch(setBrands(bodyItem))}
               name='Бренд'
-              stringValue={
+              value={
                 brandsBody.length !== 0 && brands.length !== 0
                   ? brands.filter(item => {
                       return item.brand_id === bodyItem
                     })[0].name
                   : undefined
               }
-              value={bodyItem}
             />
           )
         })}
-      </FilterBoxTemplate>
-      <Typography>Пiдiбрано авто</Typography>
+        {sortedFeaturesWithValues.map(bodyItem => {
+          return bodyItem.featuresValueItems.map(featureValue => {
+            return (
+              featuresValueCheckedHandler(bodyItem.feature.feature_id, featureValue.featureValueItem.feature_value) && (
+                <FilterSelect
+                  key={featureValue.featureValueItem.feature_id}
+                  onClick={() =>
+                    dispatch(
+                      setSelectedFeatures({
+                        featureId: bodyItem.feature.feature_id,
+                        values: featureValue.featureValueItem.feature_value,
+                      }),
+                    )
+                  }
+                  name={bodyItem.feature.feature_name}
+                  value={featureValue.featureValueItem.feature_value}
+                />
+              )
+            )
+          })
+        })}
+        <Typography>Пiдiбрано авто:{totalItemsByCat}</Typography>
+      </Box>
       <Proposition
         checked={Boolean(popular)}
         onChange={useCallback(() => dispatch(setPopular(popular)), [popular, dispatch])}
@@ -321,11 +346,11 @@ export const FilterItems: FC = () => {
           <FilterBoxTemplate
             status='success'
             title={item.feature.feature_name}
-            key={item.feature.feature_id}
             children={item.featuresValueItems.map(featureValue => {
               return (
                 <>
                   <CheckboxControlFeatures
+                    key={item.feature.feature_id}
                     checked={featuresValueCheckedHandler(
                       item.feature.feature_id,
                       featureValue.featureValueItem.feature_value,

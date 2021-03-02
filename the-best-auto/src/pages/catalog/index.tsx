@@ -21,6 +21,7 @@ export const CatalogPage = () => {
   const itemsByFilter = useTypedSelector(state => selectItemsByFilter(state))
   const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const cards = useMemo(() => {
+    console.log('rerender')
     if (catalogDataStatus === 'success') {
       return itemsByFilter.map(item => {
         let firstImageSrc = item.images !== null ? item.images.split(',')[0] : ''
