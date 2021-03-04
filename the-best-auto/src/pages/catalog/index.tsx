@@ -1,10 +1,8 @@
 import { useMemo, useEffect } from 'react'
 import { Redirect, useParams, Link, useHistory } from 'react-router-dom'
 import qs from 'qs'
-import TuneIcon from '@material-ui/icons/Tune'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
-import CheckIcon from '@material-ui/icons/Check'
 import { CatalogTemplate } from 'features/catalog/templates'
 import { CatalogCard } from 'features/catalog/molecules'
 import { FilterItems } from 'features/catalog/features/filter/organisms'
@@ -44,7 +42,6 @@ export const CatalogPage = () => {
   const popular = useTypedSelector(state => selectPopular(state))
   const isNew = useTypedSelector(state => selectIsNew(state))
   const sale = useTypedSelector(state => selectSale(state))
-
   const categoriesData = useTypedSelector(state => selectCategoriesData(state))
   const { categoryLink } = useParams<ParamTypes>()
   interface ParamTypes {
@@ -53,7 +50,6 @@ export const CatalogPage = () => {
   const itemsByFilter = useTypedSelector(state => selectItemsByFilter(state))
   const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const cards = useMemo(() => {
-    console.log('rerender')
     if (catalogDataStatus === 'success') {
       return itemsByFilter.map(item => {
         let firstImageSrc = item.images !== null ? item.images.split(',')[0] : ''
@@ -78,10 +74,8 @@ export const CatalogPage = () => {
     return []
   }, [itemsByFilter, catalogDataStatus])
   const filter = useMemo(() => <FilterItems />, [])
-  const settingButton = useMemo(() => <TuneIcon />, [])
   const closeIcon = useMemo(() => <CloseIcon />, [])
   const filterTitle = useMemo(() => <Typography variant='h6'>Фільтри</Typography>, [])
-  const checkButton = useMemo(() => <CheckIcon />, [])
   const categories = useMemo(() => <Categories categoryLink={categoryLink} />, [categoryLink])
 
   useEffect(() => {
@@ -159,12 +153,10 @@ export const CatalogPage = () => {
       ) : (
         <CatalogTemplate
           filter={filter}
-          settingButton={settingButton}
           cards={cards}
           catalogDataStatus={catalogDataStatus}
           closeIcon={closeIcon}
           filterTitle={filterTitle}
-          checkButton={checkButton}
           categories={categories}
         />
       )}

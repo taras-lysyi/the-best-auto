@@ -1,48 +1,23 @@
 import { useState } from 'react'
 import Grid from '@material-ui/core/Grid'
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Box from '@material-ui/core/Box'
 import IconButton from '@material-ui/core/IconButton'
-import Drawer from '@material-ui/core/Drawer'
-import Fab from '@material-ui/core/Fab'
+import Drawer from 'rc-drawer'
+import './rc-drawer.css'
 import Typography from '@material-ui/core/Typography'
 import { LoadingStatusT } from 'shared/types'
 import { SkeletonLoader } from 'shared/molecules'
 interface Props {
   filter: JSX.Element
-  settingButton: JSX.Element
   cards: JSX.Element[]
-  checkButton: JSX.Element
   categories: JSX.Element
   closeIcon: JSX.Element
   filterTitle: JSX.Element
   catalogDataStatus: LoadingStatusT
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    fixedBottomRightMobile: {
-      position: 'fixed',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-      zIndex: 2,
-    },
-  }),
-)
-
-export const CatalogTemplate = ({
-  filter,
-  settingButton,
-  cards,
-  checkButton,
-  categories,
-  closeIcon,
-  filterTitle,
-  catalogDataStatus,
-}: Props) => {
-  const classes = useStyles()
-
+export const CatalogTemplate = ({ filter, cards, categories, closeIcon, filterTitle, catalogDataStatus }: Props) => {
   const [drawer, setDrawer] = useState(false)
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -52,33 +27,20 @@ export const CatalogTemplate = ({
     ) {
       return
     }
-    setDrawer(open)
+    setDrawer(!open)
   }
   return (
     <>
-      <Box display={{ md: 'none' }}>
-        <Drawer anchor='right' open={drawer} onClose={toggleDrawer(false)}>
-          <IconButton onClick={() => setDrawer(false)}>{closeIcon}</IconButton>
-          <Paper>
-            <Box padding={1}>{categories}</Box>
-            <Box textAlign='center'>{filterTitle}</Box>
-            <Box padding={1}>{filter}</Box>
-          </Paper>
-        </Drawer>
-        {drawer && (
-          <Box className={classes.fixedBottomRightMobile} zIndex={100}>
-            <Fab color='secondary'>{checkButton}</Fab>
+      <Drawer open={drawer} placement='right' onHandleClick={toggleDrawer(drawer)} onClose={toggleDrawer(drawer)}>
+        <Box p={2}>
+          <Box textAlign='center'>
+            <IconButton onClick={() => setDrawer(false)}>{closeIcon}</IconButton>
           </Box>
-        )}
-        {!drawer ? (
-          <Box className={classes.fixedBottomRightMobile}>
-            <Fab color='secondary' onClick={toggleDrawer(true)}>
-              {settingButton}
-            </Fab>
-          </Box>
-        ) : null}
-      </Box>
-
+          <Box padding={1}>{categories}</Box>
+          <Box textAlign='center'>{filterTitle}</Box>
+          <Box padding={1}>{filter}</Box>
+        </Box>
+      </Drawer>
       <Grid container spacing={2}>
         <Grid component={Box} display={{ xs: 'none', md: 'block' }} item md={3}>
           <Paper>
