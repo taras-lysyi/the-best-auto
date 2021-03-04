@@ -3,6 +3,7 @@ import { useAppDispatch, useTypedSelector } from 'configureStore'
 import { CategoryItem } from '../../molecules'
 import { resetFilter } from 'features/catalog/features/filter/slice'
 import { getCategories, setInitializeCategories, setSelectedCategory } from '../../slice'
+import { setInitializeAllItemsInCat } from 'features/catalog/slice'
 import { CategoryBoxTemplate } from '../../templates'
 
 interface Props {
@@ -14,9 +15,7 @@ export const Categories = ({ categoryLink }: Props) => {
   const category = useTypedSelector(state => state.category)
   useEffect(() => {
     if (!category.initialized && category.status !== 'loading') {
-      Promise.all([dispatch(getCategories())]).then(() => {
-        dispatch(setInitializeCategories(true))
-      })
+      Promise.all([dispatch(getCategories()), dispatch(setInitializeCategories(true))])
     }
   }, [dispatch, category.initialized, category.status])
 
@@ -25,6 +24,7 @@ export const Categories = ({ categoryLink }: Props) => {
       <CategoryItem
         onClick={() => {
           dispatch(resetFilter({}))
+          dispatch(setInitializeAllItemsInCat(false))
           dispatch(setSelectedCategory({ selectedCategoryId: [item.category_id], selectedCategoryLink: item.link }))
         }}
         currentLink={categoryLink}

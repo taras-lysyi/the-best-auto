@@ -27,9 +27,9 @@ interface Product {
   active: number
   sort: number
   available: number
-  popular: number
-  new: number
-  sale: number
+  popular: 0 | 1
+  new: 0 | 1
+  sale: 0 | 1
   sold: number
   images: string
   feature: FeaturesValueResponseI[]

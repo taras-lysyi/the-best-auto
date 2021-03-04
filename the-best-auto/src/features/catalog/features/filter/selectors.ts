@@ -135,7 +135,7 @@ export const selectSortedFeaturesWithValues = createSelector(
           ...featureValueItemsWithLength,
           {
             featureValueItem: featureValue,
-            lengthInItemsByCat: lengthFeatureValueItemsInCategory
+            lengthInItemsByCat: lengthFeatureValueItemsInCategory,
           },
         ]
       })
@@ -144,7 +144,8 @@ export const selectSortedFeaturesWithValues = createSelector(
         ...sortedFeaturesWithValues,
         {
           feature,
-          featuresValueItems: featureValueItemsWithLength.sort((a, b) => b.lengthInItemsByCat - a.lengthInItemsByCat)
+          featuresValueItems: featureValueItemsWithLength
+            .sort((a, b) => b.lengthInItemsByCat - a.lengthInItemsByCat)
             .filter(item => {
               return item.lengthInItemsByCat !== 0
             })

@@ -2,6 +2,7 @@ import { HomePage } from './home'
 import { CatalogPage } from './catalog'
 import { ContactsPage } from './contacts'
 import { ProductPage } from './product/'
+import { CrmPage } from './crm'
 
 export const routes = [
   {
@@ -24,5 +25,11 @@ export const routes = [
     path: '/product/:productId?',
     exact: true,
     component: ProductPage,
+  },
+
+  {
+    path: '/crm/',
+    exact: false,
+    component: CrmPage,
   },
 ]

@@ -131,7 +131,6 @@ const filterSlice = createSlice({
       state.initialized = action.payload
     },
     resetFilter: (state, action) => {
-      state.initialized = initialState.initialized
       state.filtersBody = initialState.filtersBody
       state.featuresFilterBody = initialState.featuresFilterBody
     },

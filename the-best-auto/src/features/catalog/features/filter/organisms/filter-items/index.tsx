@@ -1,24 +1,14 @@
 import React, { useEffect, FC, useCallback, useState } from 'react'
-import { useParams, useHistory } from 'react-router'
+import { useHistory } from 'react-router'
 import qs from 'qs'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
-import {
-  selectInitializedAllItemsInCat,
-  selectPrice,
-  selectMileage,
-  selectCatalogDataStatus,
-  selectTotalItemsByCat,
-} from 'features/catalog/selectors'
+import { selectInitializedAllItemsInCat, selectPrice, selectMileage } from 'features/catalog/selectors'
 import {
   selectFilterIsInitialized,
-  selectFiltersBody,
   selectBrandsBody,
   selectPopular,
   selectIsNew,
   selectSale,
-  selectPriceBody,
-  selectMileageBody,
-  selectFiltersBodyBrands,
   selectFeaturesFilterBody,
   selectBrandsStatus,
   selectMatchBrandsWithItemsInCat,
@@ -27,11 +17,6 @@ import {
   selectSortedFeaturesWithValues,
   selectBrands,
 } from '../../selectors'
-import {
-  selectSelectedCategoryId,
-  selectSelectedCategoryLink,
-  selectCategoriesData,
-} from 'features/catalog/features/categories/selectors'
 import {
   getBrands,
   getFeatures,
@@ -45,36 +30,23 @@ import {
   setStartEndMileage,
   setBrands,
 } from '../../slice'
-import { getByCategoryIds, CategoryIdsBodyDataI } from 'features/catalog/slice'
-import { setSelectedCategory } from 'features/catalog/features/categories/slice'
 import { FilterBoxTemplate } from '../../templates'
 import { Proposition, FilterSlider, CheckboxControl, CheckboxControlFeatures, FilterSelect } from '../../molecules'
-import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
 export const FilterItems: FC = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
-  const { categoryLink } = useParams<{ categoryLink: string }>()
   const filterIsInitialized = useTypedSelector(state => selectFilterIsInitialized(state))
-  const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const initializedAllItemsInCat = useTypedSelector(state => selectInitializedAllItemsInCat(state))
-  const totalItemsByCat = useTypedSelector(state => selectTotalItemsByCat(state))
   const price = useTypedSelector(state => selectPrice(state))
   const mileage = useTypedSelector(state => selectMileage(state))
   const brands = useTypedSelector(state => selectBrands(state))
-  const filtersBody = useTypedSelector(state => selectFiltersBody(state))
   const brandsBody = useTypedSelector(state => selectBrandsBody(state))
   const popular = useTypedSelector(state => selectPopular(state))
   const isNew = useTypedSelector(state => selectIsNew(state))
   const sale = useTypedSelector(state => selectSale(state))
-  const priceBody = useTypedSelector(state => selectPriceBody(state))
-  const mileageBody = useTypedSelector(state => selectMileageBody(state))
-  const filtersBodyBrands = useTypedSelector(state => selectFiltersBodyBrands(state))
   const filteredFeaturesFilterBody = useTypedSelector(state => selectFeaturesFilterBody(state))
-  const selectedCategoryId = useTypedSelector(state => selectSelectedCategoryId(state))
-  const selectedCategoryLink = useTypedSelector(state => selectSelectedCategoryLink(state))
-  const categoriesData = useTypedSelector(state => selectCategoriesData(state))
   const brandsStatus = useTypedSelector(state => selectBrandsStatus(state))
   const matchBrandsWithItemsInCat = useTypedSelector(state => selectMatchBrandsWithItemsInCat(state))
   const featuresStatus = useTypedSelector(state => selectFeaturesStatus(state))
@@ -137,74 +109,6 @@ export const FilterItems: FC = () => {
     }
   }, [dispatch, filterIsInitialized, history.location.search])
 
-  useEffect(() => {
-    if (filterIsInitialized) {
-      let stringBody = qs.stringify({
-        brand: filtersBodyBrands,
-        ...filteredFeaturesFilterBody,
-        priceStart: priceBody.start === 0 ? [] : priceBody.start,
-        priceEnd: priceBody.end === 0 ? [] : priceBody.end,
-        mileageStart: mileageBody.start === 0 ? [] : mileageBody.start,
-        mileageEnd: mileageBody.end === 0 ? [] : mileageBody.end,
-        popular: popular === 0 ? [] : popular,
-        isnew: isNew === 0 ? [] : isNew,
-        sale: sale === 0 ? [] : sale,
-      })
-
-      history.push({
-        pathname: `/catalog/${selectedCategoryLink}`,
-        search: stringBody,
-      })
-    } // Меняем ссылку когда фильтер меняеться
-  }, [
-    filteredFeaturesFilterBody,
-    filtersBodyBrands,
-    priceBody.start,
-    priceBody.end,
-    mileageBody.start,
-    mileageBody.end,
-    popular,
-    isNew,
-    sale,
-    filterIsInitialized,
-    history,
-    selectedCategoryLink,
-    dispatch,
-  ])
-
-  useEffect(() => {
-    debugger
-    if (selectedCategoryId.length === 0 && categoriesData.length !== 0 && categoryLink) {
-      let categoryMatchUrl = categoriesData.filter(item => {
-        return item.link === categoryLink
-      })
-      dispatch(
-        setSelectedCategory({
-          selectedCategoryId: [categoryMatchUrl[0].category_id],
-          selectedCategoryLink: categoryMatchUrl[0].link,
-        }),
-      )
-    } // если открыли /catalog/onroad то в стейт добавиться айди onroad категории
-    else if (selectedCategoryId.length > 0 && categoryLink === selectedCategoryLink) {
-      let data: CategoryIdsBodyDataI = {
-        categoryIds: selectedCategoryId,
-        filters: { ...filteredFeaturesFilterBody, ...filtersBody },
-        page: 1,
-        order: 'popular',
-      }
-      dispatch(getByCategoryIds(data))
-    }
-  }, [
-    selectedCategoryId,
-    selectedCategoryLink,
-    categoriesData,
-    categoryLink,
-    filtersBody,
-    filteredFeaturesFilterBody,
-    brandsBody,
-    dispatch,
-  ])
-
   const brandsCheckedHandler = useCallback(
     (id: number) => {
       return brandsBody.includes(id) ? true : undefined
@@ -226,7 +130,6 @@ export const FilterItems: FC = () => {
   return (
     <>
       <Box>
-        <Typography>Ви вибрали:</Typography>
         {brandsBody.map(bodyItem => {
           return (
             <FilterSelect
@@ -264,7 +167,6 @@ export const FilterItems: FC = () => {
             )
           })
         })}
-        <Typography>Пiдiбрано авто:{totalItemsByCat}</Typography>
       </Box>
       <Proposition
         checked={Boolean(popular)}
