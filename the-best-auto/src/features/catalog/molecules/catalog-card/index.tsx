@@ -69,7 +69,6 @@ export const CatalogCard = ({
             {sale ? <LocalOfferIcon fontSize='large' color='secondary' /> : null}
           </Box>
           <img
-            loading='lazy'
             alt='auto'
             className={classes.media}
             src={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}

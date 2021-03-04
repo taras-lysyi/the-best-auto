@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
+import useTheme from '@material-ui/core/styles/useTheme'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import Box from '@material-ui/core/Box'
@@ -18,6 +20,8 @@ interface Props {
 }
 
 export const CatalogTemplate = ({ filter, cards, categories, closeIcon, filterTitle, catalogDataStatus }: Props) => {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.down('md'))
   const [drawer, setDrawer] = useState(false)
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -31,16 +35,23 @@ export const CatalogTemplate = ({ filter, cards, categories, closeIcon, filterTi
   }
   return (
     <>
-      <Drawer open={drawer} placement='right' onHandleClick={toggleDrawer(drawer)} onClose={toggleDrawer(drawer)}>
-        <Box p={2}>
-          <Box textAlign='center'>
-            <IconButton onClick={() => setDrawer(false)}>{closeIcon}</IconButton>
+      {matches && (
+        <Drawer
+          open={drawer}
+          placement='right'
+          wrapperClassName='drawerWrapper'
+          onHandleClick={toggleDrawer(drawer)}
+          onClose={toggleDrawer(drawer)}>
+          <Box p={2}>
+            <Box textAlign='center'>
+              <IconButton onClick={() => setDrawer(false)}>{closeIcon}</IconButton>
+            </Box>
+            <Box padding={1}>{categories}</Box>
+            <Box textAlign='center'>{filterTitle}</Box>
+            <Box padding={1}>{filter}</Box>
           </Box>
-          <Box padding={1}>{categories}</Box>
-          <Box textAlign='center'>{filterTitle}</Box>
-          <Box padding={1}>{filter}</Box>
-        </Box>
-      </Drawer>
+        </Drawer>
+      )}
       <Grid container spacing={2}>
         <Grid component={Box} display={{ xs: 'none', md: 'block' }} item md={3}>
           <Paper>
@@ -54,9 +65,7 @@ export const CatalogTemplate = ({ filter, cards, categories, closeIcon, filterTi
           <Paper>
             <Grid container spacing={1} justify='center'>
               {catalogDataStatus === 'loading' ? (
-                <Grid item sm={12}>
-                  <SkeletonLoader />
-                </Grid>
+                <SkeletonLoader />
               ) : catalogDataStatus === 'success' && cards.length === 0 ? (
                 <Box textAlign='center'>
                   <Typography variant='h5'>Авто в за данним запитом не знайдено</Typography>

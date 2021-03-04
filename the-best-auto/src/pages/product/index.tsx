@@ -48,10 +48,16 @@ const useStyles = makeStyles((theme: Theme) =>
       border: `1px dashed ${theme.palette.primary.main}`,
       textTransform: 'uppercase',
     },
+    vinCode: {
+      wordBreak: 'break-all',
+    },
     dotted: {
       borderBottom: '1px dotted #ddd',
     },
 
+    description: {
+      wordBreak: 'break-word',
+    },
     ul: {
       listStyleType: 'circle',
     },
@@ -90,7 +96,6 @@ export const ProductPage = () => {
   debugger
   let categoryName = categoryNameGetter()
   const brandNameGetter = () => {
-    console.log('func call')
     let brand: BrandsResponseI[] = []
     if (initialized) {
       brand = brands.filter(item => {
@@ -203,7 +208,7 @@ export const ProductPage = () => {
                       VIN-код:
                     </Typography>
                     <Box className={classes.vin} p={1} ml={2}>
-                      <Typography variant={matches ? 'h5' : 'h6'} color='secondary'>
+                      <Typography className={classes.vinCode} variant={matches ? 'h5' : 'h6'} color='secondary'>
                         {productData[0].vin}
                       </Typography>
                     </Box>
@@ -270,7 +275,9 @@ export const ProductPage = () => {
                     <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
                       Опис {productData[0].title}:
                     </Typography>
-                    <Typography variant='h6'>{productData[0].description}</Typography>
+                    <Typography className={classes.description} variant='h6'>
+                      {productData[0].description}
+                    </Typography>
                   </Box>
                 </Paper>
               )}
