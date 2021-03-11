@@ -4,12 +4,13 @@ import catalogReducer from 'features/catalog/slice'
 import filterReducer from 'features/catalog/features/filter/slice'
 import categoryReducer from 'features/catalog/features/categories/slice'
 import productReducer from 'features/product/slice'
-
+import formDataReducer from 'features/crm/features/add/slice'
 const rootReducer = combineReducers({
   catalog: catalogReducer,
   filter: filterReducer,
   category: categoryReducer,
   product: productReducer,
+  formData: formDataReducer,
 })
 
 export const store = configureStore({

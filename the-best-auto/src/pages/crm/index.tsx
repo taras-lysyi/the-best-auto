@@ -1,41 +1,13 @@
 import { useState, useMemo, useCallback } from 'react'
 import { Route, Switch, useLocation, NavLink } from 'react-router-dom'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import EditIcon from '@material-ui/icons/Edit'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
 import { Add } from 'features/crm/features/add'
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    icon: {
-      cursor: 'pointer',
-      '&:hover': {
-        backgroundColor: theme.palette.secondary.main,
-      },
-    },
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 200,
-    },
-    chips: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      maxWidth: 900,
-    },
-    chip: {
-      margin: 2,
-    },
-  }),
-)
+import { Menu } from 'features/crm/features/menu'
 export const CrmPage = () => {
-  const classes = useStyles()
-
   const { pathname } = useLocation()
   const routes = useMemo(() => {
     return [
@@ -107,28 +79,7 @@ export const CrmPage = () => {
           </Box>
         </Route>
         <Route path='/crm/menu/list'>
-          <Box textAlign='center'>
-            <Typography variant='h4'>Редагування головного меню</Typography>
-          </Box>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='h5'>Категория</Typography>
-            <AddIcon className={classes.icon} />
-            <ArrowDownwardIcon className={classes.icon} />
-            <ArrowUpwardIcon className={classes.icon} />
-            <EditIcon className={classes.icon} />
-          </Box>
-          <Box display='flex' alignItems='center'>
-            <Typography variant='h5'>Категория</Typography>
-            <AddIcon className={classes.icon} />
-            <ArrowDownwardIcon className={classes.icon} />
-            <ArrowUpwardIcon className={classes.icon} />
-            <EditIcon className={classes.icon} />
-          </Box>
-          <Box mt={2}>
-            <Button variant='contained' size='large' color='primary'>
-              Додати категорiю
-            </Button>
-          </Box>
+          <Menu />
         </Route>
         <Route path='/crm/catalog/list'>
           <div>каталог</div>

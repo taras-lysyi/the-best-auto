@@ -14,7 +14,7 @@ import {
   selectMatchBrandsWithItemsInCat,
   selectFeaturesStatus,
   selectFeaturesValueStatus,
-  selectSortedFeaturesWithValues,
+  selectSortedFeaturesWithLengthValues,
   selectBrands,
 } from '../../selectors'
 import {
@@ -51,7 +51,7 @@ export const FilterItems: FC = () => {
   const matchBrandsWithItemsInCat = useTypedSelector(state => selectMatchBrandsWithItemsInCat(state))
   const featuresStatus = useTypedSelector(state => selectFeaturesStatus(state))
   const featuresValueStatus = useTypedSelector(state => selectFeaturesValueStatus(state))
-  const sortedFeaturesWithValues = useTypedSelector(state => selectSortedFeaturesWithValues(state))
+  const sortedFeaturesWithValues = useTypedSelector(state => selectSortedFeaturesWithLengthValues(state))
 
   const [priceValue, setPriceValue] = useState<number[]>([price.min, price.max])
   const priceHandleChange = (event: any, newValue: number | number[]) => {

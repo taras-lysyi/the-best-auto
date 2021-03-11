@@ -107,6 +107,27 @@ const getFeaturesValueItems = (state: RootState) => state.filter.featuresValue.f
 
 interface SortedFeaturesWithValuesI {
   feature: FeaturesResponseI
+  featuresValueItems: FeaturesValueResponseI[]
+}
+export const selectSortedFeaturesWithValues = createSelector(
+  [getFeaturesItems, getFeaturesValueItems],
+  (featuresItems, featureValueItems) => {
+    let sortedFeaturesWithValues: SortedFeaturesWithValuesI[] = []
+    featuresItems.forEach(feature => {
+      sortedFeaturesWithValues = [
+        ...sortedFeaturesWithValues,
+        {
+          feature,
+          featuresValueItems: featureValueItems.filter(item => feature.feature_id === item.feature_id),
+        },
+      ]
+    })
+    return sortedFeaturesWithValues
+  },
+)
+
+interface SortedFeaturesWithValuesLengthI {
+  feature: FeaturesResponseI
   featuresValueItems: FeatureValueItemsWithLengthI[]
 }
 
@@ -115,10 +136,10 @@ interface FeatureValueItemsWithLengthI {
   lengthInItemsByCat: number
 }
 
-export const selectSortedFeaturesWithValues = createSelector(
+export const selectSortedFeaturesWithLengthValues = createSelector(
   [getFeaturesItems, getFeaturesValueItems, selectAllItemsInCat],
   (featuresItems, featuresValueItems, allItemsInCat) => {
-    let sortedFeaturesWithValues: SortedFeaturesWithValuesI[] = []
+    let sortedFeaturesWithValues: SortedFeaturesWithValuesLengthI[] = []
     let featureValueItemsWithLength: FeatureValueItemsWithLengthI[] = []
 
     featuresItems.forEach(feature => {

@@ -93,7 +93,6 @@ export const ProductPage = () => {
       return category[0] ? category[0].name : undefined
     }
   }
-  debugger
   let categoryName = categoryNameGetter()
   const brandNameGetter = () => {
     let brand: BrandsResponseI[] = []
@@ -146,26 +145,25 @@ export const ProductPage = () => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-  debugger
   return (
     <>
       {!initialized ? (
         <SkeletonLoader />
       ) : (
         <>
-          {productData[0].product_code !== '' && productData[0].product_code !== '0' && (
-            <Box mb={2} display='flex' justifyContent='space-between'>
-              <Typography className={classes.typography} variant={matches ? 'h4' : 'h5'}>
-                {productData[0].title}
-              </Typography>
+          <Box mb={2} display='flex' justifyContent='space-between'>
+            <Typography className={classes.typography} variant={matches ? 'h4' : 'h5'}>
+              {productData[0].title}
+            </Typography>
+            {productData[0].product_code !== '' && productData[0].product_code !== '0' && (
               <Paper>
                 <Box display='flex' justifyContent='space-between' alignItems='center' p={1}>
                   <Typography className={classes.code}>Код авто:</Typography>
                   <Typography>{productData[0].product_code}</Typography>
                 </Box>
               </Paper>
-            </Box>
-          )}
+            )}
+          </Box>
 
           <Grid container spacing={2}>
             <Grid className={classes.marginZeroAuto} item xs={12} sm={10} md={6}>

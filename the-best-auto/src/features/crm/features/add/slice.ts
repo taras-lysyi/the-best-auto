@@ -28,7 +28,7 @@ interface AddFormDataI {
   sale: 0 | 1
   sold: 0 | 1
   active: 0 | 1
-  features: AddFeaturesI[]
+  feature: AddFeaturesI[]
   variant: []
 }
 
@@ -44,12 +44,14 @@ export const addCRM = createAsyncThunk('/catalog/byCategoryIds', async (data: Ad
 
 interface InitialStateI {
   status: LoadingStatusT
+  initialized: boolean
   addData: AddFormDataI
   item_id: null | number
 }
 
 const initialState: InitialStateI = {
   status: null,
+  initialized: false,
   addData: {
     itemId: null,
     dateActive: null,
@@ -73,7 +75,7 @@ const initialState: InitialStateI = {
     sale: 0,
     sold: 0,
     active: 0,
-    features: [],
+    feature: [],
     variant: [],
   },
   item_id: null,
@@ -84,6 +86,9 @@ const formDataSlice = createSlice({
   reducers: {
     setCategory: (state, action: PayloadAction<{ value: number }>) => {
       state.addData.categoryId = action.payload.value
+    },
+    setFormDataIsInitialized: (state, action: PayloadAction<{ value: boolean }>) => {
+      state.initialized = action.payload.value
     },
   },
   extraReducers: builder => {
@@ -99,6 +104,6 @@ const formDataSlice = createSlice({
     })
   },
 })
-export const { setCategory } = formDataSlice.actions
+export const { setCategory, setFormDataIsInitialized } = formDataSlice.actions
 
 export default formDataSlice.reducer
