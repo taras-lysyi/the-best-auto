@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
-interface AddFeaturesI {
+interface FormFeaturesI {
   featureId: number
   featureValueId: number
 }
-interface AddFormDataI {
+export interface FormDataI {
   itemId: null | number
   dateActive: null
   timeActive: null
@@ -28,11 +28,11 @@ interface AddFormDataI {
   sale: 0 | 1
   sold: 0 | 1
   active: 0 | 1
-  feature: AddFeaturesI[]
+  feature: FormFeaturesI[]
   variant: []
 }
 
-export const addCRM = createAsyncThunk('/catalog/byCategoryIds', async (data: AddFormDataI) => {
+export const addCRM = createAsyncThunk('/catalog/byCategoryIds', async (data: FormDataI) => {
   const response = await axios.post(
     `/product/addCRM`,
     JSON.stringify({
@@ -45,14 +45,14 @@ export const addCRM = createAsyncThunk('/catalog/byCategoryIds', async (data: Ad
 interface InitialStateI {
   status: LoadingStatusT
   initialized: boolean
-  addData: AddFormDataI
+  formData: FormDataI
   item_id: null | number
 }
 
 const initialState: InitialStateI = {
   status: null,
   initialized: false,
-  addData: {
+  formData: {
     itemId: null,
     dateActive: null,
     timeActive: null,
@@ -84,9 +84,6 @@ const formDataSlice = createSlice({
   name: 'formData',
   initialState,
   reducers: {
-    setCategory: (state, action: PayloadAction<{ value: number }>) => {
-      state.addData.categoryId = action.payload.value
-    },
     setFormDataIsInitialized: (state, action: PayloadAction<{ value: boolean }>) => {
       state.initialized = action.payload.value
     },
@@ -104,6 +101,6 @@ const formDataSlice = createSlice({
     })
   },
 })
-export const { setCategory, setFormDataIsInitialized } = formDataSlice.actions
+export const { setFormDataIsInitialized } = formDataSlice.actions
 
 export default formDataSlice.reducer

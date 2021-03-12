@@ -1,16 +1,17 @@
 import { useEffect } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
-import { selectFormDataIsInitialized } from './selectors'
+import { selectFormDataIsInitialized } from 'features/crm/features/catalog/selectors'
 import { getCategories } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
 import { getBrands, getFeatures, getFeaturesValue } from 'features/catalog/features/filter/slice'
 import { selectBrands, selectSortedFeaturesWithValues } from 'features/catalog/features/filter/selectors'
-import { setFormDataIsInitialized } from './slice'
+import { setFormDataIsInitialized } from 'features/crm/features/catalog/slice'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add'
+import EditIcon from '@material-ui/icons/Edit'
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -23,6 +24,7 @@ import Chip from '@material-ui/core/Chip'
 import Input from '@material-ui/core/Input'
 import ListItemText from '@material-ui/core/ListItemText'
 import { useForm, Controller } from 'react-hook-form'
+import { FileInput } from 'features/crm/features/catalog/organisms'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,8 +58,57 @@ const MenuProps = {
     },
   },
 }
-
+// response initial types
+interface ProductResponse {
+  item_id: null | number
+  user_id: number
+  date_active: null
+  time_active: null
+  title: string
+  images: string // "18, 19, 2, 48 ,"
+  category_id: null | number
+  brand_id: null | number
+  product_code: string
+  vin: string
+  mileage: number
+  ml: 0 | 1
+  year: number
+  price: number
+  offer_price: null | number
+  available: 0 | 1
+  sort: 0 | 1
+  description: string
+  note: string | []
+  popular: 0 | 1
+  new: 0 | 1
+  sale: 0 | 1
+  sold: 0 | 1
+  active: 0 | 1
+  feature: [
+    {
+      feature_id: number
+      feature_value_id: number
+      feature_value: string
+      feature_param: null
+    },
+  ][]
+  variant: []
+  rating: number
+  review_count: number
+  user: {
+    user_id: number
+    name: string | null
+    email: string | null
+    password: string | null
+    phone: string | null
+    city: string | null
+    delivery: null | string
+    gender: number
+    phone_verify: number
+  }
+}
 interface Inputs {
+  picture: any
   itemId: null | number
   dateActive: null
   timeActive: null
@@ -90,7 +141,7 @@ interface Inputs {
   variant: []
 }
 
-export const Add = () => {
+export const Edit = () => {
   const dispatch = useAppDispatch()
   const formDataInitialized = useTypedSelector(state => selectFormDataIsInitialized(state))
   const categories = useTypedSelector(state => selectCategoriesData(state))
@@ -107,7 +158,6 @@ export const Add = () => {
     return years
   }
   const years = generateArrayOfYears()
-  console.log(years)
   useEffect(() => {
     if (!formDataInitialized) {
       Promise.all([
@@ -119,7 +169,7 @@ export const Add = () => {
       ])
     }
   }, [formDataInitialized, categories, featuresWithValues, dispatch])
-  const { handleSubmit, errors, control } = useForm<Inputs>({
+  const { register, handleSubmit, errors, control } = useForm<Inputs>({
     defaultValues: {
       itemId: null,
       dateActive: null,
@@ -154,12 +204,13 @@ export const Add = () => {
       featureValue: string
     }[] = []
 
-    data.feature.forEach(item => {
-      sortedFeatures.push(...item)
-    })
+    /* data.feature.forEach(item => { */
+    /*   sortedFeatures.push(...item) */
+    /* }) */
+    console.log(data)
     const bodyData = Object.assign(data)
-    bodyData.feature = sortedFeatures
-    alert(bodyData)
+    /* bodyData.feature = sortedFeatures */
+    /* alert(bodyData) */
   }
   const classes = useStyles()
 
@@ -169,7 +220,23 @@ export const Add = () => {
 
   return (
     <Box textAlign='center'>
+      <Typography variant='h4'>
+        Редагування авто: Honda
+        <Box ml={2}>
+          <EditIcon fontSize='large' color='secondary' />
+        </Box>
+      </Typography>
+      <Box textAlign='left'>
+        <Typography variant='h6'>Данi користувача</Typography>
+        <Box display='flex' textAlign='center'>
+          <Box m={1}>Yrii</Box>
+          <Box m={1}>+3803388754</Box>
+          <Box m={1}>mail.com</Box>
+        </Box>
+      </Box>
       <form onSubmit={handleSubmit(onSubmit)}>
+        <FileInput control={control} name='images' />
+        {/*
         <FormControl className={classes.formControl} error={Boolean(errors.categoryId)}>
           <InputLabel id='category-select-label'>Категорiя</InputLabel>
           <Controller
@@ -425,7 +492,8 @@ export const Add = () => {
             placeholder='Введiть примiтку'
           />
         </FormControl>
-        <br />
+          <br />
+            */}
         <Button type='submit' color='secondary' variant='contained' size='large'>
           Додати авто
         </Button>

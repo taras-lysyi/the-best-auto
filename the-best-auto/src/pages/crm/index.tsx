@@ -5,7 +5,8 @@ import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-import { Add } from 'features/crm/features/add'
+import { Add } from 'features/crm/features/catalog/features/add'
+import { Edit } from 'features/crm/features/catalog/features/edit'
 import { Menu } from 'features/crm/features/menu'
 export const CrmPage = () => {
   const { pathname } = useLocation()
@@ -86,6 +87,9 @@ export const CrmPage = () => {
         </Route>
         <Route path='/crm/catalog/add'>
           <Add />
+        </Route>
+        <Route path='/crm/catalog/edit'>
+          <Edit />
         </Route>
       </Switch>
     </>

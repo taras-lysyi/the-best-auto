@@ -4,7 +4,7 @@ import catalogReducer from 'features/catalog/slice'
 import filterReducer from 'features/catalog/features/filter/slice'
 import categoryReducer from 'features/catalog/features/categories/slice'
 import productReducer from 'features/product/slice'
-import formDataReducer from 'features/crm/features/add/slice'
+import formDataReducer from 'features/crm/features/catalog/slice'
 const rootReducer = combineReducers({
   catalog: catalogReducer,
   filter: filterReducer,
