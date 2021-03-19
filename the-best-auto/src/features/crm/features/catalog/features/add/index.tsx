@@ -6,7 +6,7 @@ import { getCategories } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
 import { getBrands, getFeatures, getFeaturesValue } from 'features/catalog/features/filter/slice'
 import { selectBrands, selectSortedFeaturesWithValues } from 'features/catalog/features/filter/selectors'
-import { setFormDataIsInitialized, FormDataI } from 'features/crm/features/catalog/slice'
+import { setFormDataIsInitialized, FormDataI, addCRM } from 'features/crm/features/catalog/slice'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
@@ -80,7 +80,7 @@ interface Inputs {
   sale: 0 | 1
   sold: 0 | 1
   active: 0 | 1
-  feature: [
+  features: [
     {
       featureId: number
       featureValueId: number
@@ -142,23 +142,40 @@ export const Add = () => {
       sale: 0,
       sold: 0,
       active: 0,
-      feature: [],
+      features: [],
       variant: [],
     },
   })
   const onSubmit = (data: Inputs) => {
+    console.log(data)
+    data.images = []
+    data.itemId = null
+    data.timeActive = null
+    data.dateActive = null
+    data.variant = []
+    data.active = 0
+    data.available = 0
+    data.sold = 0
     const sortedFeatures: {
       featureId: number
       featureValueId: number
-      featureValue: string
+      featureValue?: string
     }[] = []
+    // data.features.forEach(item => {
+    //   sortedFeatures.push(...item)
+    //   sortedFeatures.forEach(item => {
+    //     delete item.featureValue
+    //   })
+    // })
 
-    data.feature.forEach(item => {
-      sortedFeatures.push(...item)
-    })
-    const bodyData: FormDataI = Object.assign(data)
-    bodyData.feature = sortedFeatures
-    alert(bodyData)
+    // const bodyData: FormDataI = Object.assign(data)
+    // bodyData.features = sortedFeatures
+    // console.log(bodyData)
+    // dispatch(addCRM(bodyData)).then(result => {
+    //   if (result.meta.requestStatus === 'fulfilled') {
+    //     window.location.href = `/crm/edit/${result.payload.item_id}`
+    //   }
+    // })
   }
   const classes = useStyles()
 
@@ -308,7 +325,7 @@ export const Add = () => {
           )}
         />
         <Controller
-          name='sold'
+          name='sale'
           defaultValue={0}
           control={control}
           render={props => (
@@ -391,7 +408,7 @@ export const Add = () => {
                     </Select>
                   )
                 }
-                name={`feature[${featureWithValues.feature.feature_id}]`}
+                name={`features[${featureWithValues.feature.feature_id}]`}
                 control={control}
                 defaultValue={[]}
                 onChange={handleChange}

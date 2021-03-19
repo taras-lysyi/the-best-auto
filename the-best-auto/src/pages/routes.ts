@@ -3,6 +3,7 @@ import { CatalogPage } from './catalog'
 import { ContactsPage } from './contacts'
 import { ProductPage } from './product/'
 import { CrmPage } from './crm'
+import { AuthPage } from './auth'
 
 export const routes = [
   {
@@ -28,8 +29,13 @@ export const routes = [
   },
 
   {
-    path: '/crm/',
+    path: '/crm',
     exact: false,
     component: CrmPage,
+  },
+  {
+    path: '/auth',
+    exact: false,
+    component: AuthPage,
   },
 ]
