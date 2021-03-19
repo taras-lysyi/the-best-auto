@@ -4,6 +4,8 @@ import TextField from '@material-ui/core/TextField'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
+import Link from '@material-ui/core/Link'
 import FormControl from '@material-ui/core/FormControl'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import Container from '@material-ui/core/Container'
@@ -105,6 +107,13 @@ export const SignIn = () => {
           <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
             Увiйти
           </Button>
+          <Grid container justify='flex-end'>
+            <Grid item>
+              <Link href='/auth/signup' variant='body2'>
+                Регiстрацiя
+              </Link>
+            </Grid>
+          </Grid>
         </form>
       </div>
     </Container>

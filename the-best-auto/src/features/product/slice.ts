@@ -3,7 +3,7 @@ import axios from 'axios'
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
 
-interface Product {
+export interface Product {
   item_id: number
   user_id: number
   brand_id: number

@@ -95,7 +95,7 @@ export const SignUp = () => {
                   required
                   fullWidth
                   id='email'
-                  label='Email Address'
+                  label='Емейл адрес'
                   rules={{ required: `Поле обов'язкове` }}
                   name='email'
                   autoComplete='email'
@@ -130,7 +130,7 @@ export const SignUp = () => {
                   required
                   fullWidth
                   name='password'
-                  label='Password'
+                  label='Пароль'
                   rules={{ required: `Поле обов'язкове` }}
                   type='password'
                   id='password'

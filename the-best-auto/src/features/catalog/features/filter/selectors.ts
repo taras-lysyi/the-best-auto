@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect'
 import { RootState } from 'configureStore'
 import { BrandsResponseI, FeaturesResponseI, FeaturesValueResponseI } from './slice'
+import { Product } from 'features/product/slice'
+import { findNestedObj } from 'shared/lib/find-nested-obj'
 import { selectAllItemsInCat } from 'features/catalog/selectors'
 
 const getFilters = (state: RootState) => state.filter
@@ -141,39 +143,31 @@ export const selectSortedFeaturesWithLengthValues = createSelector(
   (featuresItems, featuresValueItems, allItemsInCat) => {
     let sortedFeaturesWithValues: SortedFeaturesWithValuesLengthI[] = []
     let featureValueItemsWithLength: FeatureValueItemsWithLengthI[] = []
-
-    featuresItems.forEach(feature => {
-      featuresValueItems.forEach(featureValue => {
-        let lengthFeatureValueItemsInCategory = 0
-        allItemsInCat.forEach(catalogItem => {
-          catalogItem.feature.forEach(feature => {
-            return feature.feature_value_id === featureValue.feature_value_id
-              ? lengthFeatureValueItemsInCategory++
-              : null
-          })
-        })
-        featureValueItemsWithLength = [
-          ...featureValueItemsWithLength,
-          {
-            featureValueItem: featureValue,
-            lengthInItemsByCat: lengthFeatureValueItemsInCategory,
-          },
-        ]
-      })
-
+    debugger
+    featuresValueItems.forEach(featureValueItem => {
+      featureValueItemsWithLength = [
+        ...featureValueItemsWithLength,
+        {
+          featureValueItem: featureValueItem,
+          lengthInItemsByCat: allItemsInCat.filter(obj =>
+            obj.feature.some(feature => feature.feature_value === featureValueItem.feature_value),
+          ).length,
+        },
+      ]
+    })
+    featuresItems.forEach(featureItem => {
       sortedFeaturesWithValues = [
         ...sortedFeaturesWithValues,
         {
-          feature,
+          feature: featureItem,
           featuresValueItems: featureValueItemsWithLength
+            .filter(itemWithLength => {
+              return itemWithLength.featureValueItem.feature_id === featureItem.feature_id
+            })
             .sort((a, b) => b.lengthInItemsByCat - a.lengthInItemsByCat)
-            .filter(item => {
-              return item.lengthInItemsByCat !== 0
-            })
-            .sort((a, b) => {
-              return (b.lengthInItemsByCat = a.lengthInItemsByCat)
-            })
-            .filter(item => feature.feature_id === item.featureValueItem.feature_id),
+            .filter(itemWithLength => {
+              return itemWithLength.lengthInItemsByCat !== 0
+            }),
         },
       ]
     })

@@ -39,6 +39,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import { useForm, Controller } from 'react-hook-form'
 import { FileInput } from 'features/crm/features/catalog/organisms'
 import { findNestedObj } from 'shared/lib/find-nested-obj'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     icon: {
