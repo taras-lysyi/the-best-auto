@@ -132,6 +132,11 @@ const catalogSlice = createSlice({
     setInitializeAllItemsInCat: (state, action: PayloadAction<boolean>) => {
       state.initializedAllItemsInCat = action.payload
     },
+    removeProductInItems: (state, action: PayloadAction<{ itemIndex: number }>) => {
+      const copy = [...state.itemsByFilter]
+      copy.splice(action.payload.itemIndex, 1)
+      state.itemsByFilter = copy
+    },
   },
   extraReducers: builder => {
     // BYCATEGORYIDS
@@ -158,6 +163,6 @@ const catalogSlice = createSlice({
   },
 })
 
-export const { setInitializeAllItemsInCat } = catalogSlice.actions
+export const { setInitializeAllItemsInCat, removeProductInItems } = catalogSlice.actions
 
 export default catalogSlice.reducer

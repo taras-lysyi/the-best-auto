@@ -147,7 +147,6 @@ export const Add = () => {
     },
   })
   const onSubmit = (data: Inputs) => {
-    console.log(data)
     data.images = []
     data.itemId = null
     data.timeActive = null
@@ -161,21 +160,20 @@ export const Add = () => {
       featureValueId: number
       featureValue?: string
     }[] = []
-    // data.features.forEach(item => {
-    //   sortedFeatures.push(...item)
-    //   sortedFeatures.forEach(item => {
-    //     delete item.featureValue
-    //   })
-    // })
+    data.features.forEach(item => {
+      sortedFeatures.push(...item)
+      sortedFeatures.forEach(item => {
+        delete item.featureValue
+      })
+    })
 
-    // const bodyData: FormDataI = Object.assign(data)
-    // bodyData.features = sortedFeatures
-    // console.log(bodyData)
-    // dispatch(addCRM(bodyData)).then(result => {
-    //   if (result.meta.requestStatus === 'fulfilled') {
-    //     window.location.href = `/crm/edit/${result.payload.item_id}`
-    //   }
-    // })
+    const bodyData: FormDataI = Object.assign(data)
+    bodyData.features = sortedFeatures
+    dispatch(addCRM(bodyData)).then(result => {
+      if (result.meta.requestStatus === 'fulfilled') {
+        window.location.href = `/crm/catalog/edit/${result.payload.item_id}`
+      }
+    })
   }
   const classes = useStyles()
 
@@ -301,7 +299,7 @@ export const Add = () => {
           />
           <FormHelperText>{errors.year && errors.year.message}</FormHelperText>
         </FormControl>
-        <Typography variant='h5'>Показ на сайтi</Typography>
+        <br />
         <Controller
           name='popular'
           defaultValue={0}

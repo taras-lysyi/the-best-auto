@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
-
 export interface ProductResponseFeature {
   feature_id: number
   feature_value_id: number
@@ -101,6 +100,17 @@ export const editCRM = createAsyncThunk('/product/editCRM', async (product: Form
   )
   return response.data.result
 })
+
+export const deleteCRM = createAsyncThunk('/product/deleteCRM', async ({ itemId }: { itemId: string | number }) => {
+  const response = await axios.post(
+    `/product/deleteCRM`,
+    JSON.stringify({
+      itemId,
+    }),
+  )
+  return response.data.result
+})
+
 export const itemsCRM = createAsyncThunk('/catalog/itemsCRM', async (itemIds: string[]) => {
   const response = await axios.post(
     `/catalog/itemsCRM`,
@@ -110,15 +120,47 @@ export const itemsCRM = createAsyncThunk('/catalog/itemsCRM', async (itemIds: st
   )
   return response.data.result
 })
+interface UploadDataI {
+  files: FileList
+  itemId: number | string
+}
+export const upload = createAsyncThunk('/product/upload', async (data: UploadDataI) => {
+  const body = new FormData()
+  for (let file of data.files) {
+    body.append('file[]', file)
+  }
+  body.set('itemId', String(data.itemId))
+  const response = await axios.post(`/product/upload`, body)
+  return response.data.result // ['4.jpg']
+})
+
+export const getFiles = createAsyncThunk('/product/getFiles', async (itemId: number | string) => {
+  const response = await axios.post(`/product/getFiles`, JSON.stringify({ itemId }))
+  return response.data.result // [3.jpg, 4.jpg ]
+})
+interface RemoveFilesI {
+  itemId: number | string
+  name: string
+}
+
+export const removeFiles = createAsyncThunk('/product/removeFiles', async (data: RemoveFilesI) => {
+  const response = await axios.post(`/product/removeFiles`, JSON.stringify({ itemId: data.itemId, name: data.name }))
+  return response.data.result // [3.jpg, 4.jpg ]
+})
+
 interface InitialStateI {
   status: LoadingStatusT
   productData: {
     status: LoadingStatusT
     initialized: boolean
     data: ProductResponse | null
+    files: {
+      status: LoadingStatusT
+      data: string[]
+    }
+    images: string[]
   }
   initialized: boolean
-  formData: FormDataI
 }
 
 const initialState: InitialStateI = {
@@ -128,32 +170,11 @@ const initialState: InitialStateI = {
     initialized: false,
     status: null,
     data: null,
-  },
-  formData: {
-    itemId: null,
-    dateActive: null,
-    timeActive: null,
-    title: '',
+    files: {
+      status: null,
+      data: [],
+    },
     images: [],
-    categoryId: null,
-    brandId: null,
-    productCode: '',
-    vin: '',
-    mileage: 0,
-    ml: 0,
-    year: '',
-    price: 0,
-    offerPrice: null,
-    available: 0,
-    description: '',
-    note: '',
-    popular: 0,
-    new: 0,
-    sale: 0,
-    sold: 0,
-    active: 0,
-    features: [],
-    variant: [],
   },
 }
 const formDataSlice = createSlice({
@@ -167,9 +188,34 @@ const formDataSlice = createSlice({
       state.productData.initialized = false
       state.productData.status = null
       state.productData.data = null
+      state.productData.files.status = null
+      state.productData.files.data = []
+      state.productData.images = []
     },
     setFormDataIsInitialized: (state, action: PayloadAction<{ value: boolean }>) => {
       state.initialized = action.payload.value
+    },
+    setProductImage: (state, action: PayloadAction<string[]>) => {
+      let imgs = []
+      for (let img of action.payload) {
+        imgs.push(img.split('.')[0])
+      }
+      state.productData.images = [...state.productData.images, ...imgs]
+    },
+    removeProductImage: (state, action: PayloadAction<string>) => {
+      state.productData.images = state.productData.images.filter(item => {
+        return item !== action.payload
+      })
+    },
+    setFirst: (state, action: PayloadAction<string>) => {
+      const filtered = state.productData.images.filter(item => {
+        return item !== action.payload
+      })
+      filtered.unshift(action.payload)
+      state.productData.images = filtered
+    },
+    resetProductImages: state => {
+      state.productData.images = []
     },
   },
   extraReducers: builder => {
@@ -189,6 +235,7 @@ const formDataSlice = createSlice({
     })
     builder.addCase(itemsCRM.fulfilled, (state, action: PayloadAction<ProductResponse[]>) => {
       state.productData.data = action.payload[0]
+      state.productData.images = action.payload[0].images !== null ? action.payload[0].images.split(',') : []
       state.productData.initialized = true
       state.productData.status = 'success'
     })
@@ -196,8 +243,27 @@ const formDataSlice = createSlice({
     builder.addCase(itemsCRM.rejected, state => {
       state.productData.status = 'failed'
     })
+
+    builder.addCase(getFiles.pending, state => {
+      state.productData.files.status = 'loading'
+    })
+    builder.addCase(getFiles.fulfilled, (state, action: PayloadAction<string[]>) => {
+      state.productData.files.data = action.payload
+      state.productData.files.status = 'success'
+    })
+    builder.addCase(getFiles.rejected, state => {
+      state.productData.files.status = 'failed'
+    })
   },
 })
-export const { setFormDataIsInitialized, setProductDataIsInitialized, resetProductData } = formDataSlice.actions
+export const {
+  setFormDataIsInitialized,
+  setProductDataIsInitialized,
+  resetProductData,
+  setProductImage,
+  setFirst,
+  removeProductImage,
+  resetProductImages,
+} = formDataSlice.actions
 
 export default formDataSlice.reducer

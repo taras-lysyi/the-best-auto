@@ -1,5 +1,9 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import { Link } from 'react-router-dom'
+import { useAppDispatch } from 'configureStore'
+import { deleteCRM } from 'features/crm/features/catalog/slice'
+import { removeProductInItems } from 'features/catalog/slice'
 import Card from '@material-ui/core/Card'
 import CardActionArea from '@material-ui/core/CardActionArea'
 import CardContent from '@material-ui/core/CardContent'
@@ -8,12 +12,20 @@ import Box from '@material-ui/core/Box'
 import FiberNewIcon from '@material-ui/icons/FiberNew'
 import StarIcon from '@material-ui/icons/Star'
 import LocalOfferIcon from '@material-ui/icons/LocalOffer'
+import ButtonGroup from '@material-ui/core/ButtonGroup'
+import Button from '@material-ui/core/Button'
+import EditIcon from '@material-ui/icons/Edit'
+import DeleteIcon from '@material-ui/icons/Delete'
+import red from '@material-ui/core/colors/red'
 
 const useStyles = makeStyles({
   title: {
     fontWeight: 'bold',
   },
-
+  linkReset: {
+    textDecoration: 'none',
+    color: 'inherit',
+  },
   media: {
     height: '175px',
   },
@@ -25,14 +37,26 @@ const useStyles = makeStyles({
     marginRight: 5,
   },
   cardContent: {
-    minHeight: '175px',
+    minHeight: '190px',
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column',
   },
+  delete: {
+    color: 'white',
+    backgroundColor: red[500],
+    '&:hover': {
+      backgroundColor: red[700],
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        backgroundColor: red[500],
+      },
+    },
+  },
 })
 
 interface Props {
+  isAuthorized: any
   title: string
   firstImageSrc: string
   mileage: number
@@ -43,6 +67,7 @@ interface Props {
   popular: 0 | 1
   isNew: 0 | 1
   sale: 0 | 1
+  itemIndex: number
 }
 
 export const CatalogCard = ({
@@ -56,46 +81,65 @@ export const CatalogCard = ({
   popular,
   sale,
   isNew,
+  isAuthorized,
+  itemIndex,
 }: Props) => {
   const classes = useStyles()
+  const dispatch = useAppDispatch()
+  const deleteProduct = () => {
+    dispatch(removeProductInItems({ itemIndex }))
 
+    // dispatch(deleteCRM({itemId: item_id}))
+  }
   return (
     <Card>
-      <CardActionArea>
-        <Box textAlign='center' position='relative'>
-          <Box position='absolute' p={1}>
-            {isNew ? <FiberNewIcon fontSize='large' color='secondary' /> : null}
-            {popular ? <StarIcon fontSize='large' color='secondary' /> : null}
-            {sale ? <LocalOfferIcon fontSize='large' color='secondary' /> : null}
+      <Link to={`/product/${item_id}`} className={classes.linkReset}>
+        <CardActionArea onClick={() => console.log('hi')}>
+          <Box textAlign='center' position='relative'>
+            <Box position='absolute' p={1}>
+              {isNew ? <FiberNewIcon fontSize='large' color='secondary' /> : null}
+              {popular ? <StarIcon fontSize='large' color='secondary' /> : null}
+              {sale ? <LocalOfferIcon fontSize='large' color='secondary' /> : null}
+            </Box>
+            <img
+              alt='auto'
+              className={classes.media}
+              src={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
+            />
           </Box>
-          <img
-            alt='auto'
-            className={classes.media}
-            src={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
-          />
-        </Box>
-        <CardContent className={classes.cardContent}>
-          <Typography gutterBottom variant='subtitle1' className={classes.title}>
-            {title}
-          </Typography>
-          <Typography variant='body1'>Пробіг: {mileage} тис.</Typography>
-          <Typography variant='body1'>Рік: {year}</Typography>
-          {offer_price ? (
-            <Box display='flex' alignItems='center'>
-              <Typography variant='subtitle1' className={classes.priceOld}>
+          <CardContent className={classes.cardContent}>
+            <Typography gutterBottom variant='subtitle1' className={classes.title}>
+              {title}
+            </Typography>
+            <Typography variant='body1'>Пробіг: {mileage} тис.</Typography>
+            <Typography variant='body1'>Рік: {year}</Typography>
+            {offer_price ? (
+              <Box display='flex' alignItems='center'>
+                <Typography variant='subtitle1' className={classes.priceOld}>
+                  {price} $
+                </Typography>
+                <Typography variant='h6' className={classes.price}>
+                  {offer_price} $
+                </Typography>
+              </Box>
+            ) : (
+              <Typography variant='h6' className={classes.price}>
                 {price} $
               </Typography>
-              <Typography variant='h6' className={classes.price}>
-                {offer_price} $
-              </Typography>
-            </Box>
-          ) : (
-            <Typography variant='h6' className={classes.price}>
-              {price} $
-            </Typography>
-          )}
-        </CardContent>
-      </CardActionArea>
+            )}
+          </CardContent>
+        </CardActionArea>
+      </Link>
+      {isAuthorized && (
+        <ButtonGroup fullWidth variant='contained'>
+          <Button
+            onClick={() => (window.location.href = `/crm/catalog/edit/${item_id}`)}
+            color='secondary'
+            endIcon={<EditIcon />}
+          />
+          <Button onClick={() => deleteProduct()} className={classes.delete} endIcon={<DeleteIcon />} />
+        </ButtonGroup>
+      )}
     </Card>
   )
 }

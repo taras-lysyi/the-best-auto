@@ -120,7 +120,9 @@ export const selectSortedFeaturesWithValues = createSelector(
         ...sortedFeaturesWithValues,
         {
           feature,
-          featuresValueItems: featureValueItems.filter(item => feature.feature_id === item.feature_id),
+          featuresValueItems: featureValueItems
+            .filter(item => feature.feature_id === item.feature_id)
+            .sort((a, b) => a.feature_value.localeCompare(b.feature_value)),
         },
       ]
     })

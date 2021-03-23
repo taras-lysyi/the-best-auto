@@ -14,9 +14,10 @@ const useStyles = makeStyles(theme => ({
 interface Props {
   selectedTab: number
   tabHandleChange: (event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => void
+  isAuthorized: any
 }
 
-export const Footer = ({ selectedTab, tabHandleChange }: Props) => {
+export const Footer = ({ selectedTab, tabHandleChange, isAuthorized }: Props) => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
   const classes = useStyles()
@@ -30,6 +31,7 @@ export const Footer = ({ selectedTab, tabHandleChange }: Props) => {
       <Paper square>
         <Toolbar className={classes.toolbar}>
           <NavTabs
+            isAuthorized={isAuthorized}
             selectedTab={selectedTab}
             tabHandleChange={tabHandleChange}
             page={page}

@@ -28,7 +28,7 @@ import {
 } from 'features/catalog/features/categories/selectors'
 import { setSelectedCategory } from 'features/catalog/features/categories/slice'
 
-export const CatalogPage = () => {
+export const CatalogPage = ({ isAuthorized }: any) => {
   const dispatch = useAppDispatch()
   const history = useHistory()
   let selectedCategoryLink = useTypedSelector(state => selectSelectedCategoryLink(state))
@@ -51,28 +51,28 @@ export const CatalogPage = () => {
   const catalogDataStatus = useTypedSelector(state => selectCatalogDataStatus(state))
   const cards = useMemo(() => {
     if (catalogDataStatus === 'success') {
-      return itemsByFilter.map(item => {
+      return itemsByFilter.map((item, index) => {
         let firstImageSrc = item.images !== null ? item.images.split(',')[0] : ''
         return (
-          <Link style={{ textDecoration: 'none' }} to={`/product/${item.item_id}`}>
-            <CatalogCard
-              item_id={item.item_id}
-              isNew={item.new}
-              popular={item.popular}
-              sale={item.sale}
-              title={item.title}
-              firstImageSrc={firstImageSrc}
-              mileage={item.mileage}
-              price={item.price}
-              offer_price={item.offer_price}
-              year={item.year}
-            />
-          </Link>
+          <CatalogCard
+            itemIndex={index}
+            isAuthorized={isAuthorized}
+            item_id={item.item_id}
+            isNew={item.new}
+            popular={item.popular}
+            sale={item.sale}
+            title={item.title}
+            firstImageSrc={firstImageSrc}
+            mileage={item.mileage}
+            price={item.price}
+            offer_price={item.offer_price}
+            year={item.year}
+          />
         )
       })
     }
     return []
-  }, [itemsByFilter, catalogDataStatus])
+  }, [itemsByFilter, catalogDataStatus, isAuthorized])
   const filter = useMemo(() => <FilterItems />, [])
   const closeIcon = useMemo(() => <CloseIcon />, [])
   const filterTitle = useMemo(() => <Typography variant='h6'>Фільтри</Typography>, [])

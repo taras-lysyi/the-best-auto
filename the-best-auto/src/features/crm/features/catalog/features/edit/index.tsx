@@ -1,19 +1,31 @@
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import Dropzone from 'react-dropzone'
+import { useForm, Controller } from 'react-hook-form'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import {
   selectFormDataIsInitialized,
   selectProductDataIsInitialized,
   selectProductDataStatus,
   selectProductData,
+  selectFiles,
+  selectImages,
 } from 'features/crm/features/catalog/selectors'
 import {
   setFormDataIsInitialized,
   editCRM,
+  deleteCRM,
   itemsCRM,
   setProductDataIsInitialized,
   resetProductData,
+  upload,
+  getFiles,
+  setProductImage,
+  setFirst,
+  removeFiles,
+  removeProductImage,
+  resetProductImages,
 } from 'features/crm/features/catalog/slice'
 import { getCategories } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
@@ -22,9 +34,21 @@ import { selectBrands, selectSortedFeaturesWithValues } from 'features/catalog/f
 import { SkeletonLoader } from 'shared/molecules'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
+import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
 import EditIcon from '@material-ui/icons/Edit'
+import PhotoIcon from '@material-ui/icons/Photo'
+import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
+import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate'
+import DeleteIcon from '@material-ui/icons/Delete'
+import WallpaperIcon from '@material-ui/icons/Wallpaper'
+import PublishIcon from '@material-ui/icons/Publish'
+import CloudUpload from '@material-ui/icons/CloudUpload'
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep'
+import SaveIcon from '@material-ui/icons/Save'
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -34,10 +58,12 @@ import TextField from '@material-ui/core/TextField'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Chip from '@material-ui/core/Chip'
+import Paper from '@material-ui/core/Paper'
+import Grid from '@material-ui/core/Grid'
 import Input from '@material-ui/core/Input'
 import ListItemText from '@material-ui/core/ListItemText'
-import { useForm, Controller } from 'react-hook-form'
-import { FileInput } from 'features/crm/features/catalog/organisms'
+import green from '@material-ui/core/colors/green'
+import red from '@material-ui/core/colors/red'
 import { findNestedObj } from 'shared/lib/find-nested-obj'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,6 +85,49 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     chip: {
       margin: 2,
+    },
+    paper: {
+      padding: theme.spacing(4),
+    },
+    media: {
+      height: '145px',
+    },
+
+    dropZonePaper: {
+      backgroundColor: '#eee',
+      textAlign: 'center',
+      cursor: 'pointer',
+      color: '#333',
+      padding: '10px',
+      marginTop: '20px',
+    },
+    cloudIcon: {
+      marginTop: '16px',
+      color: '#888888',
+      fontSize: '42px',
+    },
+    download: {
+      color: 'white',
+      backgroundColor: green[500],
+      '&:hover': {
+        backgroundColor: green[700],
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: green[500],
+        },
+      },
+    },
+
+    delete: {
+      color: 'white',
+      backgroundColor: red[500],
+      '&:hover': {
+        backgroundColor: red[700],
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: red[500],
+        },
+      },
     },
   }),
 )
@@ -103,6 +172,8 @@ interface Inputs {
 export const Edit = () => {
   const { productId } = useParams<{ productId: string }>()
   const productData = useTypedSelector(state => selectProductData(state))
+  const productFiles = useTypedSelector(state => selectFiles(state))
+  const productImages = useTypedSelector(state => selectImages(state))
   const productDataIsInitialized = useTypedSelector(state => selectProductDataIsInitialized(state))
   const productDataStatus = useTypedSelector(state => selectProductDataStatus(state))
   const dispatch = useAppDispatch()
@@ -110,7 +181,7 @@ export const Edit = () => {
   const categories = useTypedSelector(state => selectCategoriesData(state))
   const featuresWithValues = useTypedSelector(state => selectSortedFeaturesWithValues(state))
   const brands = useTypedSelector(state => selectBrands(state))
-  const { register, handleSubmit, errors, control } = useForm<Inputs>({
+  const { register, handleSubmit, errors, control, reset } = useForm<Inputs>({
     defaultValues: {},
   })
 
@@ -139,7 +210,7 @@ export const Edit = () => {
 
   useEffect(() => {
     if (!productDataIsInitialized && productDataStatus === null) {
-      Promise.all([dispatch(itemsCRM([productId]))]).then(() => {
+      Promise.all([dispatch(itemsCRM([productId])), dispatch(getFiles(productId))]).then(() => {
         dispatch(setProductDataIsInitialized())
       })
     }
@@ -151,6 +222,30 @@ export const Edit = () => {
     }
   }, [dispatch])
 
+  const onUpload = (value: FileList) => {
+    dispatch(upload({ files: value, itemId: productId })).then(() => dispatch(getFiles(productId)))
+    reset({ images: [] })
+  }
+  const addPhotoToProduct = (fileName: string[]) => {
+    dispatch(setProductImage(fileName))
+  }
+
+  const deletePhoto = (fileName: string, productId: string) => {
+    dispatch(removeFiles({ itemId: productId, name: fileName })).then(() => {
+      dispatch(getFiles(productId))
+    })
+  }
+  const makePhotoFirst = (fileName: string) => {
+    dispatch(setFirst(fileName))
+  }
+  const deleteProductImage = (fileName: string) => {
+    dispatch(removeProductImage(fileName))
+  }
+  const deleteProduct = () => {
+    dispatch(deleteCRM({ itemId: productId })).then(() => {
+      window.location.href = `/crm/dashboard`
+    })
+  }
   const onSubmit = (data: Inputs) => {
     let featuresData:
       | [
@@ -174,7 +269,8 @@ export const Edit = () => {
       })
     }
     const bodyData = Object.assign(data)
-    bodyData.feature = featuresData
+    delete bodyData.feature
+    bodyData.features = featuresData
     console.log(bodyData)
     /* dispatch(editCRM(bodyData)).then(result => { */
     /*   if (result.meta.requestStatus === 'fulfilled') { */
@@ -207,7 +303,141 @@ export const Edit = () => {
               </Box>
             </Box>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <FileInput control={control} name='images' />
+              <Box m={2}>
+                <Paper square className={classes.paper} variant='outlined'>
+                  <Typography variant='h5'>
+                    Фотографії
+                    <Box ml={2}>
+                      <PhotoIcon fontSize='large' color='secondary' />
+                    </Box>
+                  </Typography>
+                  {productImages.length !== 0 && (
+                    <>
+                      <Box textAlign='right' m={2}>
+                        <Button
+                          onClick={() => dispatch(resetProductImages())}
+                          variant='outlined'
+                          className={classes.delete}
+                          size='large'
+                          endIcon={<DeleteSweepIcon fontSize='large' />}>
+                          Видалити усi
+                        </Button>
+                      </Box>
+                      <Grid container spacing={2} justify='center'>
+                        {productImages.map((fileName: string, index: number) => (
+                          <Grid item key={fileName}>
+                            <Box border={1} borderColor={index === 0 ? 'green' : null}>
+                              <img
+                                className={classes.media}
+                                src={`https://the-best-auto.com/assets/catalog/${productId}/${fileName}.jpg`}
+                                alt={fileName}
+                              />
+                              <Box>
+                                {index !== 0 && (
+                                  <IconButton onClick={() => makePhotoFirst(fileName)}>
+                                    <WallpaperIcon color='primary' />
+                                  </IconButton>
+                                )}
+                                <IconButton onClick={() => deleteProductImage(fileName)}>
+                                  <DeleteIcon color='primary' />
+                                </IconButton>
+                              </Box>
+                            </Box>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </>
+                  )}
+                </Paper>
+              </Box>
+              {productFiles.data.length !== 0 && (
+                <Box m={2}>
+                  <Paper square className={classes.paper} variant='outlined'>
+                    <Typography variant='h5'>
+                      Галерея
+                      <Box ml={2}>
+                        <PhotoLibraryIcon fontSize='large' color='secondary' />
+                      </Box>
+                    </Typography>
+                    <Box textAlign='right' m={2}>
+                      <Button
+                        onClick={() => addPhotoToProduct(productFiles.data)}
+                        variant='outlined'
+                        className={classes.download}
+                        size='large'
+                        endIcon={<LibraryAddIcon fontSize='large' />}>
+                        Додати уci
+                      </Button>
+                    </Box>
+                    <Grid container spacing={2} justify='center'>
+                      {productFiles.data.map((fileName: string) => (
+                        <Grid item key={fileName}>
+                          <Box border={1}>
+                            <img
+                              className={classes.media}
+                              src={`https://the-best-auto.com/assets/catalog/${productId}/${fileName}`}
+                              alt={fileName}
+                            />
+                            <Box>
+                              <IconButton onClick={() => addPhotoToProduct([fileName])}>
+                                <AddPhotoAlternateIcon color='primary' />
+                              </IconButton>
+                              <IconButton onClick={() => deletePhoto(fileName, productId)}>
+                                <DeleteIcon color='primary' />
+                              </IconButton>
+                            </Box>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Paper>
+                </Box>
+              )}
+
+              <Controller
+                control={control}
+                name='images'
+                defaultValue={[]}
+                render={({ onChange, onBlur, value }) => (
+                  <>
+                    <Box m={2}>
+                      <Dropzone accept='image/png, image/jpg, image/jpeg' onDrop={onChange}>
+                        {({ getRootProps, getInputProps }) => (
+                          <Paper variant='outlined' className={classes.dropZonePaper} {...getRootProps()}>
+                            <CloudUpload className={classes.cloudIcon} />
+                            <input {...getInputProps()} name='images' onBlur={onBlur} />
+                            <p>Перетягнiть файли сюди або натиснiть, щоб вибрати</p>
+                          </Paper>
+                        )}
+                      </Dropzone>
+                    </Box>
+
+                    {value.length !== 0 && (
+                      <Box m={2}>
+                        <Paper square className={classes.paper} variant='outlined'>
+                          <Grid container spacing={2} justify='center'>
+                            {value.map((file: any, index: string) => (
+                              <Grid item key={index}>
+                                <img className={classes.media} src={URL.createObjectURL(file)} alt={file.name} />
+                              </Grid>
+                            ))}
+                          </Grid>
+                          <Box mt={2}>
+                            <Button
+                              onClick={() => onUpload(value)}
+                              className={classes.download}
+                              size='large'
+                              variant='contained'
+                              endIcon={<PublishIcon />}>
+                              Завантажити
+                            </Button>
+                          </Box>
+                        </Paper>
+                      </Box>
+                    )}
+                  </>
+                )}
+              />
               <FormControl className={classes.formControl} error={Boolean(errors.categoryId)}>
                 <InputLabel id='category-select-label'>Категорiя</InputLabel>
                 <Controller
@@ -463,9 +693,15 @@ export const Edit = () => {
                 />
               </FormControl>
               <br />
-              <Button type='submit' color='secondary' variant='contained' size='large'>
-                Додати авто
-              </Button>
+
+              <ButtonGroup variant='contained' size='large'>
+                <Button endIcon={<SaveIcon />} className={classes.download} type='submit' color='secondary'>
+                  Зберегти
+                </Button>
+                <Button onClick={() => deleteProduct()} endIcon={<DeleteIcon />} className={classes.delete}>
+                  Видалити авто
+                </Button>
+              </ButtonGroup>
             </form>
           </Box>
         </>

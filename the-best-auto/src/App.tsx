@@ -33,6 +33,10 @@ function App() {
         path: 'contacts',
         label: 'Контакти',
       },
+      {
+        path: 'crm',
+        label: 'Crm',
+      },
     ]
   }, [])
 
@@ -54,7 +58,7 @@ function App() {
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header selectedTab={selectedTab} tabHandleChange={handleChange} />
+        <Header isAuthorized={isAuthorized} selectedTab={selectedTab} tabHandleChange={handleChange} />
         <div style={{ flexGrow: 1 }}>
           <Container>
             <Box marginTop={matches ? 15 : 10}>
@@ -66,7 +70,7 @@ function App() {
             </Box>
           </Container>
         </div>
-        <Footer selectedTab={selectedTab} tabHandleChange={handleChange} />
+        <Footer isAuthorized={isAuthorized} selectedTab={selectedTab} tabHandleChange={handleChange} />
       </div>
     </>
   )

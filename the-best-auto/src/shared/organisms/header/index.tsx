@@ -57,9 +57,10 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   selectedTab: number
   tabHandleChange: (event: React.ChangeEvent<{}> | React.MouseEvent, newValue: number) => void
+  isAuthorized: any
 }
 
-const Header = ({ selectedTab, tabHandleChange }: Props) => {
+const Header = ({ selectedTab, tabHandleChange, isAuthorized }: Props) => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
@@ -111,6 +112,7 @@ const Header = ({ selectedTab, tabHandleChange }: Props) => {
           {matches && (
             <Toolbar>
               <NavTabs
+                isAuthorized={isAuthorized}
                 selectedTab={selectedTab}
                 tabHandleChange={tabHandleChange}
                 drawerHandler={toggleDrawer}
@@ -127,6 +129,7 @@ const Header = ({ selectedTab, tabHandleChange }: Props) => {
             <CloseIcon />
           </IconButton>
           <NavTabs
+            isAuthorized={isAuthorized}
             selectedTab={selectedTab}
             tabHandleChange={tabHandleChange}
             drawerHandler={toggleDrawer}

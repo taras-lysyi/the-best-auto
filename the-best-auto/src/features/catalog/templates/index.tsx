@@ -68,7 +68,7 @@ export const CatalogTemplate = ({ filter, cards, categories, closeIcon, filterTi
                 <SkeletonLoader />
               ) : catalogDataStatus === 'success' && cards.length === 0 ? (
                 <Box textAlign='center'>
-                  <Typography variant='h5'>Авто в за данним запитом не знайдено</Typography>
+                  <Typography variant='h5'>Авто за данним запитом не знайдено</Typography>
                 </Box>
               ) : catalogDataStatus === 'success' && cards.length !== 0 ? (
                 cards.map(item => {
