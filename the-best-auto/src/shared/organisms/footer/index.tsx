@@ -7,8 +7,9 @@ import Box from '@material-ui/core/Box'
 import { NavTabs } from 'shared/molecules'
 const useStyles = makeStyles(theme => ({
   toolbar: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     paddingTop: theme.spacing(1),
+    flexDirection: 'column',
   },
 }))
 interface Props {

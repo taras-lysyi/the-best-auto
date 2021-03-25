@@ -58,7 +58,7 @@ export const SignIn = () => {
           message: 'Неправельний логiн або пароль',
         })
       } else {
-        window.location.href = '/crm/dashboard'
+        window.location.href = '/'
       }
     })
   }

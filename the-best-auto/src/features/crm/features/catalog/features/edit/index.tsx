@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Dropzone from 'react-dropzone'
 import { useForm, Controller } from 'react-hook-form'
@@ -62,6 +62,8 @@ import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
 import Input from '@material-ui/core/Input'
 import ListItemText from '@material-ui/core/ListItemText'
+import Snackbar from '@material-ui/core/Snackbar'
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert'
 import green from '@material-ui/core/colors/green'
 import red from '@material-ui/core/colors/red'
 import { findNestedObj } from 'shared/lib/find-nested-obj'
@@ -141,6 +143,9 @@ const MenuProps = {
     },
   },
 }
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant='filled' {...props} />
+}
 interface Inputs {
   picture: any
   itemId: null | number
@@ -181,9 +186,7 @@ export const Edit = () => {
   const categories = useTypedSelector(state => selectCategoriesData(state))
   const featuresWithValues = useTypedSelector(state => selectSortedFeaturesWithValues(state))
   const brands = useTypedSelector(state => selectBrands(state))
-  const { register, handleSubmit, errors, control, reset } = useForm<Inputs>({
-    defaultValues: {},
-  })
+  const { handleSubmit, errors, control, reset } = useForm()
 
   function generateArrayOfYears() {
     var max = new Date().getFullYear()
@@ -222,6 +225,19 @@ export const Edit = () => {
     }
   }, [dispatch])
 
+  const selectHandleChange = ([event]: any) => {
+    return event.target.value
+  }
+
+  const [openAlert, setOpenAlert] = useState(false)
+
+  const handleCloseAlert = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setOpenAlert(false)
+  }
   const onUpload = (value: FileList) => {
     dispatch(upload({ files: value, itemId: productId })).then(() => dispatch(getFiles(productId)))
     reset({ images: [] })
@@ -243,7 +259,7 @@ export const Edit = () => {
   }
   const deleteProduct = () => {
     dispatch(deleteCRM({ itemId: productId })).then(() => {
-      window.location.href = `/crm/dashboard`
+      window.location.href = `/`
     })
   }
   const onSubmit = (data: Inputs) => {
@@ -271,18 +287,32 @@ export const Edit = () => {
     const bodyData = Object.assign(data)
     delete bodyData.feature
     bodyData.features = featuresData
-    console.log(bodyData)
-    /* dispatch(editCRM(bodyData)).then(result => { */
-    /*   if (result.meta.requestStatus === 'fulfilled') { */
-    /*     /1* window.location.href = `/crm/edit/${result.payload.item_id}` *1/ */
-    /*   } */
-    /* }) */
+    bodyData.images = productImages
+
+    bodyData.timeActive = null
+    bodyData.dateActive = null
+    bodyData.variant = {}
+    bodyData.active = 1
+    bodyData.available = 1
+    bodyData.sold = 0
+    bodyData.itemId = productData?.item_id
+    if (bodyData.description === '') {
+      bodyData.description = []
+    }
+    if (bodyData.note === '') {
+      bodyData.note = []
+    }
+    if (bodyData.offerPrice === undefined) {
+      bodyData.offerPrice = null
+    }
+    dispatch(editCRM(bodyData)).then(result => {
+      if (result.meta.requestStatus === 'fulfilled') {
+        setOpenAlert(true)
+      }
+    })
   }
   const classes = useStyles()
 
-  const handleChange = ([event]: any) => {
-    return event.target.value
-  }
   return (
     <>
       {productDataIsInitialized ? (
@@ -586,8 +616,8 @@ export const Edit = () => {
                 )}
               />
               <Controller
-                name='sold'
-                defaultValue={productData?.sold}
+                name='sale'
+                defaultValue={productData?.sale}
                 control={control}
                 render={props => (
                   <FormControlLabel
@@ -598,10 +628,12 @@ export const Edit = () => {
                   />
                 )}
               />
-              <Typography variant='h5'>Характеристика</Typography>
-              <Button variant='contained' color='primary' size='large' endIcon={<AddIcon />}>
-                Додати характеристику
-              </Button>
+              {/*
+                        <Typography variant='h5'>Характеристика</Typography>
+                        <Button variant='contained' color='primary' size='large' endIcon={<AddIcon />}>
+                          Додати характеристику
+                        </Button>
+                        */}
               <br />
               {featuresWithValues.map(featureWithValuesItem => {
                 return (
@@ -617,7 +649,7 @@ export const Edit = () => {
                           : []
                       }
                       control={control}
-                      onChange={handleChange}
+                      onChange={selectHandleChange}
                       as={
                         featureWithValuesItem.feature.feature_id >= 10 ? (
                           <Select
@@ -703,6 +735,15 @@ export const Edit = () => {
                 </Button>
               </ButtonGroup>
             </form>
+            <Snackbar
+              open={openAlert}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              autoHideDuration={3000}
+              onClose={handleCloseAlert}>
+              <Alert onClose={handleCloseAlert} severity='success'>
+                Авто збережено i доступне в каталозi
+              </Alert>
+            </Snackbar>
           </Box>
         </>
       ) : (

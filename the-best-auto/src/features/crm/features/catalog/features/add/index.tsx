@@ -333,10 +333,12 @@ export const Add = () => {
             />
           )}
         />
-        <Typography variant='h5'>Характеристика</Typography>
-        <Button variant='contained' color='primary' size='large' endIcon={<AddIcon />}>
-          Додати характеристику
-        </Button>
+        {/*
+                <Typography variant='h5'>Характеристика</Typography>
+                <Button variant='contained' color='primary' size='large' endIcon={<AddIcon />}>
+                  Додати характеристику
+                </Button>
+                */}
         <br />
         {featuresWithValues.map(featureWithValues => {
           return (

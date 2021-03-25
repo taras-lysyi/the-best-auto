@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
 import { getProduct, setInitializeProduct, resetProduct } from 'features/product/slice'
+import { deleteCRM } from 'features/crm/features/catalog/slice'
 import { selectProductData, selectProductInitialized, selectProductStatus } from 'features/product/selectors'
 import { getCategories } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
@@ -23,6 +24,11 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { Carousel } from 'features/product/organisms'
 import CallIcon from '@material-ui/icons/Call'
+import ButtonGroup from '@material-ui/core/ButtonGroup'
+import EditIcon from '@material-ui/icons/Edit'
+import DeleteIcon from '@material-ui/icons/Delete'
+import red from '@material-ui/core/colors/red'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     marginZeroAuto: {
@@ -34,6 +40,17 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     typography: {
       textTransform: 'uppercase',
+    },
+    delete: {
+      color: 'white',
+      backgroundColor: red[500],
+      '&:hover': {
+        backgroundColor: red[700],
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: red[500],
+        },
+      },
     },
     code: {
       marginRight: theme.spacing(1),
@@ -75,7 +92,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 )
-export const ProductPage = () => {
+export const ProductPage = ({ isAuthorized }: any) => {
   const dispatch = useAppDispatch()
   const { productId } = useParams<{ productId: string }>()
   const initialized = useTypedSelector(state => selectProductInitialized(state))
@@ -84,6 +101,11 @@ export const ProductPage = () => {
   const categories = useTypedSelector(state => selectCategoriesData(state))
   const brands = useTypedSelector(state => selectBrands(state))
   const features = useTypedSelector(state => selectFeatures(state))
+  const deleteProduct = () => {
+    dispatch(deleteCRM({ itemId: productId })).then(() => {
+      window.location.href = '/'
+    })
+  }
   const categoryNameGetter = () => {
     let category: any = []
     if (initialized) {
@@ -172,6 +194,19 @@ export const ProductPage = () => {
               </Paper>
             </Grid>
             <Grid className={classes.marginZeroAuto} item xs={12} md={6}>
+              {isAuthorized && (
+                <Paper>
+                  <ButtonGroup fullWidth variant='contained'>
+                    <Button
+                      component={Link}
+                      to={`/crm/catalog/edit/${productId}`}
+                      color='secondary'
+                      endIcon={<EditIcon />}
+                    />
+                    <Button onClick={() => deleteProduct()} className={classes.delete} endIcon={<DeleteIcon />} />
+                  </ButtonGroup>
+                </Paper>
+              )}
               <Paper>
                 <Box p={1}>
                   <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>

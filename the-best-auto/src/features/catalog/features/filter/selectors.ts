@@ -1,8 +1,6 @@
 import { createSelector } from 'reselect'
 import { RootState } from 'configureStore'
 import { BrandsResponseI, FeaturesResponseI, FeaturesValueResponseI } from './slice'
-import { Product } from 'features/product/slice'
-import { findNestedObj } from 'shared/lib/find-nested-obj'
 import { selectAllItemsInCat } from 'features/catalog/selectors'
 
 const getFilters = (state: RootState) => state.filter

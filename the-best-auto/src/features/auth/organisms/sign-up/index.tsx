@@ -52,7 +52,7 @@ export const SignUp = () => {
     dispatch(userRegister({ email: data.email, password: data.password, name: data.name, phone: data.phone })).then(
       data => {
         if (data.payload.status) {
-          window.location.href = '/crm/dashboard'
+          window.location.href = '/'
         }
       },
     )

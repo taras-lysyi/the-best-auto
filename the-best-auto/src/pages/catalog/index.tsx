@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react'
-import { Redirect, useParams, Link, useHistory } from 'react-router-dom'
+import { Redirect, useParams, useHistory } from 'react-router-dom'
 import qs from 'qs'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'

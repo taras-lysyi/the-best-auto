@@ -87,14 +87,14 @@ export const CatalogCard = ({
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const deleteProduct = () => {
-    dispatch(removeProductInItems({ itemIndex }))
-
-    // dispatch(deleteCRM({itemId: item_id}))
+    dispatch(deleteCRM({ itemId: item_id })).then(() => {
+      dispatch(removeProductInItems({ itemIndex }))
+    })
   }
   return (
     <Card>
       <Link to={`/product/${item_id}`} className={classes.linkReset}>
-        <CardActionArea onClick={() => console.log('hi')}>
+        <CardActionArea>
           <Box textAlign='center' position='relative'>
             <Box position='absolute' p={1}>
               {isNew ? <FiberNewIcon fontSize='large' color='secondary' /> : null}
@@ -133,10 +133,10 @@ export const CatalogCard = ({
       {isAuthorized && (
         <ButtonGroup fullWidth variant='contained'>
           <Button
-            onClick={() => (window.location.href = `/crm/catalog/edit/${item_id}`)}
+            component={Link}
+            to={`/crm/catalog/edit/${item_id}`}
             color='secondary'
-            endIcon={<EditIcon />}
-          />
+            endIcon={<EditIcon />}></Button>
           <Button onClick={() => deleteProduct()} className={classes.delete} endIcon={<DeleteIcon />} />
         </ButtonGroup>
       )}
