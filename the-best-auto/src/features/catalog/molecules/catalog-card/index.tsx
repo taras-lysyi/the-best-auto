@@ -93,7 +93,7 @@ export const CatalogCard = ({
   }
   return (
     <Card>
-      <Link to={`/product/${item_id}`} className={classes.linkReset}>
+      <Link to={`/product/${item_id}`} target='_blank' className={classes.linkReset}>
         <CardActionArea>
           <Box textAlign='center' position='relative'>
             <Box position='absolute' p={1}>

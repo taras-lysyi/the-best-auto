@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Dropzone from 'react-dropzone'
 import { useForm, Controller } from 'react-hook-form'
+//@ts-ignore
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import {
@@ -38,6 +40,7 @@ import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 import EditIcon from '@material-ui/icons/Edit'
 import PhotoIcon from '@material-ui/icons/Photo'
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
@@ -56,6 +59,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import TextField from '@material-ui/core/TextField'
 import Checkbox from '@material-ui/core/Checkbox'
+import Tooltip from '@material-ui/core/Tooltip'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Chip from '@material-ui/core/Chip'
 import Paper from '@material-ui/core/Paper'
@@ -79,6 +83,14 @@ const useStyles = makeStyles((theme: Theme) =>
     formControl: {
       margin: theme.spacing(1),
       minWidth: 200,
+    },
+    copyField: {
+      '& .MuiInputBase-root.Mui-disabled': {
+        color: 'rgba(0, 0, 0, 0.9)',
+        display: 'flex',
+        alignItems: 'center',
+        minWidth: 350,
+      },
     },
     chips: {
       display: 'flex',
@@ -229,14 +241,24 @@ export const Edit = () => {
     return event.target.value
   }
 
-  const [openAlert, setOpenAlert] = useState(false)
+  const [openSavedAlert, setOpenSavedAlert] = useState(false)
 
-  const handleCloseAlert = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleCloseSavedAlert = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
       return
     }
 
-    setOpenAlert(false)
+    setOpenSavedAlert(false)
+  }
+
+  const [openCopyAlert, setOpenCopyAlert] = useState(false)
+
+  const handleCloseCopyAlert = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setOpenCopyAlert(false)
   }
   const onUpload = (value: FileList) => {
     dispatch(upload({ files: value, itemId: productId })).then(() => dispatch(getFiles(productId)))
@@ -254,6 +276,9 @@ export const Edit = () => {
   const makePhotoFirst = (fileName: string) => {
     dispatch(setFirst(fileName))
   }
+
+  const [copy, setCopy] = useState(false)
+
   const deleteProductImage = (fileName: string) => {
     dispatch(removeProductImage(fileName))
   }
@@ -307,7 +332,7 @@ export const Edit = () => {
     }
     dispatch(editCRM(bodyData)).then(result => {
       if (result.meta.requestStatus === 'fulfilled') {
-        setOpenAlert(true)
+        setOpenSavedAlert(true)
       }
     })
   }
@@ -468,6 +493,7 @@ export const Edit = () => {
                   </>
                 )}
               />
+
               <FormControl className={classes.formControl} error={Boolean(errors.categoryId)}>
                 <InputLabel id='category-select-label'>Категорiя</InputLabel>
                 <Controller
@@ -588,7 +614,6 @@ export const Edit = () => {
                 />
                 <FormHelperText>{errors.year && errors.year.message}</FormHelperText>
               </FormControl>
-              <Typography variant='h5'>Показ на сайтi</Typography>
               <Controller
                 name='popular'
                 defaultValue={productData?.popular}
@@ -724,8 +749,33 @@ export const Edit = () => {
                   placeholder='Введiть примiтку'
                 />
               </FormControl>
-              <br />
 
+              <br />
+              <Box m={1}>
+                <TextField
+                  disabled
+                  className={classes.copyField}
+                  value={`https://the-best-auto.com/product/${productId}`}
+                  InputProps={{
+                    endAdornment: (
+                      <Tooltip title='Скопiювати'>
+                        <CopyToClipboard
+                          text={`https://the-best-auto.com/product/${productId}`}
+                          onCopy={() => {
+                            setCopy(true)
+                            setOpenCopyAlert(true)
+                          }}>
+                          <IconButton>
+                            <FileCopyIcon />
+                          </IconButton>
+                        </CopyToClipboard>
+                      </Tooltip>
+                    ),
+                  }}
+                />
+              </Box>
+
+              <br />
               <ButtonGroup variant='contained' size='large'>
                 <Button endIcon={<SaveIcon />} className={classes.download} type='submit' color='secondary'>
                   Зберегти
@@ -735,12 +785,22 @@ export const Edit = () => {
                 </Button>
               </ButtonGroup>
             </form>
+
             <Snackbar
-              open={openAlert}
+              open={openCopyAlert}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               autoHideDuration={3000}
-              onClose={handleCloseAlert}>
-              <Alert onClose={handleCloseAlert} severity='success'>
+              onClose={handleCloseCopyAlert}>
+              <Alert onClose={handleCloseCopyAlert} severity='info'>
+                Посилання на авто скопiйовано
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={openSavedAlert}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              autoHideDuration={3000}
+              onClose={handleCloseSavedAlert}>
+              <Alert onClose={handleCloseSavedAlert} severity='success'>
                 Авто збережено i доступне в каталозi
               </Alert>
             </Snackbar>
