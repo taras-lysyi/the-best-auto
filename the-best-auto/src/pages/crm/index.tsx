@@ -10,10 +10,10 @@ export const CrmPage = ({ isAuthorized }: any) => {
         <>
           <Switch>
             {/*
-<Route path='/crm/menu/list'>
-              <Menu />
-            </Route>
-            */}
+               <Route path='/crm/menu/list'>
+                 <Menu />
+               </Route>
+               */}
             <Route path='/crm/catalog/add'>
               <Add />
             </Route>

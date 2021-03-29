@@ -1,6 +1,8 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import 'react-lazy-load-image-component/src/effects/blur.css'
+import { makeStyles } from '@material-ui/core/styles'
 import { useAppDispatch } from 'configureStore'
 import { deleteCRM } from 'features/crm/features/catalog/slice'
 import { removeProductInItems } from 'features/catalog/slice'
@@ -25,9 +27,6 @@ const useStyles = makeStyles({
   linkReset: {
     textDecoration: 'none',
     color: 'inherit',
-  },
-  media: {
-    height: '175px',
   },
   price: {
     fontWeight: 'bold',
@@ -101,9 +100,9 @@ export const CatalogCard = ({
               {popular ? <StarIcon fontSize='large' color='secondary' /> : null}
               {sale ? <LocalOfferIcon fontSize='large' color='secondary' /> : null}
             </Box>
-            <img
-              alt='auto'
-              className={classes.media}
+            <LazyLoadImage
+              height='175px'
+              effect='blur'
               src={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
             />
           </Box>

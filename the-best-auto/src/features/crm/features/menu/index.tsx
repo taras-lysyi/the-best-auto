@@ -8,9 +8,10 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import EditIcon from '@material-ui/icons/Edit'
 import { useAppDispatch, useTypedSelector } from 'configureStore'
-import { getCategories } from 'features/catalog/features/categories/slice'
+import { getCategories, getCategoriesStructure } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
 import { categoryUp } from './slice'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     icon: {
@@ -36,7 +37,7 @@ export const Menu = () => {
     }
     if (type === 'up') {
       categoryUp({ categoryId: id }).then(() => {
-        dispatch(getCategories())
+        dispatch(getCategoriesStructure())
       })
     }
     if (type === 'down') {
