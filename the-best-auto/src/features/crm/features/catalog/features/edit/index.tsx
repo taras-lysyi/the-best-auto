@@ -448,7 +448,6 @@ export const Edit = () => {
                   </Paper>
                 </Box>
               )}
-
               <Controller
                 control={control}
                 name='images'
@@ -493,7 +492,6 @@ export const Edit = () => {
                   </>
                 )}
               />
-
               <FormControl className={classes.formControl} error={Boolean(errors.categoryId)}>
                 <InputLabel id='category-select-label'>Категорiя</InputLabel>
                 <Controller
@@ -511,7 +509,6 @@ export const Edit = () => {
                 />
                 <FormHelperText>{errors.categoryId && errors.categoryId.message}</FormHelperText>
               </FormControl>
-
               <FormControl className={classes.formControl} error={Boolean(errors.title)}>
                 <Controller
                   error={Boolean(errors.title)}
@@ -571,6 +568,16 @@ export const Edit = () => {
                   control={control}
                 />
               </FormControl>
+              <FormControl className={classes.formControl}>
+                <Controller
+                  type='number'
+                  as={TextField}
+                  name='price'
+                  defaultValue={productData?.offerPrice}
+                  label='Стара цiна ($)'
+                  control={control}
+                />
+              </FormControl>
               <FormControl className={classes.formControl} error={Boolean(errors.mileage)}>
                 <Controller
                   name='ml'
@@ -614,6 +621,7 @@ export const Edit = () => {
                 />
                 <FormHelperText>{errors.year && errors.year.message}</FormHelperText>
               </FormControl>
+              <br />
               <Controller
                 name='popular'
                 defaultValue={productData?.popular}
@@ -749,7 +757,6 @@ export const Edit = () => {
                   placeholder='Введiть примiтку'
                 />
               </FormControl>
-
               <br />
               <Box m={1}>
                 <TextField
@@ -774,7 +781,6 @@ export const Edit = () => {
                   }}
                 />
               </Box>
-
               <br />
               <ButtonGroup variant='contained' size='large'>
                 <Button endIcon={<SaveIcon />} className={classes.download} type='submit' color='secondary'>
