@@ -95,7 +95,7 @@ export const CatalogCard = ({
       <Link to={`/product/${item_id}`} target='_blank' className={classes.linkReset}>
         <CardActionArea>
           <Box textAlign='center' position='relative'>
-            <Box position='absolute' p={1}>
+            <Box position='absolute' zIndex='2' p={1}>
               {isNew ? <FiberNewIcon fontSize='large' color='secondary' /> : null}
               {popular ? <StarIcon fontSize='large' color='secondary' /> : null}
               {sale ? <LocalOfferIcon fontSize='large' color='secondary' /> : null}
