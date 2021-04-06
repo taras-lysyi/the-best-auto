@@ -96,22 +96,22 @@ export const HomePage = () => {
         />
         <Social />
       </Section>
-      {/* <Section> */}
-      {/*   <TitleWithIcon */}
-      {/*     icon={<RateReviewIcon fontSize='inherit' color='secondary' />} */}
-      {/*     primaryText='ВIДГУКИ' */}
-      {/*     secondaryText='ПРО НАС' */}
-      {/*   /> */}
-      {/*   <Reviews /> */}
-      {/* </Section> */}
-      {/* <Section> */}
-      {/*   <TitleWithIcon */}
-      {/*     icon={<PeopleIcon fontSize='inherit' color='secondary' />} */}
-      {/*     primaryText='НАША' */}
-      {/*     secondaryText='КОМАНДА' */}
-      {/*   /> */}
-      {/*   <Team /> */}
-      {/* </Section> */}
+      <Section>
+        <TitleWithIcon
+          icon={<RateReviewIcon fontSize='inherit' color='secondary' />}
+          primaryText='ВIДГУКИ'
+          secondaryText='ПРО НАС'
+        />
+        <Reviews />
+      </Section>
+      <Section>
+        <TitleWithIcon
+          icon={<PeopleIcon fontSize='inherit' color='secondary' />}
+          primaryText='НАША'
+          secondaryText='КОМАНДА'
+        />
+        <Team />
+      </Section>
       <Divider />
     </>
   )

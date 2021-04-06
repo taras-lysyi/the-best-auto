@@ -9,8 +9,8 @@ import photo from './photo.webp'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     slide: {
-      background:
-        'linear-gradient(to bottom, #ffcc33, #ffb347)' /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */,
+      backgroundColor: '#FF3CAC',
+      backgroundImage: 'linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%)',
       display: 'flex',
       flexDirection: 'column',
       padding: theme.spacing(1),
@@ -20,29 +20,64 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '50px',
       color: '#fff',
       fontWeight: 500,
+      '& img': {
+        height: 'auto',
+        boxShadow:
+          'rgba(240, 243, 247, 0.49) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset',
+      },
     },
     slideInner: {
       padding: theme.spacing(2),
       background: theme.palette.primary.main,
       textAlign: 'center',
     },
-    photo: {
-      width: 300,
-      height: 'auto',
-    },
-    reviewerName: {
-      fontWeight: 'bolder',
+
+    name: {
+      color: 'white',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: '90%',
+        width: '100%',
+        left: 0,
+        height: '3px',
+        borderRadius: '2px',
+        background: 'linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%)',
+      },
     },
   }),
 )
-export const Team = () => {
+
+interface SlideProps {
+  src: string
+  name: string
+  position: string
+}
+
+function Slide({ src, name, position }: SlideProps) {
   const clasess = useStyles()
+  return (
+    <div className={`keen-slider__slide ${clasess.slide}`}>
+      <Box className={clasess.slideInner}>
+        <img src={src} alt='' />
+        <Box position='relative'>
+          <Typography variant='h5'>
+            <span className={clasess.name}>{name}</span>
+          </Typography>
+        </Box>
+        <Typography variant='h6'>{position}</Typography>
+      </Box>
+    </div>
+  )
+}
+
+export const Team = () => {
   const [pause, setPause] = useState(false)
   const timer = useRef()
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     slidesPerView: 2,
     spacing: 15,
-    // loop: true,
+    loop: true,
     duration: 1000,
     breakpoints: {
       '(min-width: 768px)': {
@@ -82,28 +117,12 @@ export const Team = () => {
     }
   }, [pause, slider])
   return (
-    <div ref={sliderRef} className='keen-slider'>
-      <div className={`keen-slider__slide ${clasess.slide}`}>
-        <Box className={clasess.slideInner}>
-          <img className={clasess.photo} src={photo} alt='' />
-          <Typography variant='h5'>Василь Васильович</Typography>
-          <Typography variant='h6'>Головний менеджер</Typography>
-        </Box>
-      </div>
-
-      <div className={`keen-slider__slide ${clasess.slide}`}>
-        <Box className={clasess.slideInner}>
-          <img className={clasess.photo} src={photo} alt='' />
-          <Typography variant='h5'>Василь Васильович</Typography>
-        </Box>
-      </div>
-
-      <div className={`keen-slider__slide ${clasess.slide}`}>
-        <Box className={clasess.slideInner}>
-          <img className={clasess.photo} src={photo} alt='' />
-          <Typography variant='h5'>Василь Васильович</Typography>
-        </Box>
-      </div>
+    <div ref={sliderRef} data-aos='zoom-out' className='keen-slider'>
+      <Slide src={photo} name='Вася Кiт' position='Головний менеджер' />
+      <Slide src={photo} name='Вася Кiт' position='Головний менеджер' />
+      <Slide src={photo} name='Вася Кiт' position='Головний менеджер' />
+      <Slide src={photo} name='Вася Кiт' position='Головний менеджер' />
+      <Slide src={photo} name='Вася Кiт' position='Головний менеджер' />
     </div>
   )
 }

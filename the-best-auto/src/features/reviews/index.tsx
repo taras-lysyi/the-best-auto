@@ -85,7 +85,7 @@ export const Reviews = () => {
     }
   }, [pause, slider])
   return (
-    <div ref={sliderRef} className='keen-slider'>
+    <div ref={sliderRef} data-aos='zoom-out' className='keen-slider'>
       <div className={`keen-slider__slide ${clasess.slide}`}>
         <Box className={clasess.slideInner}>
           <Avatar
