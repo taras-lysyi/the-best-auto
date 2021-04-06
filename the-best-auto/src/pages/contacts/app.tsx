@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { render } from 'react-dom'
-import MapGL, { Popup, NavigationControl, FullscreenControl, GeolocateControl } from 'react-map-gl'
+// @ts-ignore
+// eslint-disable-next-line
+import MapGL, { Popup, NavigationControl, FullscreenControl, GeolocateControl } from '!react-map-gl'
 import ControlPanel from './control-panel'
 import Pins from './pins'
 import CityInfo from './city-info'
