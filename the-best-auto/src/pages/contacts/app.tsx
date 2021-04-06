@@ -1,75 +1,34 @@
-import { useState } from 'react'
-import { render } from 'react-dom'
-import MapGL, { Popup, NavigationControl, FullscreenControl, GeolocateControl } from 'react-map-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
-import ControlPanel from './control-panel'
-import Pins from './pins'
-import CityInfo from './city-info'
-
+import { MapContainer, TileLayer } from 'react-leaflet'
+import { Marker } from './marker'
+import { ControlPanel } from './control-panel'
+import 'leaflet/dist/leaflet.css'
 import CITIES from './cities.json'
-const TOKEN = 'pk.eyJ1IjoidGFyYXNsaXM0NTMiLCJhIjoiY2tteWptbzJrMDRueDJwbzA3dmhxdzdtYyJ9.gctT5mFGEdensGASMXeFaw' // Set your mapbox token here
-
-const geolocateStyle = {
-  top: 0,
-  left: 0,
-  padding: '10px',
-}
-
-const fullscreenControlStyle = {
-  top: 36,
-  left: 0,
-  padding: '10px',
-}
-
-const navStyle = {
-  top: 72,
-  left: 0,
-  padding: '10px',
-}
 
 export default function App() {
-  const [viewport, setViewport] = useState({
-    latitude: 49.354,
-    longitude: 31.146,
-    zoom: 5,
-    bearing: 0,
-    pitch: 0,
-  })
-  const [popupInfo, setPopupInfo] = useState(null)
   return (
     <>
-      <MapGL
-        {...viewport}
-        width='100%'
-        height='100vh'
-        mapStyle='mapbox://styles/taraslis453/ckmzvl84o0jb617pepqf18ric'
-        onViewportChange={setViewport}
-        mapboxApiAccessToken={TOKEN}>
-        <Pins data={CITIES} onClick={setPopupInfo} />
-
-        {popupInfo && (
-          <Popup
-            tipSize={5}
-            anchor='top'
-            // @ts-ignore
-            longitude={popupInfo?.longitude}
-            // @ts-ignore
-            latitude={popupInfo?.latitude}
-            closeOnClick={false}
-            onClose={setPopupInfo}>
-            <CityInfo info={popupInfo} />
-          </Popup>
-        )}
-
-        <GeolocateControl style={geolocateStyle} />
-        <FullscreenControl style={fullscreenControlStyle} />
-        <NavigationControl style={navStyle} />
-      </MapGL>
-      <ControlPanel />
+      <MapContainer style={{ width: '100%', height: '100vh' }} center={{ lat: 49.354, lng: 31.146 }} zoom={6}>
+        <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
+        {CITIES.map(item => {
+          return (
+            <Marker
+              office={item.office}
+              city={item.city}
+              description={item.description}
+              name={item.name}
+              phone={item.phone}
+              position={{ lat: item.geo[0], lng: item.geo[1] }}
+            />
+          )
+        })}
+        <div className='leaflet-control-container'>
+          <div className='leaflet-bottom leaflet-right'>
+            <div className='leaflet-control leaflet-bar'>
+              <ControlPanel />
+            </div>
+          </div>
+        </div>
+      </MapContainer>
     </>
   )
-}
-
-export function renderToDom(container: any) {
-  render(<App />, container)
 }
