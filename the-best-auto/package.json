@@ -58,6 +58,7 @@
   },
   "browserslist": {
     "production": [
+      "defaults",
       "not dead",
       ">0.2%",
       "not ie 11",
