@@ -41,8 +41,10 @@ export const ServicesCard = ({ icon, text }: Props) => {
   return (
     <Paper className={clasess.paper} variant='outlined'>
       <Box>
-        <Box fontSize={35}>{icon}</Box>
-        <Typography color='inherit' variant={matches ? 'h5' : 'h4'}>
+        <Box data-aos='zoom-out' data-aos-duration='800' fontSize={35}>
+          {icon}
+        </Box>
+        <Typography data-aos='zoom-in' data-aos-duration='800' color='inherit' variant={matches ? 'h5' : 'h4'}>
           {text}
         </Typography>
       </Box>

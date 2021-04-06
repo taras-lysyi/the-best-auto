@@ -14,13 +14,15 @@ export const TitleWithIcon = ({ icon, primaryText, secondaryText }: Props) => {
   const matches = useMediaQuery(theme.breakpoints.down('md'))
   return (
     <Box textAlign='center' marginBottom={matches ? 2 : 4}>
-      <Box fontSize={35} lineHeight={0}>
+      <Box fontSize={35} lineHeight={0} data-aos='zoom-in' data-aos-duration='800'>
         {icon}
       </Box>
-      <Typography variant={matches ? 'h4' : 'h3'}>{primaryText}</Typography>
-      <Typography color='secondary' variant={matches ? 'h4' : 'h3'}>
-        {secondaryText}
-      </Typography>
+      <Box data-aos='zoom-in-up' data-aos-duration='1000'>
+        <Typography variant={matches ? 'h4' : 'h3'}>{primaryText}</Typography>
+        <Typography color='secondary' variant={matches ? 'h4' : 'h3'}>
+          {secondaryText}
+        </Typography>
+      </Box>
     </Box>
   )
 }

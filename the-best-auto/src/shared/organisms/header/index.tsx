@@ -98,10 +98,10 @@ const Header = ({ selectedTab, tabHandleChange, isAuthorized }: Props) => {
           </IconButton>
           <Box display='flex' className={classes.logo}>
             <Typography className={classes.title} variant='h4' noWrap>
-              THE
+              THE&nbsp;
             </Typography>
             <Typography className={classes.title} variant='h4' noWrap>
-              BEST
+              BEST&nbsp;
             </Typography>
             <Typography color='secondary' style={{ fontWeight: 'bold' }} noWrap variant='h4'>
               AUTO

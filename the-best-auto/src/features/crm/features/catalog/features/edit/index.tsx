@@ -313,7 +313,7 @@ export const Edit = () => {
     delete bodyData.feature
     bodyData.features = featuresData
     bodyData.images = productImages
-
+    bodyData.productCode = '0'
     bodyData.timeActive = null
     bodyData.dateActive = null
     bodyData.variant = {}
@@ -521,8 +521,11 @@ export const Edit = () => {
                 />
                 <FormHelperText>{errors.title && errors.title.message}</FormHelperText>
               </FormControl>
-              <FormControl className={classes.formControl} error={Boolean(errors.brandId)}>
-                <InputLabel id='brand-select-label'>Бренд</InputLabel>
+              <FormControl
+                className={classes.formControl}
+                // error={Boolean(errors.brandId)}
+              >
+                <InputLabel id='brand-select-label'>Марка</InputLabel>
                 <Controller
                   as={
                     <Select>
@@ -533,7 +536,7 @@ export const Edit = () => {
                   }
                   name='brandId'
                   defaultValue={productData?.brand_id}
-                  rules={{ required: `Бренд обов'язковий!` }}
+                  // rules={{ required: `Марка обов'язкова!` }}
                   control={control}
                 />
                 <FormHelperText>{errors.brandId && errors.brandId.message}</FormHelperText>
@@ -544,15 +547,6 @@ export const Edit = () => {
                   name='vin'
                   defaultValue={productData?.vin}
                   label='VIN номер'
-                  control={control}
-                />
-              </FormControl>
-              <FormControl className={classes.formControl}>
-                <Controller
-                  as={TextField}
-                  name='productCode'
-                  defaultValue={productData?.product_code}
-                  label='Внутрiшнiй код авто'
                   control={control}
                 />
               </FormControl>

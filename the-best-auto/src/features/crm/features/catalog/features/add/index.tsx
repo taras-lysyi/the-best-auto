@@ -149,6 +149,7 @@ export const Add = () => {
   const onSubmit = (data: Inputs) => {
     data.images = []
     data.itemId = null
+    data.productCode = '0'
     data.timeActive = null
     data.dateActive = null
     data.variant = []
@@ -212,8 +213,11 @@ export const Add = () => {
           />
           <FormHelperText>{errors.title && errors.title.message}</FormHelperText>
         </FormControl>
-        <FormControl className={classes.formControl} error={Boolean(errors.brandId)}>
-          <InputLabel id='brand-select-label'>Бренд</InputLabel>
+        <FormControl
+          className={classes.formControl}
+          // error={Boolean(errors.brandId)}
+        >
+          <InputLabel id='brand-select-label'>Марка</InputLabel>
           <Controller
             as={
               <Select>
@@ -223,7 +227,7 @@ export const Add = () => {
               </Select>
             }
             name='brandId'
-            rules={{ required: `Бренд обов'язковий!` }}
+            // rules={{ required: `Марка обов'язкова!` }}
             control={control}
             defaultValue=''
           />
@@ -232,14 +236,11 @@ export const Add = () => {
         <FormControl className={classes.formControl}>
           <Controller as={TextField} name='vin' label='VIN номер' control={control} defaultValue='' />
         </FormControl>
-        <FormControl className={classes.formControl}>
-          <Controller as={TextField} name='productCode' label='Внутрiшнiй код авто' control={control} defaultValue='' />
-        </FormControl>
         <FormControl className={classes.formControl} error={Boolean(errors.price)}>
           <Controller
             error={Boolean(errors.price)}
             type='number'
-            rules={{ required: `Актуальна цiна обов'язкова` }}
+            rules={{ required: `Актуальна цiна обо'язкова` }}
             as={TextField}
             name='price'
             label='Актуальна цiна ($)'
