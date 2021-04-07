@@ -5,6 +5,7 @@ import { Section } from 'shared/atoms'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { TitleWithIcon } from 'shared/molecules'
+import { ScrollDown } from './scroll'
 import { ServicesGrid, ServicesGridItem } from 'features/services/atoms'
 import { ServicesCard } from 'features/services/molecules'
 import Box from '@material-ui/core/Box'
@@ -45,6 +46,7 @@ export const HomePage = () => {
           <Typography data-aos='fade-down' color='secondary' variant={matches ? 'h3' : 'h2'}>
             ПІД КЛЮЧ
           </Typography>
+          <ScrollDown />
         </Box>
       </Section>
 
