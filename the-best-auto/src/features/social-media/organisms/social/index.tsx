@@ -18,9 +18,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'center',
     },
-    grid: {
-      overflow: 'hidden',
-    },
     instagramPaper: {
       background: 'linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
       padding: theme.spacing(1),
@@ -61,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const Social = () => {
   const clasess = useStyles()
   return (
-    <Grid container className={clasess.grid} spacing={1}>
+    <Grid container spacing={1}>
       <Grid item xs={12} sm={6} md={6} lg={6}>
         <a className={clasess.link} target='_blank' rel='noreferrer' href='https://www.instagram.com/the.bestauto/'>
           <Paper data-aos='fade-right' data-aos-duration='1000' className={clasess.instagramPaper} variant='outlined'>

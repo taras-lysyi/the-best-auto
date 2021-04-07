@@ -9,5 +9,9 @@ type Props = {
 export const Section = ({ children }: Props) => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.down('md'))
-  return <Box paddingY={matches ? 6 : 10}>{children}</Box>
+  return (
+    <Box overflow='hidden' paddingY={matches ? 6 : 10}>
+      {children}
+    </Box>
+  )
 }
