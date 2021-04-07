@@ -1,16 +1,17 @@
 import React, { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
+import { NavTabs } from 'shared/molecules'
+import logo from 'shared/assets/logo.png'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Box from '@material-ui/core/Box'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
 import MenuIcon from '@material-ui/icons/Menu'
 import Drawer from '@material-ui/core/Drawer'
 import CloseIcon from '@material-ui/icons/Close'
-import { NavTabs } from 'shared/molecules'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -30,15 +31,15 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'block',
       },
     },
-    logoLink: {
-      textDecoration: 'none',
-      width: '100%',
-    },
     logo: {
       [theme.breakpoints.down('sm')]: {
         width: '100%',
+        textAlign: 'center',
         justifyContent: 'center',
       },
+    },
+    logoImg: {
+      width: '170px',
     },
     title: {
       fontWeight: 'bold',
@@ -96,18 +97,9 @@ const Header = ({ selectedTab, tabHandleChange, isAuthorized }: Props) => {
             aria-label='open drawer'>
             <MenuIcon />
           </IconButton>
-          <Box display='flex' className={classes.logo}>
-            <Typography className={classes.title} variant='h4' noWrap>
-              THE&nbsp;
-            </Typography>
-            <Typography className={classes.title} variant='h4' noWrap>
-              BEST&nbsp;
-            </Typography>
-            <Typography color='secondary' style={{ fontWeight: 'bold' }} noWrap variant='h4'>
-              AUTO
-            </Typography>
+          <Box className={classes.logo}>
+            <img alt='logo' className={classes.logoImg} src={logo} />
           </Box>
-
           <div className={classes.grow} />
           {matches && (
             <Toolbar>
