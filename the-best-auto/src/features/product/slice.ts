@@ -42,15 +42,22 @@ export const getProduct = createAsyncThunk('/catalog/items', async (data: string
   return response.data.result
 })
 
+export const getCarFax = createAsyncThunk('/product/getCarFax', async (itemId: number | string) => {
+  const response = await axios.post(`/product/getCarFax`, JSON.stringify({ itemId }))
+  return response.data.status
+})
+
 interface InitialStateI {
   status: LoadingStatusT
   productData: Product[] | []
+  carFaxAvailable: boolean | null
   initialized: boolean
 }
 
 const initialState: InitialStateI = {
   status: null,
   productData: [],
+  carFaxAvailable: null,
   initialized: false,
 }
 
@@ -77,6 +84,9 @@ const productSlice = createSlice({
     })
     builder.addCase(getProduct.rejected, state => {
       state.status = 'failed'
+    })
+    builder.addCase(getCarFax.fulfilled, (state, action: PayloadAction<boolean>) => {
+      state.carFaxAvailable = action.payload
     })
   },
 })

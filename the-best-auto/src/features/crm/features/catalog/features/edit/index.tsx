@@ -12,6 +12,7 @@ import {
   selectProductDataStatus,
   selectProductData,
   selectFiles,
+  selectCarFax,
   selectImages,
 } from 'features/crm/features/catalog/selectors'
 import {
@@ -22,10 +23,13 @@ import {
   setProductDataIsInitialized,
   resetProductData,
   upload,
+  uploadCarFax,
   getFiles,
+  getCarFax,
   setProductImage,
   setFirst,
   removeFiles,
+  removeCarFax,
   removeProductImage,
   resetProductImages,
 } from 'features/crm/features/catalog/slice'
@@ -52,6 +56,9 @@ import CloudUpload from '@material-ui/icons/CloudUpload'
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep'
 import SaveIcon from '@material-ui/icons/Save'
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf'
+import VisibilityIcon from '@material-ui/icons/Visibility'
+import GetAppIcon from '@material-ui/icons/GetApp'
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -191,6 +198,7 @@ export const Edit = () => {
   const productData = useTypedSelector(state => selectProductData(state))
   const productFiles = useTypedSelector(state => selectFiles(state))
   const productImages = useTypedSelector(state => selectImages(state))
+  const carFaxAvailable = useTypedSelector(state => selectCarFax(state))
   const productDataIsInitialized = useTypedSelector(state => selectProductDataIsInitialized(state))
   const productDataStatus = useTypedSelector(state => selectProductDataStatus(state))
   const dispatch = useAppDispatch()
@@ -225,7 +233,11 @@ export const Edit = () => {
 
   useEffect(() => {
     if (!productDataIsInitialized && productDataStatus === null) {
-      Promise.all([dispatch(itemsCRM([productId])), dispatch(getFiles(productId))]).then(() => {
+      Promise.all([
+        dispatch(itemsCRM([productId])),
+        dispatch(getFiles(productId)),
+        dispatch(getCarFax(productId)),
+      ]).then(() => {
         dispatch(setProductDataIsInitialized())
       })
     }
@@ -259,6 +271,17 @@ export const Edit = () => {
     }
 
     setOpenCopyAlert(false)
+  }
+  const onCarFaxUpload = (value: FileList) => {
+    dispatch(uploadCarFax({ files: value, itemId: productId })).then(() => {
+      dispatch(getCarFax(productId))
+    })
+  }
+
+  const deleteCarFax = () => {
+    dispatch(removeCarFax(productId)).then(() => {
+      dispatch(getCarFax(productId))
+    })
   }
   const onUpload = (value: FileList) => {
     dispatch(upload({ files: value, itemId: productId })).then(() => dispatch(getFiles(productId)))
@@ -358,6 +381,71 @@ export const Edit = () => {
               </Box>
             </Box>
             <form onSubmit={handleSubmit(onSubmit)}>
+              {carFaxAvailable && (
+                <Box>
+                  <Typography variant='h5'>Carfax</Typography>
+                  <ButtonGroup>
+                    <Button
+                      href={`https://the-best-auto.com/assets/catalog/${productId}/carfax.pdf`}
+                      target='_blank'
+                      color='primary'
+                      variant='contained'
+                      endIcon={<VisibilityIcon />}>
+                      Переглянути
+                    </Button>
+                    <Button onClick={deleteCarFax} className={classes.delete} endIcon={<DeleteIcon />}>
+                      Видалити
+                    </Button>
+                  </ButtonGroup>
+                </Box>
+              )}
+              {!carFaxAvailable && (
+                <Controller
+                  control={control}
+                  name='carfax'
+                  defaultValue={[]}
+                  render={({ onChange, onBlur, value }) => (
+                    <>
+                      <Box m={2}>
+                        <Dropzone accept='application/pdf' onDrop={onChange}>
+                          {({ getRootProps, getInputProps }) => (
+                            <Paper variant='outlined' className={classes.dropZonePaper} {...getRootProps()}>
+                              <CloudUpload className={classes.cloudIcon} />
+                              <input {...getInputProps()} name='carfax' onBlur={onBlur} />
+                              <p>Перетягнiть pdf файл carfax'у сюди або натиснiть, щоб вибрати</p>
+                            </Paper>
+                          )}
+                        </Dropzone>
+                      </Box>
+
+                      {value.length !== 0 && (
+                        <Box m={2}>
+                          <Paper square className={classes.paper} variant='outlined'>
+                            <Box textAlign='center'>
+                              {value.map((file: any, index: string) => (
+                                <div key={index}>
+                                  <PictureAsPdfIcon color='secondary' />
+                                  <div>{file.name}</div>
+                                </div>
+                              ))}
+                            </Box>
+                            <Box mt={2}>
+                              <Button
+                                onClick={() => onCarFaxUpload(value)}
+                                className={classes.download}
+                                size='large'
+                                variant='contained'
+                                endIcon={<PublishIcon />}>
+                                Завантажити
+                              </Button>
+                            </Box>
+                          </Paper>
+                        </Box>
+                      )}
+                    </>
+                  )}
+                />
+              )}
               <Box m={2}>
                 <Paper square className={classes.paper} variant='outlined'>
                   <Typography variant='h5'>
@@ -460,7 +548,7 @@ export const Edit = () => {
                           <Paper variant='outlined' className={classes.dropZonePaper} {...getRootProps()}>
                             <CloudUpload className={classes.cloudIcon} />
                             <input {...getInputProps()} name='images' onBlur={onBlur} />
-                            <p>Перетягнiть файли сюди або натиснiть, щоб вибрати</p>
+                            <p>Перетягнiть фотографiї сюди або натиснiть, щоб вибрати</p>
                           </Paper>
                         )}
                       </Dropzone>

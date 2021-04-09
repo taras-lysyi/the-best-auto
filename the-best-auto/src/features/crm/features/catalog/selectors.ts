@@ -23,9 +23,10 @@ export const selectProductData = createSelector([getFormData], formData => {
   return copy
 })
 
-export const selectProductId = createSelector([getFormData] , formData => formData.productData.data?.item_id)
+export const selectProductId = createSelector([getFormData], formData => formData.productData.data?.item_id)
 
-export const selectFiles = createSelector([getFormData] , formData => formData.productData.files)
+export const selectFiles = createSelector([getFormData], formData => formData.productData.files)
+
+export const selectCarFax = createSelector([getFormData], formData => formData.productData.carFax.available)
 
 export const selectImages = createSelector([getFormData], formData => formData.productData.images)
-

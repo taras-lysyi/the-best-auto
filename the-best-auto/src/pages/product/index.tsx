@@ -1,9 +1,14 @@
 import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
-import { getProduct, setInitializeProduct, resetProduct } from 'features/product/slice'
+import { getProduct, getCarFax, setInitializeProduct, resetProduct } from 'features/product/slice'
 import { deleteCRM } from 'features/crm/features/catalog/slice'
-import { selectProductData, selectProductInitialized, selectProductStatus } from 'features/product/selectors'
+import {
+  selectProductData,
+  selectProductInitialized,
+  selectProductStatus,
+  selectProductCarFaxAvailable,
+} from 'features/product/selectors'
 import { getCategories } from 'features/catalog/features/categories/slice'
 import { selectCategoriesData } from 'features/catalog/features/categories/selectors'
 import { selectBrands, selectFeatures } from 'features/catalog/features/filter/selectors'
@@ -27,6 +32,7 @@ import CallIcon from '@material-ui/icons/Call'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf'
 import red from '@material-ui/core/colors/red'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -98,6 +104,7 @@ export const ProductPage = ({ isAuthorized }: any) => {
   const initialized = useTypedSelector(state => selectProductInitialized(state))
   const status = useTypedSelector(state => selectProductStatus(state))
   const productData = useTypedSelector(state => selectProductData(state))
+  const carFaxAvailable = useTypedSelector(state => selectProductCarFaxAvailable(state))
   const categories = useTypedSelector(state => selectCategoriesData(state))
   const brands = useTypedSelector(state => selectBrands(state))
   const features = useTypedSelector(state => selectFeatures(state))
@@ -137,6 +144,7 @@ export const ProductPage = ({ isAuthorized }: any) => {
       Promise.all([
         dispatch(getCategories()),
         dispatch(getProduct([productId])),
+        dispatch(getCarFax(productId)),
         dispatch(getBrands()),
         dispatch(getFeatures()),
       ]).then(() => {
@@ -212,12 +220,26 @@ export const ProductPage = ({ isAuthorized }: any) => {
                   <Typography variant={matches ? 'h5' : 'h6'} className={classes.bold}>
                     {categoryName}
                   </Typography>
-                  <Box display='flex'>
-                    <Typography variant='h6' className={classes.feature}>
-                      Марка:
-                    </Typography>
-                    <Typography variant='h6'>{brandName}</Typography>
-                  </Box>
+                  {carFaxAvailable && (
+                    <Box my={1}>
+                      <Button
+                        size='large'
+                        variant='contained'
+                        color='primary'
+                        endIcon={<PictureAsPdfIcon />}
+                        href={`https://the-best-auto.com/assets/catalog/${productId}/carfax.pdf`}>
+                        Переглянути CarFax
+                      </Button>
+                    </Box>
+                  )}
+                  {brandName !== undefined && (
+                    <Box display='flex'>
+                      <Typography variant='h6' className={classes.feature}>
+                        Марка:
+                      </Typography>
+                      <Typography variant='h6'>{brandName}</Typography>
+                    </Box>
+                  )}
                   <Box display='flex'>
                     <Typography variant='h6' className={classes.feature}>
                       Пробiг:

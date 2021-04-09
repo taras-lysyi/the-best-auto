@@ -124,6 +124,7 @@ interface UploadDataI {
   files: FileList
   itemId: number | string
 }
+
 export const upload = createAsyncThunk('/product/upload', async (data: UploadDataI) => {
   const body = new FormData()
   for (let file of data.files) {
@@ -131,6 +132,19 @@ export const upload = createAsyncThunk('/product/upload', async (data: UploadDat
   }
   body.set('itemId', String(data.itemId))
   const response = await axios.post(`/product/upload`, body)
+  return response.data.result // ['4.jpg']
+})
+
+interface UploadDataCarFaxI {
+  files: FileList
+  itemId: string
+}
+
+export const uploadCarFax = createAsyncThunk('/product/uploadCarFax', async (data: UploadDataCarFaxI) => {
+  const body = new FormData()
+  body.append('file', data.files[0])
+  body.set('itemId', data.itemId)
+  const response = await axios.post(`/product/uploadCarFax`, body)
   return response.data.result // ['4.jpg']
 })
 
@@ -148,6 +162,16 @@ export const removeFiles = createAsyncThunk('/product/removeFiles', async (data:
   return response.data.result // [3.jpg, 4.jpg ]
 })
 
+export const getCarFax = createAsyncThunk('/product/getCarFax', async (itemId: number | string) => {
+  const response = await axios.post(`/product/getCarFax`, JSON.stringify({ itemId }))
+  return response.data.status
+})
+
+export const removeCarFax = createAsyncThunk('/product/removeCarFax', async (itemId: number | string) => {
+  const response = await axios.post(`/product/removeCarFax`, JSON.stringify({ itemId }))
+  return response.data.status
+})
+
 interface InitialStateI {
   status: LoadingStatusT
   productData: {
@@ -157,6 +181,10 @@ interface InitialStateI {
     files: {
       status: LoadingStatusT
       data: string[]
+    }
+    carFax: {
+      available: boolean | null
+      status: LoadingStatusT
     }
     images: string[]
   }
@@ -173,6 +201,10 @@ const initialState: InitialStateI = {
     files: {
       status: null,
       data: [],
+    },
+    carFax: {
+      available: null,
+      status: null,
     },
     images: [],
   },
@@ -253,6 +285,17 @@ const formDataSlice = createSlice({
     })
     builder.addCase(getFiles.rejected, state => {
       state.productData.files.status = 'failed'
+    })
+
+    builder.addCase(getCarFax.pending, state => {
+      state.productData.carFax.status = 'loading'
+    })
+    builder.addCase(getCarFax.fulfilled, (state, action: PayloadAction<boolean>) => {
+      state.productData.carFax.status = 'success'
+      state.productData.carFax.available = action.payload
+    })
+    builder.addCase(getCarFax.rejected, state => {
+      state.productData.carFax.status = 'failed'
     })
   },
 })
