@@ -208,7 +208,7 @@ export const Team = ({ isAuthorized }: any) => {
     setOpenSavedAlert(false)
   }
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
-    slidesPerView: 2,
+    slidesPerView: 1,
     spacing: 15,
     // loop: true,
     // duration: 1000,
