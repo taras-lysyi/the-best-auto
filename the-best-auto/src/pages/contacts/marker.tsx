@@ -23,7 +23,7 @@ const iconSoon = new L.Icon({
 })
 
 interface Props {
-  office: boolean | string
+  office: 0 | 1 | string
   city: string
   description: string
   name?: string
@@ -36,7 +36,7 @@ export const Marker = ({ position, office, city, description, name, phone = '' }
     <LeafletMarker icon={office === 'soon' ? iconSoon : iconAvailable} position={position}>
       <Popup>
         <Box textAlign='center'>
-          {office === true ? (
+          {office === 1 ? (
             <BusinessIcon color='secondary' />
           ) : office === 'soon' ? (
             <ScheduleIcon color='secondary' />

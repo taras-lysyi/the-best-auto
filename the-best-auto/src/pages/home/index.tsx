@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTypedSelector, useAppDispatch } from 'configureStore'
 import { useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { Section } from 'shared/atoms'
@@ -26,13 +27,29 @@ import RateReviewIcon from '@material-ui/icons/RateReview'
 import { Reviews } from 'features/reviews'
 import PeopleIcon from '@material-ui/icons/People'
 import { Team } from 'features/team'
+import { getSettingsYoutubeReviews } from 'features/reviews/slice'
+import { selectYoutubeReviewsSettingsInitialized } from 'features/reviews/selectors'
+import { getTeamMembers } from 'features/team/slice'
+import { selectTeamInitialized } from 'features/team/selectors'
 
-export const HomePage = () => {
+export const HomePage = ({ isAuthorized }: any) => {
   const theme = useTheme()
+  const dispatch = useAppDispatch()
+  const reviewsInitialized = useTypedSelector(state => selectYoutubeReviewsSettingsInitialized(state))
+  const teamInitialized = useTypedSelector(state => selectTeamInitialized(state))
   const matches = useMediaQuery(theme.breakpoints.down('md'))
   useEffect(() => {
     AOS.init()
   })
+
+  useEffect(() => {
+    if (!reviewsInitialized) {
+      dispatch(getSettingsYoutubeReviews())
+    }
+    if (!teamInitialized) {
+      dispatch(getTeamMembers())
+    }
+  }, [reviewsInitialized, teamInitialized, dispatch])
   return (
     <>
       <Section>
@@ -104,7 +121,7 @@ export const HomePage = () => {
           primaryText='ВIДГУКИ'
           secondaryText='ПРО НАС'
         />
-        <Reviews />
+        {reviewsInitialized && <Reviews />}
       </Section>
       <Section>
         <TitleWithIcon
@@ -112,7 +129,7 @@ export const HomePage = () => {
           primaryText='НАША'
           secondaryText='КОМАНДА'
         />
-        <Team />
+        {teamInitialized && <Team isAuthorized={isAuthorized} />}
       </Section>
       <Divider />
     </>

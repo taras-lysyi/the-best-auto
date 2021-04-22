@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTypedSelector } from 'configureStore'
 import { useKeenSlider } from 'keen-slider/react'
 import 'keen-slider/keen-slider.min.css'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
-import Avatar from '@material-ui/core/Avatar'
-import Typography from '@material-ui/core/Typography'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { selectYoutubeReviewsSettings } from 'features/reviews/selectors'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,36 +21,27 @@ const useStyles = makeStyles((theme: Theme) =>
       color: '#fff',
       fontWeight: 500,
     },
-    slideInner: {
-      padding: theme.spacing(2),
-      background: theme.palette.primary.main,
-      textAlign: 'center',
-    },
-    avatar: {
-      margin: '0 auto',
-      width: theme.spacing(8),
-      height: theme.spacing(8),
-      boxShadow: '0 5px 11px 0 rgba(255, 243, 243, 0.15),0 4px 15px 0 rgba(0,0,0,0.15)',
-    },
-    reviewerName: {
-      fontWeight: 'bolder',
-    },
   }),
 )
 
 export const Reviews = () => {
-  const clasess = useStyles()
+  const classes = useStyles()
+  const settings = useTypedSelector(state => selectYoutubeReviewsSettings(state))
+  const match = useMediaQuery('(max-width: 768px )')
+
   const [pause, setPause] = useState(false)
+
   const timer = useRef()
+
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     slidesPerView: 1,
     spacing: 15,
-    // loop: true,
+    loop: true,
     duration: 1000,
     breakpoints: {
-      '(min-width: 768px)': {
-        slidesPerView: 2,
-      },
+      // '(min-width: 768px)': {
+      //   slidesPerView: 2,
+      // },
       '(min-width: 1200px)': {
         slidesPerView: 3,
       },
@@ -62,6 +53,7 @@ export const Reviews = () => {
       setPause(false)
     },
   })
+
   useEffect(() => {
     if (sliderRef.current !== null) {
       sliderRef.current.addEventListener('mouseover', () => {
@@ -85,37 +77,22 @@ export const Reviews = () => {
     }
   }, [pause, slider])
   return (
-    <div ref={sliderRef} data-aos='zoom-out' className='keen-slider'>
-      <div className={`keen-slider__slide ${clasess.slide}`}>
-        <Box className={clasess.slideInner}>
-          <Avatar
-            className={clasess.avatar}
-            src='https://hollywood-motors.com.ua/assets/testimonials/webp/iryna-f1f4f6f863ffe7801592e900f79e1278008b6225543974ed0622d2c8d43ee357.webp'
-          />
-          <Typography className={clasess.reviewerName} variant='h5'>
-            Оля
-          </Typography>
-          <Typography variant='h6'>
-            Дякую за чудовий сервіс та авто! Допомогли з вибором, доставкою, розмитненням та ремонтом, авто перевищило
-            очікування, ще раз дякую! Рекомендую звертатися до них якщо хочете авто з США
-          </Typography>
-        </Box>
+    <>
+      <div ref={sliderRef} data-aos='zoom-out' className='keen-slider'>
+        {settings?.split(',').map((item: string) => {
+          return (
+            <div className={`keen-slider__slide ${classes.slide}`}>
+              <iframe
+                width={!match ? '560' : 'auto'}
+                height='315'
+                src={`https://www.youtube-nocookie.com/embed/${item}?controls=0`}
+                title='YouTube video player'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                allowFullScreen></iframe>
+            </div>
+          )
+        })}
       </div>
-      <div className={`keen-slider__slide ${clasess.slide}`}>
-        <Box className={clasess.slideInner}>
-          <Avatar
-            className={clasess.avatar}
-            src='https://hollywood-motors.com.ua/assets/testimonials/webp/iryna-f1f4f6f863ffe7801592e900f79e1278008b6225543974ed0622d2c8d43ee357.webp'
-          />
-          <Typography className={clasess.reviewerName} variant='h5'>
-            Оля
-          </Typography>
-          <Typography variant='h6'>
-            Дякую за чудовий сервіс та авто! Допомогли з вибором, доставкою, розмитненням та ремонтом, авто перевищило
-            очікування, ще раз дякую! Рекомендую звертатися до них якщо хочете авто з США
-          </Typography>
-        </Box>
-      </div>
-    </div>
+    </>
   )
 }
