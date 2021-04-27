@@ -76,6 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     dotted: {
       borderBottom: '1px dotted #ddd',
+      wordBreak: 'break-all',
     },
 
     description: {
