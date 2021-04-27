@@ -250,6 +250,8 @@ export const Edit = () => {
   }, [dispatch])
 
   const selectHandleChange = ([event]: any) => {
+    debugger
+    console.log(event.target.value)
     return event.target.value
   }
 
@@ -320,8 +322,12 @@ export const Edit = () => {
         ]
       | any[] = []
     for (let prop in data.feature) {
+      let item = data.feature[prop]
+      if (typeof item === 'string') {
+        item = [item]
+      }
       // eslint-disable-next-line
-      data.feature[prop].forEach(item => {
+      item.forEach(item => {
         const feature = findNestedObj(featuresWithValues, 'feature_value', item)
         featuresData = [
           ...featuresData,
@@ -654,7 +660,7 @@ export const Edit = () => {
                 <Controller
                   type='number'
                   as={TextField}
-                  name='price'
+                  name='offerPrice'
                   defaultValue={productData?.offerPrice}
                   label='Стара цiна ($)'
                   control={control}
