@@ -176,7 +176,6 @@ export const ProductPage = ({ isAuthorized }: any) => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-  console.log(productData[0])
   return (
     <>
       {!initialized ? (
