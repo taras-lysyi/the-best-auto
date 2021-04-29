@@ -176,6 +176,7 @@ export const ProductPage = ({ isAuthorized }: any) => {
   const classes = useStyles()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
+  console.log(productData[0])
   return (
     <>
       {!initialized ? (
@@ -246,7 +247,7 @@ export const ProductPage = ({ isAuthorized }: any) => {
                       Пробiг:
                     </Typography>
                     <Typography variant='h6'>
-                      {productData[0].ml === 0 ? `${productData[0].mileage} миль` : `${productData[0].mileage} км`}
+                      {productData[0].ml === 0 ? `${productData[0].mileage} км` : `${productData[0].mileage} миль`}
                     </Typography>
                   </Box>
                   <Box display='flex'>
