@@ -341,7 +341,11 @@ export const ProductPage = ({ isAuthorized }: any) => {
               <Paper className={classes.paper}>
                 <Box p={1} display='flex' justifyContent='space-between' alignItems='center'>
                   <Box>
-                    {productData[0].category_id === 1 && <Typography>Орієнтовна ціна в Україні</Typography>}
+                    {productData[0].category_id === 3 ? (
+                      <Typography>Орієнтовна ціна в Україні</Typography>
+                    ) : (
+                      <Typography>Цiна</Typography>
+                    )}
                     <Typography variant={matches ? 'h4' : 'h5'} className={classes.bold}>
                       {`${productData[0].price} $`}
                     </Typography>
