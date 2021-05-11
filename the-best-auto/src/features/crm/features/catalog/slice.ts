@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { LoadingStatusT } from 'shared/types'
+import { FeaturesValueResponseI, FeaturesResponseI } from 'features/catalog/features/filter/slice'
+
 export interface ProductResponseFeature {
   feature_id: number
   feature_value_id: number
@@ -172,6 +174,32 @@ export const removeCarFax = createAsyncThunk('/product/removeCarFax', async (ite
   return response.data.status
 })
 
+export const getFeatures = createAsyncThunk('/features/all', async () => {
+  const response = await axios.post('/features/all')
+  return response.data.result
+})
+
+export const getFeaturesValue = createAsyncThunk('/features/value', async () => {
+  const response = await axios.post('/features/value')
+  return response.data.result
+})
+
+export const addFeature = createAsyncThunk('/features/add', async (name: string) => {
+  const body = new FormData()
+  body.set('name', name)
+
+  const response = await axios.post('/features/add', body)
+  return response.data.result
+})
+
+export const addFeatureValue = createAsyncThunk('/features/value/add', async (data: { id: number; name: string }) => {
+  const body = new FormData()
+  body.set('featureId', String(data.id))
+  body.set('name', data.name)
+  const response = await axios.post('/features/value/add', body)
+  return response.data.result
+})
+
 interface InitialStateI {
   status: LoadingStatusT
   productData: {
@@ -189,6 +217,14 @@ interface InitialStateI {
     images: string[]
   }
   initialized: boolean
+  features: {
+    status: LoadingStatusT
+    featuresItems: FeaturesResponseI[]
+  }
+  featuresValue: {
+    status: LoadingStatusT
+    featuresValueItems: FeaturesValueResponseI[]
+  }
 }
 
 const initialState: InitialStateI = {
@@ -208,7 +244,16 @@ const initialState: InitialStateI = {
     },
     images: [],
   },
+  features: {
+    status: null,
+    featuresItems: [],
+  },
+  featuresValue: {
+    status: null,
+    featuresValueItems: [],
+  },
 }
+
 const formDataSlice = createSlice({
   name: 'formData',
   initialState,
@@ -297,8 +342,39 @@ const formDataSlice = createSlice({
     builder.addCase(getCarFax.rejected, state => {
       state.productData.carFax.status = 'failed'
     })
+    // FEATURES
+    builder.addCase(getFeatures.pending, state => {
+      state.features.status = 'loading'
+    })
+    builder.addCase(getFeatures.fulfilled, (state, action: PayloadAction<FeaturesResponseI[]>) => {
+      state.features.featuresItems = action.payload
+      state.features.status = 'success'
+    })
+    builder.addCase(getFeatures.rejected, state => {
+      state.features.status = 'failed'
+    })
+    // FEATURES VALUES
+    builder.addCase(getFeaturesValue.pending, state => {
+      state.featuresValue.status = 'loading'
+    })
+    builder.addCase(getFeaturesValue.fulfilled, (state, action: PayloadAction<FeaturesValueResponseI[]>) => {
+      state.featuresValue.featuresValueItems = action.payload
+      state.featuresValue.status = 'success'
+    })
+    builder.addCase(getFeaturesValue.rejected, state => {
+      state.featuresValue.status = 'failed'
+    })
+
+    builder.addCase(addFeature.fulfilled, (state, action: PayloadAction<FeaturesResponseI>) => {
+      state.features.featuresItems = [...state.features.featuresItems, action.payload]
+    })
+
+    builder.addCase(addFeatureValue.fulfilled, (state, action: PayloadAction<FeaturesValueResponseI>) => {
+      state.featuresValue.featuresValueItems = [...state.featuresValue.featuresValueItems, action.payload]
+    })
   },
 })
+
 export const {
   setFormDataIsInitialized,
   setProductDataIsInitialized,

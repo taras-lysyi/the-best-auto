@@ -63,6 +63,10 @@ export const NavTabs = memo(({ drawerHandler, page, matches, selectedTab, tabHan
         path: 'crm/catalog/add',
         label: 'Додати авто',
       },
+      {
+        path: 'crm/catalog/addFeature',
+        label: 'Додати характеристику',
+      },
       // {
       //   path: 'crm/menu/list',
       //   label: 'Меню',

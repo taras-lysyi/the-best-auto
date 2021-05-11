@@ -7,10 +7,8 @@ import { selectCategoriesData } from 'features/catalog/features/categories/selec
 import { getBrands, getFeatures, getFeaturesValue } from 'features/catalog/features/filter/slice'
 import { selectBrands, selectSortedFeaturesWithValues } from 'features/catalog/features/filter/selectors'
 import { setFormDataIsInitialized, FormDataI, addCRM } from 'features/crm/features/catalog/slice'
-import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add'
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -179,7 +177,6 @@ export const Add = () => {
   const classes = useStyles()
 
   const handleChange = ([event]: any) => {
-    debugger
     return event.target.value
   }
 
@@ -335,12 +332,6 @@ export const Add = () => {
             />
           )}
         />
-        {/*
-                <Typography variant='h5'>Характеристика</Typography>
-                <Button variant='contained' color='primary' size='large' endIcon={<AddIcon />}>
-                  Додати характеристику
-                </Button>
-                */}
         <br />
         {featuresWithValues.map(featureWithValues => {
           return (
