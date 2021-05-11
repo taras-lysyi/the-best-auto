@@ -27,7 +27,6 @@ const AddFeatureForm = () => {
   const dispatch = useAppDispatch()
   const classes = useStyles()
   const { handleSubmit, control, errors } = useForm()
-
   const onSubmit = (data: { title: string }) => {
     dispatch(addFeature(data.title))
   }
@@ -59,7 +58,6 @@ const AddFeatureValueForm = ({ selectedFeatureId }: { selectedFeatureId: number 
   const classes = useStyles()
   const { handleSubmit, control, errors } = useForm()
 
-  console.log(selectedFeatureId)
   const onSubmit = (data: { value: string }) => {
     dispatch(addFeatureValue({ id: selectedFeatureId, name: data.value }))
   }
