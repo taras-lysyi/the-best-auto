@@ -97,6 +97,13 @@ const useStyles = makeStyles((theme: Theme) =>
       textDecoration: 'none',
       color: 'inherit',
     },
+    price: {
+      fontWeight: 'bold',
+    },
+    priceOld: {
+      textDecoration: 'line-through',
+      marginRight: 5,
+    },
   }),
 )
 export const ProductPage = ({ isAuthorized }: any) => {
@@ -342,13 +349,32 @@ export const ProductPage = ({ isAuthorized }: any) => {
                 <Box p={1} display='flex' justifyContent='space-between' alignItems='center'>
                   <Box>
                     {productData[0].category_id === 3 ? (
-                      <Typography>Орієнтовна ціна в Україні</Typography>
+                      <>
+                        <Typography>Орієнтовна ціна в Україні</Typography>
+                        <Typography variant={matches ? 'h4' : 'h5'} className={classes.bold}>
+                          {productData[0].price} $
+                        </Typography>
+                      </>
+                    ) : productData[0].offer_price ? (
+                      <>
+                        <Typography>Цiна</Typography>
+                        <Box display='flex' alignItems='center'>
+                          <Typography variant='h6' className={classes.priceOld}>
+                            {productData[0].price} $
+                          </Typography>
+                          <Typography variant={matches ? 'h4' : 'h5'} className={classes.bold}>
+                            {productData[0].offer_price} $
+                          </Typography>
+                        </Box>
+                      </>
                     ) : (
-                      <Typography>Цiна</Typography>
+                      <>
+                        <Typography>Цiна</Typography>
+                        <Typography variant={matches ? 'h4' : 'h5'} className={classes.bold}>
+                          {productData[0].price} $
+                        </Typography>
+                      </>
                     )}
-                    <Typography variant={matches ? 'h4' : 'h5'} className={classes.bold}>
-                      {`${productData[0].price} $`}
-                    </Typography>
                   </Box>
                   <Button size='large' variant='outlined' color='secondary' startIcon={<CallIcon />}>
                     <a href='tel:+380673142557' className={classes.link}>

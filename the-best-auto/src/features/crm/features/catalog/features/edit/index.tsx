@@ -661,7 +661,7 @@ export const Edit = () => {
                   type='number'
                   as={TextField}
                   name='offerPrice'
-                  defaultValue={productData?.offerPrice}
+                  defaultValue={productData?.offer_price}
                   label='Стара цiна ($)'
                   control={control}
                 />
