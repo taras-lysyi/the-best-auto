@@ -360,10 +360,10 @@ export const ProductPage = ({ isAuthorized }: any) => {
                         <Typography>Цiна</Typography>
                         <Box display='flex' alignItems='center'>
                           <Typography variant='h6' className={classes.priceOld}>
-                            {productData[0].price} $
+                            {productData[0].offer_price} $
                           </Typography>
                           <Typography variant={matches ? 'h4' : 'h5'} className={classes.bold}>
-                            {productData[0].offer_price} $
+                            {productData[0].price} $
                           </Typography>
                         </Box>
                       </>
