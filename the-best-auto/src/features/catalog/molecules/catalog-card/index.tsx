@@ -115,10 +115,10 @@ export const CatalogCard = ({
             {offer_price ? (
               <Box display='flex' alignItems='center'>
                 <Typography variant='subtitle1' className={classes.priceOld}>
-                  {price} $
+                  {offer_price} $
                 </Typography>
                 <Typography variant='h6' className={classes.price}>
-                  {offer_price} $
+                  {price} $
                 </Typography>
               </Box>
             ) : (
@@ -136,7 +136,16 @@ export const CatalogCard = ({
             to={`/crm/catalog/edit/${item_id}`}
             color='secondary'
             endIcon={<EditIcon />}></Button>
-          <Button onClick={() => deleteProduct()} className={classes.delete} endIcon={<DeleteIcon />} />
+          <Button
+            onClick={() => {
+              let result = window.confirm('Видалити продукт?')
+              if (result) {
+                deleteProduct()
+              }
+            }}
+            className={classes.delete}
+            endIcon={<DeleteIcon />}
+          />
         </ButtonGroup>
       )}
     </Card>
