@@ -19,20 +19,20 @@ export const Categories = ({ categoryLink }: Props) => {
     }
   }, [dispatch, category.initialized, category.status])
 
-  const categoryItems = category.categoriesData.map(item => {
-    return (
-      <CategoryItem
-        onClick={() => {
-          dispatch(resetFilter({}))
-          dispatch(setInitializeAllItemsInCat(false))
-          dispatch(setSelectedCategory({ selectedCategoryId: [item.category_id], selectedCategoryLink: item.link }))
-        }}
-        currentLink={categoryLink}
-        link={item.link}
-        name={item.name}
-        key={item.link}
-      />
-    )
+  const categoryItems = category.categoriesData.filter((item) => item.name !== 'Авто на аукціоні').map(item => {
+      return (
+        <CategoryItem
+          onClick={() => {
+            dispatch(resetFilter({}))
+            dispatch(setInitializeAllItemsInCat(false))
+            dispatch(setSelectedCategory({ selectedCategoryId: [item.category_id], selectedCategoryLink: item.link }))
+          }}
+          currentLink={categoryLink}
+          link={item.link}
+          name={item.name}
+          key={item.link}
+        />
+      )
   })
   return (
     <CategoryBoxTemplate
