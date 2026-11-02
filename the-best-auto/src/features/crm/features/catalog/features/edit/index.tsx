@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ASSETS_URL } from 'shared/config'
 import { useParams } from 'react-router-dom'
 import Dropzone from 'react-dropzone'
 import { useForm, Controller } from 'react-hook-form'
@@ -392,7 +393,7 @@ export const Edit = () => {
                   <Typography variant='h5'>Carfax</Typography>
                   <ButtonGroup>
                     <Button
-                      href={`https://the-best-auto.com/assets/catalog/${productId}/carfax.pdf`}
+                      href={`${ASSETS_URL}/catalog/${productId}/carfax.pdf`}
                       target='_blank'
                       color='primary'
                       variant='contained'
@@ -478,7 +479,7 @@ export const Edit = () => {
                             <Box border={1} borderColor={index === 0 ? 'green' : null}>
                               <img
                                 className={classes.media}
-                                src={`https://the-best-auto.com/assets/catalog/${productId}/${fileName}.jpg`}
+                                src={`${ASSETS_URL}/catalog/${productId}/${fileName}.jpg`}
                                 alt={fileName}
                               />
                               <Box>
@@ -524,7 +525,7 @@ export const Edit = () => {
                           <Box border={1}>
                             <img
                               className={classes.media}
-                              src={`https://the-best-auto.com/assets/catalog/${productId}/${fileName}`}
+                              src={`${ASSETS_URL}/catalog/${productId}/${fileName}`}
                               alt={fileName}
                             />
                             <Box>
@@ -850,12 +851,12 @@ export const Edit = () => {
                 <TextField
                   disabled
                   className={classes.copyField}
-                  value={`https://the-best-auto.com/product/${productId}`}
+                  value={`${window.location.origin}/product/${productId}`}
                   InputProps={{
                     endAdornment: (
                       <Tooltip title='Скопiювати'>
                         <CopyToClipboard
-                          text={`https://the-best-auto.com/product/${productId}`}
+                          text={`${window.location.origin}/product/${productId}`}
                           onCopy={() => {
                             setCopy(true)
                             setOpenCopyAlert(true)

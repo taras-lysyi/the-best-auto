@@ -1,4 +1,5 @@
 import React from 'react'
+import { ASSETS_URL } from 'shared/config'
 import { useKeenSlider } from 'keen-slider/react'
 import 'keen-slider/keen-slider.min.css'
 import './styles.css'
@@ -20,7 +21,7 @@ export const Carousel = ({ productId, photoIdsString }: { productId: string; pho
           {photoIdsArr.map(photoId => {
             return (
               <div className='keen-slider__slide' key={photoId}>
-                <img alt='auto' src={`https://the-best-auto.com/assets/catalog/${productId}/${photoId}.jpg`} />
+                <img alt='auto' src={`${ASSETS_URL}/catalog/${productId}/${photoId}.jpg`} />
               </div>
             )
           })}

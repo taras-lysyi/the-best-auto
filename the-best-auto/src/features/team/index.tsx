@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { ASSETS_URL } from 'shared/config'
 import { useForm, Controller } from 'react-hook-form'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
 import { useKeenSlider } from 'keen-slider/react'
@@ -264,7 +265,7 @@ export const Team = ({ isAuthorized }: any) => {
             <Slide
               id={item.member_id}
               isAuthorized={isAuthorized}
-              src={`https://the-best-auto.com/assets/team/${item.member_id}.jpg`}
+              src={`${ASSETS_URL}/team/${item.member_id}.jpg`}
               name={item.member_name}
               position={item.member_position}
             />

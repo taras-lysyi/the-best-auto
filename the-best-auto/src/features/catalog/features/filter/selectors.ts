@@ -143,7 +143,6 @@ export const selectSortedFeaturesWithLengthValues = createSelector(
   (featuresItems, featuresValueItems, allItemsInCat) => {
     let sortedFeaturesWithValues: SortedFeaturesWithValuesLengthI[] = []
     let featureValueItemsWithLength: FeatureValueItemsWithLengthI[] = []
-    debugger
     featuresValueItems.forEach(featureValueItem => {
       featureValueItemsWithLength = [
         ...featureValueItemsWithLength,

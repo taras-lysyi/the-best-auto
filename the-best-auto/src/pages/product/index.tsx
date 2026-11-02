@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ASSETS_URL } from 'shared/config'
 import { useParams, Link } from 'react-router-dom'
 import { useTypedSelector, useAppDispatch } from 'configureStore'
 import { getProduct, getCarFax, setInitializeProduct, resetProduct } from 'features/product/slice'
@@ -235,7 +236,7 @@ export const ProductPage = ({ isAuthorized }: any) => {
                         variant='contained'
                         color='primary'
                         endIcon={<PictureAsPdfIcon />}
-                        href={`https://the-best-auto.com/assets/catalog/${productId}/carfax.pdf`}>
+                        href={`${ASSETS_URL}/catalog/${productId}/carfax.pdf`}>
                         Переглянути CarFax
                       </Button>
                     </Box>
@@ -377,7 +378,7 @@ export const ProductPage = ({ isAuthorized }: any) => {
                     )}
                   </Box>
                   <Button size='large' variant='outlined' color='secondary' startIcon={<CallIcon />}>
-                    <a href='tel:+380673142557' className={classes.link}>
+                    <a href='tel:+380676703322' className={classes.link}>
                       <Typography variant={matches ? 'h4' : 'h5'}>Дзвiнок</Typography>
                     </a>
                   </Button>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { ASSETS_URL } from 'shared/config'
 import { Link } from 'react-router-dom'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
@@ -103,14 +104,14 @@ export const CatalogCard = ({
             <LazyLoadImage
               height='175px'
               effect='blur'
-              src={`https://the-best-auto.com/assets/catalog/${item_id}/${firstImageSrc}.jpg`}
+              src={`${ASSETS_URL}/catalog/${item_id}/${firstImageSrc}.jpg`}
             />
           </Box>
           <CardContent className={classes.cardContent}>
             <Typography gutterBottom variant='subtitle1' className={classes.title}>
               {title}
             </Typography>
-            <Typography variant='body1'>Пробіг: {mileage} тис.</Typography>
+            <Typography variant='body1'>Пробіг: {mileage} км</Typography>
             <Typography variant='body1'>Рік: {year}</Typography>
             {offer_price ? (
               <Box display='flex' alignItems='center'>

@@ -191,7 +191,6 @@ const filterSlice = createSlice({
         }
       } else {
         // вызываеться диспач onchange checkbox
-        debugger
         if (state.featuresFilterBody[action.payload.featureId].indexOf(action.payload.values as string) !== -1) {
           // если элемент есть в массиве
           state.featuresFilterBody[action.payload.featureId] = (state.featuresFilterBody[
