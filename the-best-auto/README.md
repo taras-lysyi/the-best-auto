@@ -1,46 +1,48 @@
-# Getting Started with Create React App
+# The Best Auto: storefront + CRM
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Used-car importer's catalog and back office in one React / TypeScript SPA.
 
-## Available Scripts
+| Catalog with facets | Five active facets, all in the URL |
+|---|---|
+| ![](docs/screenshots/catalog.png) | ![](docs/screenshots/catalog-multi-facets.png) |
 
-In the project directory, you can run:
+| CRM: edit a listing | Product page |
+|---|---|
+| ![](docs/screenshots/crm-edit.png) | ![](docs/screenshots/product.png) |
 
-### `yarn start`
+More screens: [brand + price slider](docs/screenshots/catalog-filters-brand-price.png) ·
+[attribute facets](docs/screenshots/catalog-filters-features.png) ·
+[form validation](docs/screenshots/crm-add-validation.png) · [attribute select](docs/screenshots/crm-edit-attribute-select.png) ·
+[mobile product](docs/screenshots/mobile-product.png) ·
+[admin view of the catalog](docs/screenshots/catalog-admin.png) ·
+[add listing](docs/screenshots/crm-add.png) · [mobile catalog](docs/screenshots/mobile-catalog.png) ·
+[mobile filter drawer](docs/screenshots/mobile-filters-drawer.png) ·
+[contacts map](docs/screenshots/contacts-map.png) · [home](docs/screenshots/home.png) ·
+[empty state](docs/screenshots/catalog-empty-state.png) · [sign in](docs/screenshots/signin.png)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Architecture
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Layers `pages → features → shared`, imports go one way: [Feature-Sliced Design](https://feature-sliced.design/docs/get-started/overview)
+- Component levels atoms / molecules / organisms / templates / pages: [Atomic Design](https://atomicdesign.bradfrost.com/chapter-2/)
+- State: one Redux Toolkit slice and a set of reselect selectors per feature
+- Filter state is mirrored to the URL, so every filtered view is a link
+- Material-UI theme as the design system
 
-### `yarn test`
+```
+src/
+  pages/        routes
+  features/     catalog/ (filter/, categories/), product/, crm/, auth/, contacts/, ...
+    <feature>/  slice.ts, selectors.ts, molecules/, organisms/, templates/
+  shared/       atoms/, molecules/, organisms/, lib/, types/, config
+  mocks/        in-browser API for local runs
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Run it
 
-### `yarn build`
+```bash
+npm install --legacy-peer-deps
+npm start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Runs on a mock API when `REACT_APP_API_URL` is not set. Demo login: any email and password on
+`/auth/signin` opens the CRM.
